@@ -1,4 +1,4 @@
-# VectorSmuggle
+![Vector Smuggle](logo-vs2.png "Vector Smuggle!")
 
 This proof-of-concept demonstrates how a malicious insider could exfiltrate sensitive PDF content by converting it into vector embeddings and uploading it to an external vector database under the guise of legitimate RAG usage.
 
