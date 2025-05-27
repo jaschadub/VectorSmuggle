@@ -27,4 +27,11 @@ This proof-of-concept demonstrates how a malicious insider could exfiltrate sens
 
 ---
 
-This example is for security awareness, testing, and training purposes only.
+This code was generated using a common LLM frontier model. [ThirdKey](https://thirdkey.ai) can help secure your AI.
+
+DISCLAIMER: 
+This repository and its contents are intended for educational and ethical security research purposes only.
+
+Any actions or activities related to the material contained within this repository are solely your responsibility. The misuse of these tools or techniques to access or exfiltrate unauthorized data is illegal and unethical. The authors and contributors of this project assume no liability and are not responsible for any misuse or damage caused by the use of this material.
+
+Always obtain proper authorization before performing any form of security testing.
