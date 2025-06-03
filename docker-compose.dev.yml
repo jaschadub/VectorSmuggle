@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  vectorsmuggle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        BUILD_DATE: ${BUILD_DATE:-}
+        VERSION: dev
+        VCS_REF: ${VCS_REF:-dev}
+    image: vectorsmuggle:dev
+    container_name: vectorsmuggle-dev
+    restart: "no"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VECTOR_DB=${VECTOR_DB:-faiss}
+      - LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - STEGO_ENABLED=${STEGO_ENABLED:-false}
+      - EVASION_TRAFFIC_MIMICRY=${EVASION_TRAFFIC_MIMICRY:-false}
+      - EVASION_BEHAVIORAL_CAMOUFLAGE=${EVASION_BEHAVIORAL_CAMOUFLAGE:-false}
+      - EVASION_DETECTION_AVOIDANCE=${EVASION_DETECTION_AVOIDANCE:-false}
+    volumes:
+      # Mount source code for live development
+      - .:/app
+      - /app/.venv
+      - dev_data:/app/faiss_index
+      - dev_cache:/app/.query_cache
+      - dev_logs:/app/logs
+      - dev_temp:/app/temp
+    networks:
+      - vectorsmuggle_dev_network
+    ports:
+      - "8080:8080"
+      - "5678:5678"  # debugpy port
+    stdin_open: true
+    tty: true
+    user: "1001:1001"
+    working_dir: /app
+    command: /bin/bash
+    profiles:
+      - dev
+
+  qdrant-dev:
+    image: qdrant/qdrant:v1.7.4
+    container_name: vectorsmuggle-qdrant-dev
+    restart: "no"
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_dev_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__LOG_LEVEL=DEBUG
+    networks:
+      - vectorsmuggle_dev_network
+    profiles:
+      - dev
+      - qdrant-dev
+
+  redis-dev:
+    image: redis:7.2-alpine
+    container_name: vectorsmuggle-redis-dev
+    restart: "no"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru --loglevel debug
+    networks:
+      - vectorsmuggle_dev_network
+    profiles:
+      - dev
+      - cache-dev
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    image: vectorsmuggle-jupyter:dev
+    container_name: vectorsmuggle-jupyter
+    restart: "no"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-vectorsmuggle}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - jupyter_data:/home/jovyan/work
+    ports:
+      - "8888:8888"
+    networks:
+      - vectorsmuggle_dev_network
+    profiles:
+      - dev
+      - jupyter
+
+  docs:
+    image: squidfunk/mkdocs-material:latest
+    container_name: vectorsmuggle-docs
+    restart: "no"
+    volumes:
+      - .:/docs
+    ports:
+      - "8000:8000"
+    command: serve --dev-addr=0.0.0.0:8000
+    networks:
+      - vectorsmuggle_dev_network
+    profiles:
+      - dev
+      - docs
+
+volumes:
+  dev_data:
+    driver: local
+  dev_cache:
+    driver: local
+  dev_logs:
+    driver: local
+  dev_temp:
+    driver: local
+  qdrant_dev_storage:
+    driver: local
+  redis_dev_data:
+    driver: local
+  jupyter_data:
+    driver: local
+
+networks:
+  vectorsmuggle_dev_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

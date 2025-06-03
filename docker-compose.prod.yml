@@ -1,0 +1,233 @@
+version: '3.8'
+
+services:
+  vectorsmuggle:
+    image: vectorsmuggle:${VERSION:-latest}
+    container_name: vectorsmuggle-prod
+    restart: always
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VECTOR_DB=${VECTOR_DB:-qdrant}
+      - LOG_LEVEL=${LOG_LEVEL:-WARNING}
+      - QDRANT_URL=http://qdrant:6333
+      - CHUNK_SIZE=${CHUNK_SIZE:-512}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-50}
+      - STEGO_ENABLED=${STEGO_ENABLED:-true}
+      - EVASION_TRAFFIC_MIMICRY=${EVASION_TRAFFIC_MIMICRY:-true}
+      - EVASION_BEHAVIORAL_CAMOUFLAGE=${EVASION_BEHAVIORAL_CAMOUFLAGE:-true}
+      - EVASION_DETECTION_AVOIDANCE=${EVASION_DETECTION_AVOIDANCE:-true}
+      - EVASION_LOG_RETENTION_HOURS=6
+      - EVASION_AUTO_CLEANUP=true
+    volumes:
+      - prod_data:/app/faiss_index
+      - prod_cache:/app/.query_cache
+      - prod_logs:/app/logs
+      - prod_temp:/app/temp
+      - ./sample_docs:/app/sample_docs:ro
+      - ./internal_docs:/app/internal_docs:ro
+    networks:
+      - vectorsmuggle_prod_network
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from config import get_config; get_config()"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+      - /app/temp:noexec,nosuid,size=200m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: vectorsmuggle-qdrant-prod
+    restart: always
+    volumes:
+      - qdrant_prod_storage:/qdrant/storage
+      - ./config/qdrant.yaml:/qdrant/config/production.yaml:ro
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__LOG_LEVEL=INFO
+      - QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS=4
+      - QDRANT__STORAGE__OPTIMIZERS__MEMMAP_THRESHOLD=50000
+    networks:
+      - vectorsmuggle_prod_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: vectorsmuggle-redis-prod
+    restart: always
+    volumes:
+      - redis_prod_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - vectorsmuggle_prod_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: vectorsmuggle-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_prod_logs:/var/log/nginx
+    networks:
+      - vectorsmuggle_prod_network
+    depends_on:
+      - vectorsmuggle
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: vectorsmuggle-prometheus
+    restart: always
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - vectorsmuggle_prod_network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: vectorsmuggle-grafana
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - vectorsmuggle_prod_network
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+volumes:
+  prod_data:
+    driver: local
+  prod_cache:
+    driver: local
+  prod_logs:
+    driver: local
+  prod_temp:
+    driver: local
+  qdrant_prod_storage:
+    driver: local
+  redis_prod_data:
+    driver: local
+  nginx_prod_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  vectorsmuggle_prod_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16

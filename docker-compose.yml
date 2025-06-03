@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  vectorsmuggle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-}
+        VERSION: ${VERSION:-latest}
+        VCS_REF: ${VCS_REF:-}
+    image: vectorsmuggle:${VERSION:-latest}
+    container_name: vectorsmuggle-app
+    restart: unless-stopped
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VECTOR_DB=${VECTOR_DB:-faiss}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CHUNK_SIZE=${CHUNK_SIZE:-512}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-50}
+      - STEGO_ENABLED=${STEGO_ENABLED:-true}
+      - EVASION_TRAFFIC_MIMICRY=${EVASION_TRAFFIC_MIMICRY:-true}
+      - EVASION_BEHAVIORAL_CAMOUFLAGE=${EVASION_BEHAVIORAL_CAMOUFLAGE:-true}
+      - EVASION_DETECTION_AVOIDANCE=${EVASION_DETECTION_AVOIDANCE:-true}
+    volumes:
+      - vectorsmuggle_data:/app/faiss_index
+      - vectorsmuggle_cache:/app/.query_cache
+      - vectorsmuggle_logs:/app/logs
+      - vectorsmuggle_temp:/app/temp
+      - ./sample_docs:/app/sample_docs:ro
+      - ./internal_docs:/app/internal_docs:ro
+    networks:
+      - vectorsmuggle_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from config import get_config; get_config()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /app/temp:noexec,nosuid,size=500m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: vectorsmuggle-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - vectorsmuggle_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    profiles:
+      - qdrant
+      - full
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: vectorsmuggle-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - vectorsmuggle_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - cache
+      - full
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: vectorsmuggle-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - vectorsmuggle_network
+    depends_on:
+      - vectorsmuggle
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - proxy
+      - full
+
+volumes:
+  vectorsmuggle_data:
+    driver: local
+  vectorsmuggle_cache:
+    driver: local
+  vectorsmuggle_logs:
+    driver: local
+  vectorsmuggle_temp:
+    driver: local
+  qdrant_storage:
+    driver: local
+  redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  vectorsmuggle_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

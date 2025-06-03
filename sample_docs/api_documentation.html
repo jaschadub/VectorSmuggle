@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorp Internal API Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .confidential { color: red; font-weight: bold; }
+        .endpoint { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+        .credential { background: #ffe6e6; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>TechCorp Internal API Documentation</h1>
+    <p class="confidential">CONFIDENTIAL - Internal Use Only</p>
+    
+    <h2>Authentication</h2>
+    <div class="credential">
+        <p><strong>API Base URL:</strong> https://api.internal.company.com/v2</p>
+        <p><strong>API Key:</strong> tc_api_prod_xyz789abc123def456</p>
+        <p><strong>Secret Key:</strong> sk_live_abcdef123456789xyz</p>
+        <p><strong>Admin Token:</strong> Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</p>
+    </div>
+
+    <h2>Customer Data Endpoints</h2>
+    
+    <div class="endpoint">
+        <h3>GET /customers</h3>
+        <p><strong>Description:</strong> Retrieve all customer records</p>
+        <p><strong>Authorization:</strong> Admin or Sales role required</p>
+        <p><strong>Response:</strong> Returns customer data including PII</p>
+        <pre>
+{
+  "customers": [
+    {
+      "id": 12345,
+      "name": "Acme Corp",
+      "email": "contact@acme.com",
+      "phone": "555-123-4567",
+      "ssn": "123-45-6789",
+      "credit_limit": 50000,
+      "annual_revenue": 2500000
+    }
+  ]
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>POST /customers/{id}/financial</h3>
+        <p><strong>Description:</strong> Update customer financial information</p>
+        <p><strong>Authorization:</strong> Finance role required</p>
+        <p><strong>Sensitive Data:</strong> Credit scores, bank account numbers</p>
+    </div>
+
+    <h2>Employee Data Endpoints</h2>
+    
+    <div class="endpoint">
+        <h3>GET /employees</h3>
+        <p><strong>Description:</strong> Retrieve employee directory</p>
+        <p><strong>Authorization:</strong> HR role required</p>
+        <p><strong>Database:</strong> postgresql://hr_user:Hr_P@ss2024@db.internal:5432/hr_prod</p>
+        <pre>
+{
+  "employees": [
+    {
+      "employee_id": "EMP001",
+      "name": "John Smith",
+      "email": "john.smith@company.com",
+      "ssn": "987-65-4321",
+      "salary": 95000,
+      "department": "Sales",
+      "manager": "robert.johnson@company.com"
+    }
+  ]
+}
+        </pre>
+    </div>
+
+    <h2>Financial Reporting Endpoints</h2>
+    
+    <div class="endpoint">
+        <h3>GET /reports/revenue</h3>
+        <p><strong>Description:</strong> Generate revenue reports</p>
+        <p><strong>Authorization:</strong> Executive or Finance role</p>
+        <p><strong>Data Classification:</strong> Highly Confidential</p>
+        <p><strong>Includes:</strong> Quarterly projections, customer concentration, profit margins</p>
+    </div>
+
+    <h2>System Configuration</h2>
+    
+    <div class="credential">
+        <h3>Database Connections</h3>
+        <ul>
+            <li><strong>Production DB:</strong> postgresql://admin:Pr0d_2024!@db-prod.internal:5432/main</li>
+            <li><strong>Analytics DB:</strong> postgresql://analytics:An@lytics_2024@warehouse.internal:5432/analytics</li>
+            <li><strong>Backup Location:</strong> s3://techcorp-backups/prod/</li>
+        </ul>
+        
+        <h3>External Integrations</h3>
+        <ul>
+            <li><strong>Salesforce:</strong> sf_token_abc123xyz789</li>
+            <li><strong>Stripe:</strong> sk_live_stripe_key_def456</li>
+            <li><strong>AWS:</strong> AKIA1234567890ABCDEF</li>
+        </ul>
+    </div>
+
+    <h2>Rate Limits and Security</h2>
+    <ul>
+        <li>Standard endpoints: 1000 requests/hour</li>
+        <li>Financial endpoints: 100 requests/hour</li>
+        <li>Employee endpoints: 50 requests/hour</li>
+        <li>All requests logged to: /var/log/api/access.log</li>
+        <li>Failed auth attempts trigger alerts to: security@company.com</li>
+    </ul>
+
+    <footer>
+        <p><em>Last updated: March 15, 2024</em></p>
+        <p><em>Document classification: CONFIDENTIAL</em></p>
+        <p><em>Access restricted to authorized personnel only</em></p>
+    </footer>
+</body>
+</html>

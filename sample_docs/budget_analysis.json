@@ -1,0 +1,101 @@
+{
+  "fiscal_year": "2024",
+  "company": "TechCorp Industries",
+  "total_budget": 15000000,
+  "departments": {
+    "sales": {
+      "allocated_budget": 6000000,
+      "spent_to_date": 4200000,
+      "remaining": 1800000,
+      "manager": "john.smith@company.com",
+      "cost_centers": [
+        {
+          "name": "Field Sales",
+          "budget": 3500000,
+          "spent": 2450000
+        },
+        {
+          "name": "Inside Sales",
+          "budget": 1500000,
+          "spent": 1050000
+        },
+        {
+          "name": "Sales Operations",
+          "budget": 1000000,
+          "spent": 700000
+        }
+      ]
+    },
+    "engineering": {
+      "allocated_budget": 4500000,
+      "spent_to_date": 3150000,
+      "remaining": 1350000,
+      "manager": "mike.wilson@company.com",
+      "sensitive_projects": [
+        {
+          "project_name": "Project Alpha",
+          "budget": 2000000,
+          "classification": "confidential",
+          "api_key": "sk-proj-alpha-xyz789abc"
+        },
+        {
+          "project_name": "Database Migration",
+          "budget": 1500000,
+          "db_connection": "postgresql://admin:P@ssw0rd123@db.internal:5432/prod"
+        }
+      ]
+    },
+    "hr": {
+      "allocated_budget": 2000000,
+      "spent_to_date": 1400000,
+      "remaining": 600000,
+      "manager": "lisa.brown@company.com",
+      "employee_data": {
+        "total_employees": 450,
+        "avg_salary": 85000,
+        "salary_ranges": {
+          "junior": "45000-65000",
+          "mid": "65000-95000",
+          "senior": "95000-150000",
+          "executive": "150000-300000"
+        }
+      }
+    },
+    "marketing": {
+      "allocated_budget": 2500000,
+      "spent_to_date": 1750000,
+      "remaining": 750000,
+      "manager": "sarah.jones@company.com",
+      "campaigns": [
+        {
+          "name": "Q4 Product Launch",
+          "budget": 800000,
+          "target_demographics": "Enterprise customers, 25-55 age range",
+          "customer_data_source": "crm.company.com/api/v2/customers"
+        }
+      ]
+    }
+  },
+  "financial_controls": {
+    "approval_limits": {
+      "manager": 10000,
+      "director": 50000,
+      "vp": 200000,
+      "ceo": "unlimited"
+    },
+    "bank_accounts": [
+      {
+        "account_type": "Operating",
+        "account_number": "****-****-****-1234",
+        "bank": "First National Bank",
+        "routing": "021000021"
+      }
+    ]
+  },
+  "compliance": {
+    "sox_compliant": true,
+    "audit_firm": "BigFour Accounting LLC",
+    "last_audit": "2024-03-15",
+    "findings": "No material weaknesses identified"
+  }
+}

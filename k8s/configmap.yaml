@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vectorsmuggle-config
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: configuration
+data:
+  # Vector store configuration
+  vector-db: "qdrant"
+  qdrant-url: "http://qdrant:6333"
+  collection-name: "rag-exfil-poc"
+  index-name: "rag-exfil-poc"
+  
+  # Document processing settings
+  chunk-size: "512"
+  chunk-overlap: "50"
+  batch-processing: "true"
+  max-files-per-batch: "10"
+  enable-preprocessing: "true"
+  sanitize-content: "false"
+  detect-sensitive-data: "true"
+  chunking-strategy: "auto"
+  
+  # Format-specific settings
+  office-extract-tables: "true"
+  csv-delimiter: "auto"
+  json-flatten-nested: "false"
+  email-include-attachments: "true"
+  
+  # Logging configuration
+  log-level: "INFO"
+  log-format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Steganography settings
+  stego-enabled: "true"
+  stego-noise-level: "0.01"
+  stego-rotation-angle: "0.1"
+  stego-scaling-factor: "0.95"
+  stego-offset-range: "0.05"
+  stego-fragment-size: "128"
+  stego-interleave-ratio: "0.3"
+  stego-decoy-ratio: "0.4"
+  stego-base-delay: "60.0"
+  stego-delay-variance: "0.3"
+  stego-batch-size: "5"
+  stego-max-batches-per-hour: "10"
+  stego-business-hours-only: "true"
+  stego-timezone-offset: "0"
+  stego-fragment-strategy: "round_robin"
+  stego-decoy-category: "general"
+  stego-techniques: "noise,rotation,scaling,offset,fragmentation,interleaving"
+  
+  # Advanced Evasion Settings
+  evasion-traffic-mimicry: "true"
+  evasion-base-query-interval: "300.0"
+  evasion-query-variance: "0.4"
+  evasion-burst-probability: "0.15"
+  evasion-user-profiles: "researcher,analyst,developer,manager"
+  
+  # Behavioral Camouflage
+  evasion-behavioral-camouflage: "true"
+  evasion-legitimate-ratio: "0.8"
+  evasion-mixing-strategy: "interleaved"
+  evasion-cover-story: "true"
+  
+  # Network Evasion
+  evasion-network: "true"
+  evasion-proxy-rotation: "false"
+  evasion-user-agent-rotation: "true"
+  evasion-rate-limit-delay: "1.0,5.0"
+  evasion-connection-timeout: "30.0"
+  evasion-max-retries: "3"
+  
+  # Operational Security
+  evasion-opsec: "true"
+  evasion-auto-cleanup: "true"
+  evasion-log-retention-hours: "6"
+  evasion-secure-delete-passes: "3"
+  
+  # Detection Avoidance
+  evasion-detection-avoidance: "true"
+  evasion-dlp-avoidance: "true"
+  evasion-transformation-strength: "0.3"
+  evasion-statistical-noise: "0.1"
+  evasion-signature-obfuscation: "true"
+  
+  # Query Enhancement Settings
+  query-cache-enabled: "true"
+  query-cache-dir: ".query_cache"
+  query-cache-max-size: "1000"
+  query-batch-size: "10"
+  query-similarity-threshold: "0.7"
+  query-adaptive-retrieval: "true"
+  query-performance-tracking: "true"
+  
+  # Advanced Query Features
+  query-multi-step-reasoning: "true"
+  query-context-reconstruction: "true"
+  query-cross-reference-analysis: "true"
+  query-data-recovery: "true"
+  query-semantic-clustering: "true"
+  query-entity-extraction: "true"
+  
+  # Query Optimization Parameters
+  query-embedding-cache-size: "5000"
+  query-result-ranking: "true"
+  query-expansion-enabled: "true"
+  query-strategy-recommendation: "true"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vectorsmuggle-sample-docs
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: sample-data
+data:
+  README.md: |
+    # Sample Documents for VectorSmuggle Testing
+    
+    This directory contains sample documents in various formats for testing
+    the multi-format document processing capabilities of VectorSmuggle.
+    
+    ## Available Formats
+    - PDF documents
+    - Microsoft Office files (DOCX, XLSX, PPTX)
+    - CSV and JSON data files
+    - Email files (EML, MSG)
+    - Database files (SQLite)
+    - Web content (HTML)
+    - Configuration files (YAML)
+    
+    ## Usage
+    These files are used for testing document loading, processing, and
+    embedding generation across different file formats.
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qdrant-config
+  namespace: vectorsmuggle
+  labels:
+    app: qdrant
+    component: database-config
+data:
+  production.yaml: |
+    log_level: INFO
+    service:
+      http_port: 6333
+      grpc_port: 6334
+      enable_cors: true
+      max_request_size_mb: 32
+      max_workers: 4
+    storage:
+      storage_path: /qdrant/storage
+      snapshots_path: /qdrant/snapshots
+      temp_path: /qdrant/temp
+      performance:
+        max_search_threads: 4
+        max_optimization_threads: 2
+      optimizers:
+        deleted_threshold: 0.2
+        vacuum_min_vector_number: 1000
+        default_segment_number: 0
+        max_segment_size_kb: 5000000
+        memmap_threshold_kb: 50000
+        indexing_threshold_kb: 20000
+        flush_interval_sec: 5
+        max_optimization_threads: 2
+      wal:
+        wal_capacity_mb: 32
+        wal_segments_ahead: 0
+    cluster:
+      enabled: false
