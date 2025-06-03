@@ -2,6 +2,8 @@
 
 # VectorSmuggle
 
+_"The smuggle is real!"_
+
 A comprehensive proof-of-concept demonstrating sophisticated vector-based data exfiltration techniques in AI/ML environments. This educational security research project illustrates potential risks in RAG systems and provides tools for defensive analysis.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -466,7 +468,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions, suggestions, or responsible disclosure of security issues:
 
-- **Security Issues**: Please follow our [responsible disclosure policy](legal/responsible_disclosure.md)
 - **General Questions**: Open an issue on GitHub
 - **Research Collaboration**: Contact the maintainers
 
