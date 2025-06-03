@@ -1,0 +1,287 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vectorsmuggle
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: application
+    version: v1.0.0
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: vectorsmuggle
+      component: application
+  template:
+    metadata:
+      labels:
+        app: vectorsmuggle
+        component: application
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: vectorsmuggle
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: vectorsmuggle
+        image: vectorsmuggle:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: vectorsmuggle-secrets
+              key: openai-api-key
+        - name: VECTOR_DB
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: vector-db
+        - name: QDRANT_URL
+          value: "http://qdrant:6333"
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: log-level
+        - name: CHUNK_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: chunk-size
+        - name: CHUNK_OVERLAP
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: chunk-overlap
+        - name: STEGO_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: stego-enabled
+        - name: EVASION_TRAFFIC_MIMICRY
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: evasion-traffic-mimicry
+        - name: EVASION_BEHAVIORAL_CAMOUFLAGE
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: evasion-behavioral-camouflage
+        - name: EVASION_DETECTION_AVOIDANCE
+          valueFrom:
+            configMapKeyRef:
+              name: vectorsmuggle-config
+              key: evasion-detection-avoidance
+        - name: PYTHONPATH
+          value: "/app"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: PYTHONDONTWRITEBYTECODE
+          value: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/faiss_index
+        - name: cache-volume
+          mountPath: /app/.query_cache
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: temp-volume
+          mountPath: /app/temp
+        - name: sample-docs
+          mountPath: /app/sample_docs
+          readOnly: true
+        - name: internal-docs
+          mountPath: /app/internal_docs
+          readOnly: true
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "from config import get_config; get_config()"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "from config import get_config; get_config()"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+            - SETGID
+            - SETUID
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: vectorsmuggle-data-pvc
+      - name: cache-volume
+        persistentVolumeClaim:
+          claimName: vectorsmuggle-cache-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: vectorsmuggle-logs-pvc
+      - name: temp-volume
+        emptyDir:
+          sizeLimit: 500Mi
+      - name: sample-docs
+        configMap:
+          name: vectorsmuggle-sample-docs
+      - name: internal-docs
+        secret:
+          secretName: vectorsmuggle-internal-docs
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "vectorsmuggle.io/dedicated"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - vectorsmuggle
+              topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qdrant
+  namespace: vectorsmuggle
+  labels:
+    app: qdrant
+    component: database
+    version: v1.7.4
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: qdrant
+      component: database
+  template:
+    metadata:
+      labels:
+        app: qdrant
+        component: database
+        version: v1.7.4
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: qdrant
+        image: qdrant/qdrant:v1.7.4
+        ports:
+        - name: http
+          containerPort: 6333
+          protocol: TCP
+        - name: grpc
+          containerPort: 6334
+          protocol: TCP
+        env:
+        - name: QDRANT__SERVICE__HTTP_PORT
+          value: "6333"
+        - name: QDRANT__SERVICE__GRPC_PORT
+          value: "6334"
+        - name: QDRANT__LOG_LEVEL
+          value: "INFO"
+        - name: QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS
+          value: "4"
+        - name: QDRANT__STORAGE__OPTIMIZERS__MEMMAP_THRESHOLD
+          value: "50000"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1500m"
+        volumeMounts:
+        - name: qdrant-storage
+          mountPath: /qdrant/storage
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 6333
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 6333
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: qdrant-storage
+        persistentVolumeClaim:
+          claimName: qdrant-storage-pvc
+      nodeSelector:
+        kubernetes.io/os: linux

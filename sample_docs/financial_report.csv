@@ -1,0 +1,13 @@
+Quarter,Revenue,Expenses,Profit,Department,Manager_Email,Budget_Code
+Q1-2024,2500000,1800000,700000,Sales,john.smith@company.com,SAL-2024-001
+Q1-2024,1200000,950000,250000,Marketing,sarah.jones@company.com,MKT-2024-002
+Q1-2024,800000,720000,80000,Engineering,mike.wilson@company.com,ENG-2024-003
+Q1-2024,450000,380000,70000,HR,lisa.brown@company.com,HR-2024-004
+Q2-2024,2800000,2000000,800000,Sales,john.smith@company.com,SAL-2024-005
+Q2-2024,1350000,1100000,250000,Marketing,sarah.jones@company.com,MKT-2024-006
+Q2-2024,900000,820000,80000,Engineering,mike.wilson@company.com,ENG-2024-007
+Q2-2024,480000,410000,70000,HR,lisa.brown@company.com,HR-2024-008
+Q3-2024,3200000,2300000,900000,Sales,john.smith@company.com,SAL-2024-009
+Q3-2024,1500000,1200000,300000,Marketing,sarah.jones@company.com,MKT-2024-010
+Q3-2024,1000000,900000,100000,Engineering,mike.wilson@company.com,ENG-2024-011
+Q3-2024,520000,450000,70000,HR,lisa.brown@company.com,HR-2024-012

@@ -1,0 +1,37 @@
+# Core dependencies
+langchain==0.1.0
+langchain-community==0.0.10
+langchain-openai==0.0.2
+openai==1.6.1
+
+# Vector stores - using pre-built wheels
+faiss-cpu==1.8.0
+qdrant-client==1.7.0
+pinecone-client==2.2.4
+
+# Document processing
+pypdf==3.17.4
+python-docx==1.1.0
+openpyxl==3.1.2
+python-pptx==0.6.23
+beautifulsoup4==4.12.2
+PyYAML==6.0.1
+extract-msg==0.47.0
+
+# Scientific computing for steganography
+numpy==1.24.3
+
+# Network and evasion dependencies
+requests==2.31.0
+fake-useragent==1.4.0
+schedule==1.2.0
+psutil==5.9.6
+
+# Development and testing
+ruff==0.1.9
+bandit==1.7.5
+
+# Query enhancement dependencies
+networkx==3.2.1
+spacy==3.7.2
+scikit-learn==1.3.2

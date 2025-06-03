@@ -1,0 +1,247 @@
+# TechCorp Database Schema Configuration
+# CONFIDENTIAL - Internal Use Only
+
+database_config:
+  environment: production
+  host: db-prod.internal.company.com
+  port: 5432
+  database: techcorp_main
+  ssl_mode: require
+  connection_pool_size: 20
+  backup_schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 90
+
+credentials:
+  admin_user: db_admin
+  admin_password: "Pr0d_DB_P@ssw0rd_2024!"
+  app_user: techcorp_app
+  app_password: "App_DB_Acc3ss_2024"
+  readonly_user: analytics_ro
+  readonly_password: "R3ad0nly_2024"
+
+schemas:
+  customers:
+    description: "Customer data and account information"
+    tables:
+      customers:
+        columns:
+          - name: customer_id
+            type: SERIAL
+            primary_key: true
+          - name: company_name
+            type: VARCHAR(255)
+            nullable: false
+          - name: contact_email
+            type: VARCHAR(255)
+            nullable: false
+          - name: phone_number
+            type: VARCHAR(20)
+          - name: billing_address
+            type: TEXT
+          - name: tax_id
+            type: VARCHAR(50)
+            sensitive: true
+          - name: credit_limit
+            type: DECIMAL(12,2)
+            sensitive: true
+          - name: created_at
+            type: TIMESTAMP
+            default: CURRENT_TIMESTAMP
+        indexes:
+          - name: idx_customer_email
+            columns: [contact_email]
+            unique: true
+          - name: idx_customer_company
+            columns: [company_name]
+
+      customer_contacts:
+        columns:
+          - name: contact_id
+            type: SERIAL
+            primary_key: true
+          - name: customer_id
+            type: INTEGER
+            foreign_key: customers.customer_id
+          - name: first_name
+            type: VARCHAR(100)
+          - name: last_name
+            type: VARCHAR(100)
+          - name: email
+            type: VARCHAR(255)
+          - name: phone
+            type: VARCHAR(20)
+          - name: ssn
+            type: VARCHAR(11)
+            sensitive: true
+            encrypted: true
+          - name: role
+            type: VARCHAR(100)
+
+  employees:
+    description: "Employee information and HR data"
+    access_level: restricted
+    tables:
+      employees:
+        columns:
+          - name: employee_id
+            type: SERIAL
+            primary_key: true
+          - name: employee_number
+            type: VARCHAR(20)
+            unique: true
+          - name: first_name
+            type: VARCHAR(100)
+            nullable: false
+          - name: last_name
+            type: VARCHAR(100)
+            nullable: false
+          - name: email
+            type: VARCHAR(255)
+            unique: true
+          - name: ssn
+            type: VARCHAR(11)
+            sensitive: true
+            encrypted: true
+          - name: date_of_birth
+            type: DATE
+            sensitive: true
+          - name: hire_date
+            type: DATE
+          - name: department
+            type: VARCHAR(100)
+          - name: job_title
+            type: VARCHAR(150)
+          - name: manager_id
+            type: INTEGER
+            foreign_key: employees.employee_id
+          - name: salary
+            type: DECIMAL(10,2)
+            sensitive: true
+          - name: bonus_eligible
+            type: BOOLEAN
+            default: false
+          - name: stock_options
+            type: INTEGER
+            default: 0
+          - name: status
+            type: VARCHAR(20)
+            default: 'active'
+
+      payroll:
+        columns:
+          - name: payroll_id
+            type: SERIAL
+            primary_key: true
+          - name: employee_id
+            type: INTEGER
+            foreign_key: employees.employee_id
+          - name: pay_period_start
+            type: DATE
+          - name: pay_period_end
+            type: DATE
+          - name: gross_pay
+            type: DECIMAL(10,2)
+            sensitive: true
+          - name: net_pay
+            type: DECIMAL(10,2)
+            sensitive: true
+          - name: tax_withheld
+            type: DECIMAL(10,2)
+            sensitive: true
+          - name: bank_account
+            type: VARCHAR(20)
+            sensitive: true
+            encrypted: true
+          - name: routing_number
+            type: VARCHAR(9)
+            sensitive: true
+
+  financial:
+    description: "Financial transactions and accounting data"
+    access_level: confidential
+    tables:
+      transactions:
+        columns:
+          - name: transaction_id
+            type: SERIAL
+            primary_key: true
+          - name: customer_id
+            type: INTEGER
+            foreign_key: customers.customer_id
+          - name: amount
+            type: DECIMAL(12,2)
+            nullable: false
+          - name: currency
+            type: VARCHAR(3)
+            default: 'USD'
+          - name: transaction_type
+            type: VARCHAR(50)
+          - name: payment_method
+            type: VARCHAR(50)
+          - name: credit_card_last4
+            type: VARCHAR(4)
+          - name: bank_account_last4
+            type: VARCHAR(4)
+          - name: transaction_date
+            type: TIMESTAMP
+            default: CURRENT_TIMESTAMP
+          - name: status
+            type: VARCHAR(20)
+            default: 'pending'
+
+      revenue_projections:
+        columns:
+          - name: projection_id
+            type: SERIAL
+            primary_key: true
+          - name: fiscal_quarter
+            type: VARCHAR(10)
+          - name: department
+            type: VARCHAR(100)
+          - name: projected_revenue
+            type: DECIMAL(15,2)
+            sensitive: true
+          - name: actual_revenue
+            type: DECIMAL(15,2)
+            sensitive: true
+          - name: variance_percent
+            type: DECIMAL(5,2)
+          - name: created_by
+            type: INTEGER
+            foreign_key: employees.employee_id
+
+api_access:
+  endpoints:
+    - path: "/api/v1/customers"
+      methods: [GET, POST, PUT]
+      auth_required: true
+      rate_limit: 1000
+    - path: "/api/v1/employees"
+      methods: [GET]
+      auth_required: true
+      access_level: hr_only
+      rate_limit: 100
+    - path: "/api/v1/financial"
+      methods: [GET]
+      auth_required: true
+      access_level: finance_only
+      rate_limit: 50
+
+  authentication:
+    type: jwt
+    secret_key: "jwt_secret_key_prod_2024_xyz789"
+    token_expiry: 3600
+    refresh_token_expiry: 86400
+
+backup_config:
+  s3_bucket: techcorp-db-backups-prod
+  aws_region: us-west-2
+  encryption: AES256
+  access_key: AKIA1234567890ABCDEF
+  secret_key: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+monitoring:
+  slow_query_threshold: 5000  # milliseconds
+  connection_alerts: true
+  disk_space_threshold: 85    # percent
+  alert_email: dba@company.com

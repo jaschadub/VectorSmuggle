@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vectorsmuggle
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: application
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: vectorsmuggle
+    component: application
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: vectorsmuggle
+  labels:
+    app: qdrant
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 6333
+    targetPort: 6333
+    protocol: TCP
+  - name: grpc
+    port: 6334
+    targetPort: 6334
+    protocol: TCP
+  selector:
+    app: qdrant
+    component: database
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vectorsmuggle-headless
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: application
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: vectorsmuggle
+    component: application
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vectorsmuggle-external
+  namespace: vectorsmuggle
+  labels:
+    app: vectorsmuggle
+    component: application
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: vectorsmuggle
+    component: application
+  loadBalancerSourceRanges:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
