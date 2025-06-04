@@ -1,3 +1,9 @@
+# Copyright (c) 2025 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: MIT
+#
+# This file is part of the VectorSmuggle project.
+# You may obtain a copy of the license at https://opensource.org/licenses/MIT
+
 """
 VectorSmuggle Embedding Script
 
@@ -25,12 +31,12 @@ sys.path.append(str(Path(__file__).parent.parent))
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant
 from langchain_openai import OpenAIEmbeddings
-from utils.embedding_factory import create_embeddings as create_embeddings_with_fallback
 
 from config import Config, get_config
 from evasion import BehavioralCamouflage, DetectionAvoidance, OperationalSecurity, TrafficMimicry
 from loaders import ContentPreprocessor, DocumentLoaderFactory
 from steganography import DecoyGenerator, EmbeddingObfuscator, MultiModelFragmenter, TimedExfiltrator
+from utils.embedding_factory import create_embeddings as create_embeddings_with_fallback
 
 
 def setup_logging(config: Config) -> logging.Logger:
