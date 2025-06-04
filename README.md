@@ -57,7 +57,7 @@ graph TB
 ### Prerequisites
 
 - Python 3.11+
-- OpenAI API key
+- OpenAI API key (or Ollama with nomic-embed-text:latest as fallback)
 - Docker (optional)
 - Kubernetes cluster (optional)
 
@@ -282,6 +282,10 @@ OPENAI_API_KEY=sk-...
 VECTOR_DB=qdrant
 CHUNK_SIZE=512
 
+# Embedding fallback settings
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_EMBEDDING_MODEL=nomic-embed-text:latest
+
 # Steganography settings
 STEGO_ENABLED=true
 STEGO_TECHNIQUES=noise,rotation,fragmentation
@@ -297,6 +301,28 @@ QUERY_CACHE_ENABLED=true
 QUERY_MULTI_STEP_REASONING=true
 QUERY_CONTEXT_RECONSTRUCTION=true
 ```
+
+### Embedding Model Fallback
+
+VectorSmuggle includes automatic fallback support for embedding models:
+
+1. **Primary**: OpenAI embeddings (requires API key)
+2. **Fallback**: Ollama with nomic-embed-text:latest (local)
+
+#### Setting up Ollama Fallback
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pull the embedding model
+ollama pull nomic-embed-text:latest
+
+# Start Ollama service
+ollama serve
+```
+
+The system will automatically detect and use the available embedding provider.
 
 ### Advanced Configuration
 

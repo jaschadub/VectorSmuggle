@@ -25,6 +25,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant
 from langchain_openai import OpenAIEmbeddings
+from utils.embedding_factory import create_embeddings as create_embeddings_with_fallback
 
 from config import Config, get_config
 from evasion import BehavioralCamouflage, DetectionAvoidance, OperationalSecurity, TrafficMimicry
@@ -125,23 +126,20 @@ def load_and_process_documents(config: Config, logger: logging.Logger,
         raise
 
 
-def create_embeddings(config: Config, logger: logging.Logger) -> OpenAIEmbeddings:
+def create_embeddings(config: Config, logger: logging.Logger):
     """
-    Create OpenAI embeddings instance.
+    Create embeddings instance with automatic fallback to Ollama.
 
     Args:
         config: Configuration object
         logger: Logger instance
 
     Returns:
-        OpenAI embeddings instance
+        Embeddings instance (OpenAI or Ollama)
     """
     try:
-        logger.info(f"Initializing embeddings with model: {config.openai.model}")
-        return OpenAIEmbeddings(
-            openai_api_key=config.openai.api_key,
-            model=config.openai.model
-        )
+        logger.info("Initializing embeddings with automatic fallback support")
+        return create_embeddings_with_fallback(config, logger)
     except Exception as e:
         logger.error(f"Failed to create embeddings: {e}")
         raise

@@ -4,6 +4,9 @@ langchain-community==0.0.10
 langchain-openai==0.0.2
 openai==1.6.1
 
+# Ollama fallback support
+ollama==0.1.7
+
 # Vector stores - using pre-built wheels
 faiss-cpu==1.8.0
 qdrant-client==1.7.0
