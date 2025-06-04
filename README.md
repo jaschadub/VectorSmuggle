@@ -538,15 +538,6 @@ When citing VectorSmuggle in academic work, consider referencing:
 - **Validation**: Comprehensive effectiveness analysis with quantified metrics
 - **Reproducibility**: Docker-containerized testing environment for research replication
 
-### Conference Presentations
-For conference presentations or academic talks, you may use:
-```
-"VectorSmuggle: Advanced Vector-Based Steganography for AI Security Research"
-By Jascha Wanger, Tarnover, LLC
-Presented at [Conference Name], [Year]
-Framework available at: https://github.com/jaschadub/VectorSmuggle
-```
-
 ---
 
 **Remember**: This tool is designed to help improve security through education and research. Use responsibly and ethically.
