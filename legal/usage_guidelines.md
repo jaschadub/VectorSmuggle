@@ -89,22 +89,6 @@ The authors and contributors:
 - Preserve evidence and logs
 - Document lessons learned
 
-## Enforcement
-
-### Violations
-Violations of these guidelines may result in:
-- Termination of access
-- Legal action
-- Reporting to authorities
-- Professional sanctions
-
-### Monitoring
-Usage may be monitored for:
-- Compliance verification
-- Security purposes
-- Legal requirements
-- Quality assurance
-
 ## Contact Information
 
 For questions about usage guidelines:
