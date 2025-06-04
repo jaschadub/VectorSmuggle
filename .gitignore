@@ -206,3 +206,10 @@ Dockerfile.test
 run_research_tests.sh
 .env.template
 reports/EFFECTIVENESS_SUMMARY.md
+
+# Test results and generated data (VectorSmuggle specific)
+tests/data/
+tests/results/
+output/
+logs/
+.env.template
