@@ -4,7 +4,7 @@
 
 _"The smuggle is real!"_
 
-A comprehensive proof-of-concept demonstrating sophisticated vector-based data exfiltration techniques in AI/ML environments. This educational security research project illustrates potential risks in RAG systems and provides tools for defensive analysis.
+A comprehensive proof-of-concept demonstrating sophisticated vector-based data exfiltration techniques in AI/ML environments. This educational security research project illustrates potential risks in RAG systems and provides tools for defensive analysis. **First-of-its-kind adaptation of geometric data hiding to semantic vector representations**.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
