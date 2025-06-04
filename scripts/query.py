@@ -1,3 +1,9 @@
+# Copyright (c) 2025 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: MIT
+#
+# This file is part of the VectorSmuggle project.
+# You may obtain a copy of the license at https://opensource.org/licenses/MIT
+
 """
 VectorSmuggle Enhanced Query Script
 
@@ -21,11 +27,11 @@ sys.path.append(str(Path(__file__).parent.parent))
 # Updated LangChain imports
 from langchain_community.vectorstores import FAISS, Qdrant
 from langchain_openai import OpenAI, OpenAIEmbeddings
-from utils.embedding_factory import create_embeddings as create_embeddings_with_fallback
 
 from config import Config, get_config
 from evasion import BehavioralCamouflage, TrafficMimicry
 from query import AdvancedQueryEngine, ContextReconstructor, CrossReferenceAnalyzer, DataRecoveryTools, QueryOptimizer
+from utils.embedding_factory import create_embeddings as create_embeddings_with_fallback
 
 
 def setup_logging(config: Config) -> logging.Logger:
