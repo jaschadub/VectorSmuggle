@@ -205,3 +205,4 @@ docker-compose.test.yml
 Dockerfile.test
 run_research_tests.sh
 .env.template
+reports/EFFECTIVENESS_SUMMARY.md
