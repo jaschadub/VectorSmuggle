@@ -188,3 +188,19 @@ temp_data/
 .env.local
 .env.production
 secrets.json
+
+# Test results and reports (exclude from repo)
+test_results/
+results/
+*.effectiveness_report.md
+*_effectiveness_report.md
+
+# Temporary test data
+temp_test_data/
+test_output/
+
+# DO NOT RERMOVE
+tests/
+docker-compose.test.yml
+Dockerfile.test
+run_research_tests.sh

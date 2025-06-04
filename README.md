@@ -8,8 +8,8 @@ A comprehensive proof-of-concept demonstrating sophisticated vector-based data e
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Security Research](https://img.shields.io/badge/purpose-security%20research-red.svg)](https://github.com/your-repo/VectorSmuggle)
-[![Educational](https://img.shields.io/badge/use-educational%20only-green.svg)](https://github.com/your-repo/VectorSmuggle)
+[![Security Research](https://img.shields.io/badge/purpose-security%20research-red.svg)](https://github.com/jaschadub/VectorSmuggle)
+[![Educational](https://img.shields.io/badge/use-educational%20only-green.svg)](https://github.com/jaschadub/VectorSmuggle)
 
 ## 📋 Overview
 
@@ -65,7 +65,7 @@ graph TB
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/jaschadub/VectorSmuggle.git
 cd VectorSmuggle
 
 # Set up virtual environment
@@ -478,6 +478,48 @@ For questions, suggestions, or responsible disclosure of security issues:
 - Security research community for threat intelligence
 - Academic institutions for research collaboration
 - Open source contributors and maintainers
+
+## 📖 Citation
+
+If you use VectorSmuggle in your research, please cite it as follows:
+
+### BibTeX
+```bibtex
+@software{vectorsmuggle2025,
+  title={VectorSmuggle: A Comprehensive Framework for Vector-Based Data Exfiltration Research},
+  author={Wanger, Jascha},
+  organization={Tarnover, LLC},
+  year={2025},
+  url={https://github.com/jaschadub/VectorSmuggle},
+  note={Educational security research framework for AI/ML systems}
+}
+```
+
+### APA Style
+```
+Wanger, J. (2025). VectorSmuggle: A Comprehensive Framework for Vector-Based Data Exfiltration Research [Computer software]. Tarnover, LLC. https://github.com/jaschadub/VectorSmuggle
+```
+
+### IEEE Style
+```
+J. Wanger, "VectorSmuggle: A Comprehensive Framework for Vector-Based Data Exfiltration Research," Tarnover, LLC, 2025. [Online]. Available: https://github.com/jaschadub/VectorSmuggle
+```
+
+### Research Applications
+When citing VectorSmuggle in academic work, consider referencing:
+- **Methodology**: Automated testing framework for steganographic technique validation
+- **Contributions**: Novel vector embedding steganography and detection methods
+- **Validation**: Comprehensive effectiveness analysis with quantified metrics
+- **Reproducibility**: Docker-containerized testing environment for research replication
+
+### Conference Presentations
+For conference presentations or academic talks, you may use:
+```
+"VectorSmuggle: Advanced Vector-Based Steganography for AI Security Research"
+By Jascha Wanger, Tarnover, LLC
+Presented at [Conference Name], [Year]
+Framework available at: https://github.com/jaschadub/VectorSmuggle
+```
 
 ---
 
