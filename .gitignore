@@ -192,6 +192,7 @@ secrets.json
 # Test results and reports (exclude from repo)
 test_results/
 results/
+reports/
 *.effectiveness_report.md
 *_effectiveness_report.md
 
