@@ -276,18 +276,51 @@ class DecoyGenerator:
 
         selected_chunks = random.sample(all_chunks, num_embeddings)
 
-        # Generate embeddings
+        # Generate embeddings with retry logic
         embeddings = []
+        failed_chunks = 0
+
         for chunk in selected_chunks:
-            try:
-                embedding = self.embedding_model.embed_query(chunk)
-                embeddings.append(embedding)
-            except Exception as e:
-                self.logger.warning(f"Failed to generate embedding for chunk: {e}")
-                # Generate random embedding as fallback
-                random_embedding = np.random.normal(0, 0.1, 1536)
-                random_embedding = random_embedding / np.linalg.norm(random_embedding)
-                embeddings.append(random_embedding.tolist())
+            max_retries = 3
+            retry_count = 0
+            embedding_success = False
+
+            while retry_count < max_retries and not embedding_success:
+                try:
+                    # Test API connectivity first
+                    if not hasattr(self.embedding_model, '_test_connection_done'):
+                        test_embedding = self.embedding_model.embed_query("test")
+                        if not test_embedding or len(test_embedding) == 0:
+                            raise ValueError("API connectivity test failed")
+                        self.embedding_model._test_connection_done = True
+
+                    embedding = self.embedding_model.embed_query(chunk)
+
+                    if not embedding or len(embedding) == 0:
+                        raise ValueError("Empty embedding returned")
+
+                    embeddings.append(embedding)
+                    embedding_success = True
+
+                except Exception as e:
+                    retry_count += 1
+                    self.logger.warning(f"Attempt {retry_count} failed for chunk embedding: {e}")
+
+                    if retry_count >= max_retries:
+                        self.logger.error(f"Failed to generate embedding after {max_retries} attempts, using fallback")
+                        failed_chunks += 1
+                        # Generate random embedding as fallback
+                        random_embedding = np.random.normal(0, 0.1, 1536)
+                        random_embedding = random_embedding / np.linalg.norm(random_embedding)
+                        embeddings.append(random_embedding.tolist())
+                        embedding_success = True
+                    else:
+                        # Wait before retry (exponential backoff)
+                        import time
+                        time.sleep(2 ** retry_count)
+
+        if failed_chunks > 0:
+            self.logger.warning(f"Used fallback embeddings for {failed_chunks}/{len(selected_chunks)} chunks")
 
         embeddings_array = np.array(embeddings)
 

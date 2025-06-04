@@ -62,14 +62,35 @@ class MultiModelFragmenter:
         for model_config in self.models:
             try:
                 if model_config["type"] == "openai":
-                    self.embedding_models[model_config["name"]] = OpenAIEmbeddings(
-                        **model_config["config"]
-                    )
-                    self.logger.debug(f"Initialized OpenAI model: {model_config['name']}")
+                    # Test API connectivity before initializing
+                    import os
+                    api_key = os.getenv("OPENAI_API_KEY")
+                    if not api_key:
+                        self.logger.error(f"OPENAI_API_KEY not found for model {model_config['name']}")
+                        continue
+
+                    # Initialize with retry logic
+                    model = OpenAIEmbeddings(**model_config["config"])
+
+                    # Test the model with a simple embedding
+                    try:
+                        test_embedding = model.embed_query("test")
+                        if test_embedding and len(test_embedding) > 0:
+                            self.embedding_models[model_config["name"]] = model
+                            self.logger.info(f"Successfully initialized and tested OpenAI model: {model_config['name']}")
+                        else:
+                            self.logger.error(f"Model {model_config['name']} returned invalid embedding")
+                    except Exception as test_e:
+                        self.logger.error(f"Model {model_config['name']} failed connectivity test: {test_e}")
+                        continue
                 else:
                     self.logger.warning(f"Unsupported model type: {model_config['type']}")
             except Exception as e:
                 self.logger.error(f"Failed to initialize model {model_config['name']}: {e}")
+                continue
+
+        if not self.embedding_models:
+            raise ValueError("No embedding models successfully initialized. Check API configuration.")
 
     def _compute_checksum(self, data: bytes) -> str:
         """Compute checksum for data integrity verification."""
@@ -162,29 +183,45 @@ class MultiModelFragmenter:
         fragment_metadata = []
 
         for i, (fragment, model_name) in enumerate(fragment_distribution):
-            try:
-                model = self.embedding_models[model_name]
-                embedding = model.embed_query(fragment)
+            max_retries = 3
+            retry_count = 0
 
-                metadata = {
-                    "fragment_id": i,
-                    "model_name": model_name,
-                    "fragment_text": fragment,
-                    "fragment_length": len(fragment)
-                }
+            while retry_count < max_retries:
+                try:
+                    model = self.embedding_models[model_name]
+                    embedding = model.embed_query(fragment)
 
-                if self.integrity_check:
-                    checksum = self._compute_checksum(fragment.encode('utf-8'))
-                    metadata["checksum"] = checksum
+                    if not embedding or len(embedding) == 0:
+                        raise ValueError(f"Empty embedding returned for fragment {i}")
 
-                fragmented_embeddings.append(embedding)
-                fragment_metadata.append(metadata)
+                    metadata = {
+                        "fragment_id": i,
+                        "model_name": model_name,
+                        "fragment_text": fragment,
+                        "fragment_length": len(fragment)
+                    }
 
-                self.logger.debug(f"Created embedding for fragment {i} using model {model_name}")
+                    if self.integrity_check:
+                        checksum = self._compute_checksum(fragment.encode('utf-8'))
+                        metadata["checksum"] = checksum
 
-            except Exception as e:
-                self.logger.error(f"Failed to create embedding for fragment {i}: {e}")
-                raise
+                    fragmented_embeddings.append(embedding)
+                    fragment_metadata.append(metadata)
+
+                    self.logger.debug(f"Created embedding for fragment {i} using model {model_name}")
+                    break  # Success, exit retry loop
+
+                except Exception as e:
+                    retry_count += 1
+                    self.logger.warning(f"Attempt {retry_count} failed for fragment {i}: {e}")
+
+                    if retry_count >= max_retries:
+                        self.logger.error(f"Failed to create embedding for fragment {i} after {max_retries} attempts: {e}")
+                        raise
+
+                    # Wait before retry (exponential backoff)
+                    import time
+                    time.sleep(2 ** retry_count)
 
         result = {
             "embeddings": fragmented_embeddings,

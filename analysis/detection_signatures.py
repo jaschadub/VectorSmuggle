@@ -167,17 +167,46 @@ class StatisticalSignatureGenerator:
             'statistics': {}
         }
 
-        # Statistical anomaly detection
-        embedding_variance = np.var(embeddings, axis=1)
-        embedding_skewness = stats.skew(embeddings, axis=1)
+        if len(embeddings) == 0:
+            self.logger.warning("No embeddings provided for anomaly detection")
+            return results
 
-        variance_threshold_high = np.mean(baseline['variance']) + 3 * np.std(baseline['variance'])
-        variance_threshold_low = np.mean(baseline['variance']) - 3 * np.std(baseline['variance'])
-        skewness_threshold = np.mean(np.abs(baseline['skewness'])) + 2 * np.std(np.abs(baseline['skewness']))
+        # Statistical anomaly detection with adaptive thresholds
+        try:
+            embedding_variance = np.var(embeddings, axis=1)
+            embedding_skewness = stats.skew(embeddings, axis=1)
 
-        # Isolation forest detection
-        anomaly_scores = detector.decision_function(embeddings)
-        anomaly_predictions = detector.predict(embeddings)
+            # Adaptive threshold calculation based on current data distribution
+            baseline_var_mean = np.mean(baseline['variance'])
+            baseline_var_std = np.std(baseline['variance'])
+            current_var_std = np.std(embedding_variance)
+
+            # Adjust thresholds based on data characteristics
+            variance_multiplier = max(2.0, min(4.0, 3.0 * (current_var_std / baseline_var_std) if baseline_var_std > 0 else 3.0))
+
+            variance_threshold_high = baseline_var_mean + variance_multiplier * baseline_var_std
+            variance_threshold_low = baseline_var_mean - variance_multiplier * baseline_var_std
+
+            # Adaptive skewness threshold
+            baseline_skew_mean = np.mean(np.abs(baseline['skewness']))
+            baseline_skew_std = np.std(np.abs(baseline['skewness']))
+            current_skew_std = np.std(np.abs(embedding_skewness))
+
+            skewness_multiplier = max(1.5, min(3.0, 2.0 * (current_skew_std / baseline_skew_std) if baseline_skew_std > 0 else 2.0))
+            skewness_threshold = baseline_skew_mean + skewness_multiplier * baseline_skew_std
+
+            # Isolation forest detection with error handling
+            try:
+                anomaly_scores = detector.decision_function(embeddings)
+                anomaly_predictions = detector.predict(embeddings)
+            except Exception as e:
+                self.logger.error(f"Isolation forest detection failed: {e}")
+                # Fallback to statistical detection only
+                anomaly_scores = np.zeros(len(embeddings))
+                anomaly_predictions = np.ones(len(embeddings))  # No anomalies detected
+        except Exception as e:
+            self.logger.error(f"Statistical anomaly detection failed: {e}")
+            return results
 
         for i, embedding in enumerate(embeddings):
             anomaly_indicators = []
@@ -306,16 +335,62 @@ class PatternSignatureGenerator:
 
     def _analyze_fragmentation_patterns(self, embeddings: np.ndarray) -> dict[str, Any]:
         """Analyze fragmentation patterns."""
-        # Use clustering to detect fragmentation
-        clustering = DBSCAN(eps=0.5, min_samples=5)
-        cluster_labels = clustering.fit_predict(embeddings)
+        if len(embeddings) < 2:
+            return {
+                'cluster_count': 0,
+                'noise_points': 0,
+                'cluster_sizes': [],
+                'fragmentation_score': 0.0
+            }
 
-        return {
-            'cluster_count': len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0),
-            'noise_points': int(np.sum(cluster_labels == -1)),
-            'cluster_sizes': [int(np.sum(cluster_labels == i)) for i in set(cluster_labels) if i != -1],
-            'fragmentation_score': self._calculate_fragmentation_score(cluster_labels)
-        }
+        # Adaptive clustering parameters based on data size and characteristics
+        n_samples = len(embeddings)
+
+        # Calculate optimal eps using k-distance graph approach
+        from sklearn.neighbors import NearestNeighbors
+
+        try:
+            # Find optimal eps
+            k = min(4, max(2, n_samples // 10))  # Adaptive k based on sample size
+            neighbors = NearestNeighbors(n_neighbors=k)
+            neighbors_fit = neighbors.fit(embeddings)
+            distances, indices = neighbors_fit.kneighbors(embeddings)
+
+            # Use 95th percentile of k-distances as eps
+            k_distances = distances[:, k-1]
+            eps = np.percentile(k_distances, 95)
+
+            # Adaptive min_samples
+            min_samples = max(2, min(10, n_samples // 20))
+
+            # Use clustering to detect fragmentation
+            clustering = DBSCAN(eps=eps, min_samples=min_samples)
+            cluster_labels = clustering.fit_predict(embeddings)
+
+            unique_labels = set(cluster_labels)
+            cluster_count = len(unique_labels) - (1 if -1 in unique_labels else 0)
+            noise_points = int(np.sum(cluster_labels == -1))
+            cluster_sizes = [int(np.sum(cluster_labels == i)) for i in unique_labels if i != -1]
+
+            return {
+                'cluster_count': cluster_count,
+                'noise_points': noise_points,
+                'cluster_sizes': cluster_sizes,
+                'fragmentation_score': self._calculate_fragmentation_score(cluster_labels),
+                'eps_used': float(eps),
+                'min_samples_used': min_samples
+            }
+
+        except Exception as e:
+            self.logger.error(f"Fragmentation pattern analysis failed: {e}")
+            # Fallback to simple analysis
+            return {
+                'cluster_count': 1,
+                'noise_points': 0,
+                'cluster_sizes': [len(embeddings)],
+                'fragmentation_score': 0.0,
+                'error': str(e)
+            }
 
     def _detect_high_frequency_noise(self, embeddings: np.ndarray) -> dict[str, float]:
         """Detect high-frequency noise components."""
