@@ -66,6 +66,24 @@ class OpenAIConfig:
     model: str = "text-embedding-ada-002"
     llm_model: str = "gpt-3.5-turbo-instruct"
 
+    # API reliability settings
+    max_retries: int = 3
+    timeout: float = 30.0
+    retry_delay: float = 1.0
+    backoff_factor: float = 2.0
+
+    # Fallback options
+    fallback_enabled: bool = True
+    fallback_models: list[str] = None
+
+    def __post_init__(self):
+        """Set default fallback models if not provided."""
+        if self.fallback_models is None:
+            self.fallback_models = [
+                "text-embedding-3-small",
+                "text-embedding-ada-002"
+            ]
+
 
 @dataclass
 class SteganographyConfig:
@@ -177,10 +195,20 @@ class Config:
     """Main configuration class."""
 
     def __init__(self):
+        # Parse fallback models from environment
+        fallback_models_str = os.getenv("OPENAI_FALLBACK_MODELS", "text-embedding-3-small,text-embedding-ada-002")
+        fallback_models = [m.strip() for m in fallback_models_str.split(",") if m.strip()]
+
         self.openai = OpenAIConfig(
             api_key=os.getenv("OPENAI_API_KEY"),
             model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002"),
-            llm_model=os.getenv("OPENAI_LLM_MODEL", "gpt-3.5-turbo-instruct")
+            llm_model=os.getenv("OPENAI_LLM_MODEL", "gpt-3.5-turbo-instruct"),
+            max_retries=int(os.getenv("OPENAI_MAX_RETRIES", "3")),
+            timeout=float(os.getenv("OPENAI_TIMEOUT", "30.0")),
+            retry_delay=float(os.getenv("OPENAI_RETRY_DELAY", "1.0")),
+            backoff_factor=float(os.getenv("OPENAI_BACKOFF_FACTOR", "2.0")),
+            fallback_enabled=os.getenv("OPENAI_FALLBACK_ENABLED", "true").lower() == "true",
+            fallback_models=fallback_models
         )
 
         self.vector_store = VectorStoreConfig(
