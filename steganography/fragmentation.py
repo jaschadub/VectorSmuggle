@@ -16,7 +16,8 @@ class MultiModelFragmenter:
         models: list[dict[str, Any]] | None = None,
         fragment_strategy: str = "round_robin",
         integrity_check: bool = True,
-        checksum_algorithm: str = "sha256"
+        checksum_algorithm: str = "sha256",
+        random_state: np.random.RandomState | None = None
     ):
         """
         Initialize multi-model fragmenter.
@@ -26,11 +27,13 @@ class MultiModelFragmenter:
             fragment_strategy: Strategy for distributing fragments ('round_robin', 'random', 'weighted')
             integrity_check: Whether to include integrity checks for fragments
             checksum_algorithm: Algorithm for computing checksums
+            random_state: Seeded RandomState for deterministic operations
         """
         self.models = models or self._get_default_models()
         self.fragment_strategy = fragment_strategy
         self.integrity_check = integrity_check
         self.checksum_algorithm = checksum_algorithm
+        self.random_state = random_state or np.random.RandomState()
         self.logger = logging.getLogger(__name__)
 
         # Initialize embedding models
@@ -81,7 +84,9 @@ class MultiModelFragmenter:
                         else:
                             self.logger.error(f"Model {model_config['name']} returned invalid embedding")
                     except Exception as test_e:
-                        self.logger.error(f"Model {model_config['name']} failed connectivity test: {test_e}")
+                        self.logger.error(
+                            f"Model {model_config['name']} failed connectivity test: {test_e}"
+                        )
                         continue
                 else:
                     self.logger.warning(f"Unsupported model type: {model_config['type']}")
@@ -97,7 +102,7 @@ class MultiModelFragmenter:
         if self.checksum_algorithm == "sha256":
             return hashlib.sha256(data).hexdigest()
         elif self.checksum_algorithm == "md5":
-            return hashlib.md5(data).hexdigest()
+            return hashlib.md5(data, usedforsecurity=False).hexdigest()
         else:
             raise ValueError(f"Unsupported checksum algorithm: {self.checksum_algorithm}")
 
@@ -138,16 +143,15 @@ class MultiModelFragmenter:
                 distribution.append((fragment, model_name))
 
         elif self.fragment_strategy == "random":
-            import random
             for fragment in fragments:
-                model_name = random.choice(model_names)
+                model_name = self.random_state.choice(model_names)
                 distribution.append((fragment, model_name))
 
         elif self.fragment_strategy == "weighted":
             # Simple weighted distribution - can be enhanced with actual weights
             weights = [1.0] * len(model_names)  # Equal weights for now
             for fragment in fragments:
-                model_name = np.random.choice(model_names, p=np.array(weights)/sum(weights))
+                model_name = self.random_state.choice(model_names, p=np.array(weights)/sum(weights))
                 distribution.append((fragment, model_name))
 
         else:
@@ -216,7 +220,9 @@ class MultiModelFragmenter:
                     self.logger.warning(f"Attempt {retry_count} failed for fragment {i}: {e}")
 
                     if retry_count >= max_retries:
-                        self.logger.error(f"Failed to create embedding for fragment {i} after {max_retries} attempts: {e}")
+                        self.logger.error(
+                            f"Failed to create embedding for fragment {i} after {max_retries} attempts: {e}"
+                        )
                         raise
 
                     # Wait before retry (exponential backoff)
@@ -232,7 +238,10 @@ class MultiModelFragmenter:
             "total_checksum": self._compute_checksum(text.encode('utf-8')) if self.integrity_check else None
         }
 
-        self.logger.info(f"Successfully fragmented text into {num_fragments} embeddings across {len({md['model_name'] for md in fragment_metadata})} models")
+        unique_models = len({md['model_name'] for md in fragment_metadata})
+        self.logger.info(
+            f"Successfully fragmented text into {num_fragments} embeddings across {unique_models} models"
+        )
         return result
 
     def reconstruct_from_fragments(self, fragmented_data: dict[str, Any]) -> str:
@@ -305,7 +314,8 @@ class MultiModelFragmenter:
         # Check individual fragment integrity
         for fragment_meta in metadata:
             model_name = fragment_meta["model_name"]
-            validation_results["model_distribution"][model_name] = validation_results["model_distribution"].get(model_name, 0) + 1
+            model_dist = validation_results["model_distribution"]
+            model_dist[model_name] = model_dist.get(model_name, 0) + 1
 
             if self.integrity_check and "checksum" in fragment_meta:
                 fragment_text = fragment_meta["fragment_text"]

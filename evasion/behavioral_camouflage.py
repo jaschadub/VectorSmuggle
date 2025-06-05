@@ -22,7 +22,8 @@ class BehavioralCamouflage:
         legitimate_ratio: float = 0.8,
         cover_story_templates: list[str] | None = None,
         role_profiles: dict[str, Any] | None = None,
-        activity_mixing_strategy: str = "interleaved"
+        activity_mixing_strategy: str = "interleaved",
+        random_state: np.random.RandomState | None = None
     ):
         """
         Initialize behavioral camouflage system.
@@ -32,9 +33,11 @@ class BehavioralCamouflage:
             cover_story_templates: Templates for generating cover stories
             role_profiles: Different role-based behavior profiles
             activity_mixing_strategy: Strategy for mixing activities (interleaved, batched, random)
+            random_state: Seeded RandomState for deterministic operations
         """
         self.legitimate_ratio = legitimate_ratio
         self.activity_mixing_strategy = activity_mixing_strategy
+        self.random_state = random_state or np.random.RandomState()
 
         if cover_story_templates is None:
             cover_story_templates = [
@@ -139,9 +142,9 @@ class BehavioralCamouflage:
                 "process improvement", "compliance review", "training program",
                 "competitive analysis", "customer research", "technology assessment"
             ]
-            project_context = random.choice(projects)
+            project_context = self.random_state.choice(projects)
 
-        template = random.choice(self.cover_story_templates)
+        template = self.random_state.choice(self.cover_story_templates)
         cover_story = template.format(project=project_context)
 
         self.current_cover_story = {
@@ -176,19 +179,19 @@ class BehavioralCamouflage:
             else:
                 # Vary access intervals based on role
                 if profile["work_patterns"]["deep_work_periods"]:
-                    interval = random.uniform(30, 300)  # 30s to 5min for focused work
+                    interval = self.random_state.uniform(30, 300)  # 30s to 5min for focused work
                 else:
-                    interval = random.uniform(60, 600)  # 1min to 10min for varied work
+                    interval = self.random_state.uniform(60, 600)  # 1min to 10min for varied work
 
                 access_time = access_pattern[-1]["timestamp"] + timedelta(seconds=interval)
 
             doc_access = {
                 "document_id": f"doc_{i:03d}",
-                "document_type": random.choice(doc_types),
+                "document_type": self.random_state.choice(doc_types),
                 "access_reason": access_reason,
                 "timestamp": access_time,
                 "role": self.current_role,
-                "access_duration": random.uniform(30, 600),  # 30s to 10min
+                "access_duration": self.random_state.uniform(30, 600),  # 30s to 10min
                 "legitimate": True
             }
 

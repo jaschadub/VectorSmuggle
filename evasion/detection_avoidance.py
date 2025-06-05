@@ -23,7 +23,8 @@ class DetectionAvoidance:
         dlp_keywords: list[str] | None = None,
         transformation_strength: float = 0.3,
         statistical_noise_level: float = 0.1,
-        content_obfuscation_ratio: float = 0.2
+        content_obfuscation_ratio: float = 0.2,
+        random_state: np.random.RandomState | None = None
     ):
         """
         Initialize detection avoidance system.
@@ -33,6 +34,7 @@ class DetectionAvoidance:
             transformation_strength: Strength of content transformations (0.0-1.0)
             statistical_noise_level: Level of statistical noise to inject
             content_obfuscation_ratio: Ratio of content to obfuscate
+            random_state: Seeded RandomState for deterministic operations
         """
         if dlp_keywords is None:
             dlp_keywords = self._get_default_dlp_keywords()
@@ -40,6 +42,7 @@ class DetectionAvoidance:
         self.transformation_strength = transformation_strength
         self.statistical_noise_level = statistical_noise_level
         self.content_obfuscation_ratio = content_obfuscation_ratio
+        self.random_state = random_state or np.random.RandomState()
 
         self.detection_patterns = self._compile_detection_patterns()
         self.transformation_cache: dict[str, str] = {}
@@ -317,7 +320,6 @@ class DetectionAvoidance:
             return embeddings
 
         # Calculate statistics of original embeddings
-        mean = np.mean(embeddings, axis=0)
         std = np.std(embeddings, axis=0)
 
         # Generate noise that maintains statistical properties
@@ -402,7 +404,7 @@ class DetectionAvoidance:
             return data_points
 
         # Convert to numpy array for easier manipulation
-        if isinstance(data_points[0], (int, float)):
+        if isinstance(data_points[0], int | float):
             data_array = np.array(data_points)
 
             # Calculate statistics

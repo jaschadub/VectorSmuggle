@@ -26,7 +26,8 @@ class TrafficMimicry:
         burst_size_range: tuple[int, int] = (3, 8),
         business_hours_only: bool = True,
         timezone_offset: int = 0,
-        user_profiles: list[str] | None = None
+        user_profiles: list[str] | None = None,
+        random_state: np.random.RandomState | None = None
     ):
         """
         Initialize traffic mimicry system.
@@ -39,6 +40,7 @@ class TrafficMimicry:
             business_hours_only: Whether to limit activity to business hours
             timezone_offset: Timezone offset from UTC in hours
             user_profiles: List of user profile types to simulate
+            random_state: Seeded RandomState for deterministic operations
         """
         self.base_query_interval = base_query_interval
         self.query_variance = query_variance
@@ -50,9 +52,10 @@ class TrafficMimicry:
         if user_profiles is None:
             user_profiles = ["researcher", "analyst", "developer", "manager"]
         self.user_profiles = user_profiles
+        self.random_state = random_state or np.random.RandomState()
 
         self.activity_history: list[dict[str, Any]] = []
-        self.current_profile = random.choice(self.user_profiles)
+        self.current_profile = self.random_state.choice(self.user_profiles)
         self.logger = logging.getLogger(__name__)
 
         # Legitimate query patterns for different user types
