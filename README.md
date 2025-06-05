@@ -435,20 +435,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - The authors assume no liability for any misuse or damage caused by this material
 - **Always obtain proper authorization before performing any security testing**
 
-## 🔗 Resources
-
-### Documentation Links
-- [Research Methodology](docs/research_methodology.md)
-- [Attack Vectors Analysis](docs/attack_vectors.md)
-- [Defense Strategies](docs/defense_strategies.md)
-- [System Architecture](docs/technical/architecture.md)
-- [API Reference](docs/technical/api_reference.md)
-
-### Educational Materials
-- [Threat Modeling Guide](education/threat_modeling.md)
-- [Workshop Materials](education/workshop_materials.md)
-- [Red Team Playbook](education/red_team_playbook.md)
-
 ## 📞 Contact
 
 For questions, suggestions, or responsible disclosure of security issues:
@@ -486,4 +472,4 @@ J. Wanger, "VectorSmuggle: A Comprehensive Framework for Vector-Based Data Exfil
 
 **Remember**: This tool is designed to help improve security through education and research. Use responsibly and ethically.
 
-*This code was generated using advanced AI models. [ThirdKey](https://thirdkey.ai) can help secure your AI infrastructure.*
+*Portions of this code are generated, tested, and audited using advanced AI models. [ThirdKey](https://thirdkey.ai) can help secure your AI infrastructure.*
