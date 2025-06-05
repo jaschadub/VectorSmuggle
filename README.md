@@ -115,18 +115,6 @@ python risk_assessment.py
 - [🔒 Security Testing](docs/guides/security_testing.md) - Testing procedures
 - [🚢 Deployment Guide](docs/guides/deployment.md) - Production deployment
 
-### Educational Materials
-- [🎯 Threat Modeling](education/threat_modeling.md) - Security analysis framework
-- [📚 Case Studies](education/case_studies.md) - Real-world examples
-- [🎓 Workshop Materials](education/workshop_materials.md) - Training content
-- [🔴 Red Team Playbook](education/red_team_playbook.md) - Exercise scenarios
-
-### Legal Framework
-- [📋 Usage Guidelines](legal/usage_guidelines.md) - Responsible use policies
-- [🔍 Responsible Disclosure](legal/responsible_disclosure.md) - Vulnerability reporting
-- [✅ Compliance Checklist](legal/compliance_checklist.md) - Legal requirements
-- [🤝 Ethical Considerations](legal/ethical_considerations.md) - Research ethics
-
 ## 🔧 Core Components
 
 ### Steganographic Engine
@@ -368,28 +356,6 @@ See [`docs/technical/configuration.md`](docs/technical/configuration.md) for com
 - Security event logging
 - Audit trail maintenance
 
-## 🧪 Testing and Validation
-
-### Security Testing
-
-```bash
-# Run comprehensive security tests
-python -m pytest tests/security/ -v
-
-# Generate test reports
-python tests/generate_security_report.py
-```
-
-### Performance Testing
-
-```bash
-# Benchmark embedding operations
-python tests/performance/benchmark_embeddings.py
-
-# Load testing
-python tests/performance/load_test.py --users 100 --duration 300
-```
-
 ### Code Quality
 
 ```bash
@@ -481,29 +447,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Educational Materials
 - [Threat Modeling Guide](education/threat_modeling.md)
 - [Workshop Materials](education/workshop_materials.md)
-- [Case Studies](education/case_studies.md)
 - [Red Team Playbook](education/red_team_playbook.md)
-
-### Legal Framework
-- [Usage Guidelines](legal/usage_guidelines.md)
-- [Responsible Disclosure](legal/responsible_disclosure.md)
-- [Compliance Checklist](legal/compliance_checklist.md)
-- [Ethical Considerations](legal/ethical_considerations.md)
 
 ## 📞 Contact
 
 For questions, suggestions, or responsible disclosure of security issues:
 
 - **General Questions**: Open an issue on GitHub
-- **Research Collaboration**: Contact the maintainers
-
-## 🙏 Acknowledgments
-
-- OpenAI for embedding models and APIs
-- LangChain community for document processing frameworks
-- Security research community for threat intelligence
-- Academic institutions for research collaboration
-- Open source contributors and maintainers
+- **Research Collaboration**: Contact the maintainer
 
 ## 📖 Citation
 
@@ -530,13 +481,6 @@ Wanger, J. (2025). VectorSmuggle: A Comprehensive Framework for Vector-Based Dat
 ```
 J. Wanger, "VectorSmuggle: A Comprehensive Framework for Vector-Based Data Exfiltration Research," Tarnover, LLC, 2025. [Online]. Available: https://github.com/jaschadub/VectorSmuggle
 ```
-
-### Research Applications
-When citing VectorSmuggle in academic work, consider referencing:
-- **Methodology**: Automated testing framework for steganographic technique validation
-- **Contributions**: Novel vector embedding steganography and detection methods
-- **Validation**: Comprehensive effectiveness analysis with quantified metrics
-- **Reproducibility**: Docker-containerized testing environment for research replication
 
 ---
 
