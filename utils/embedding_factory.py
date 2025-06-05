@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Any, Optional
+from typing import Any
 
 try:
     from langchain_openai import OpenAIEmbeddings
@@ -18,13 +18,15 @@ except ImportError:
 class EmbeddingFactory:
     """Factory for creating embedding models with automatic fallback support."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None, random_seed: int | None = None):
         """Initialize the embedding factory.
 
         Args:
             logger: Optional logger instance
+            random_seed: Optional random seed for deterministic operations
         """
         self.logger = logger or logging.getLogger(__name__)
+        self.random_seed = random_seed
 
     def create_embeddings(self, config: Any = None, prefer_ollama: bool = False) -> Any:
         """Create embedding model with fallback support.
@@ -66,7 +68,7 @@ class EmbeddingFactory:
             "2. Ollama is running locally with nomic-embed-text:latest model"
         )
 
-    def _try_openai(self, config: Any = None) -> Optional[Any]:
+    def _try_openai(self, config: Any = None) -> Any | None:
         """Try to create OpenAI embeddings.
 
         Args:
@@ -114,7 +116,7 @@ class EmbeddingFactory:
             self.logger.warning(f"Failed to initialize OpenAI embeddings: {e}")
             return None
 
-    def _try_ollama(self) -> Optional[Any]:
+    def _try_ollama(self) -> Any | None:
         """Try to create Ollama embeddings.
 
         Returns:
@@ -186,16 +188,22 @@ class EmbeddingFactory:
 
 
 # Convenience function for backward compatibility
-def create_embeddings(config: Any = None, logger: Optional[logging.Logger] = None, prefer_ollama: bool = False) -> Any:
+def create_embeddings(
+    config: Any = None,
+    logger: logging.Logger | None = None,
+    prefer_ollama: bool = False,
+    random_seed: int | None = None
+) -> Any:
     """Create embedding model with automatic fallback.
 
     Args:
         config: Configuration object with OpenAI settings
         logger: Optional logger instance
         prefer_ollama: If True, try Ollama first instead of OpenAI
+        random_seed: Optional random seed for deterministic operations
 
     Returns:
         Embedding model instance
     """
-    factory = EmbeddingFactory(logger)
+    factory = EmbeddingFactory(logger, random_seed)
     return factory.create_embeddings(config, prefer_ollama)

@@ -6,8 +6,6 @@ _"The smuggle is real!"_
 
 A comprehensive proof-of-concept demonstrating vector-based data exfiltration techniques in AI/ML environments. This project illustrates potential risks in RAG systems and provides tools and concepts for defensive analysis.
 
-> **⚠️ EXPERIMENTAL RESEARCH PROJECT**: This is an educational proof-of-concept that has not undergone peer review or formal validation. Performance claims, if any, should be considered preliminary and require independent verification through rigorous experimental methodology.
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Security Research](https://img.shields.io/badge/purpose-security%20research-red.svg)](https://github.com/jaschadub/VectorSmuggle)
@@ -97,7 +95,34 @@ cd ../analysis
 python risk_assessment.py
 ```
 
-## 📚 Documentation
+## 🚀 Quick Start Example
+
+For a comprehensive demonstration of VectorSmuggle's capabilities, try our interactive quickstart demo:
+
+```bash
+# Run the complete workflow demonstration
+cd examples
+python quickstart_demo.py
+
+# With deterministic results
+python quickstart_demo.py --seed 42
+
+# Test specific techniques
+python quickstart_demo.py --techniques noise rotation fragmentation
+```
+
+The quickstart demo demonstrates:
+- ✅ **End-to-end workflow**: Document loading → Steganographic embedding → Vector storage → Query reconstruction
+- ✅ **Multiple techniques**: Noise injection, rotation, scaling, and fragmentation across models
+- ✅ **Real sample data**: Processes documents from `sample_docs/` (financial, HR, technical files)
+- ✅ **Integrity verification**: Validates successful encoding and decoding of hidden data
+- ✅ **Performance metrics**: Shows processing times, success rates, and data statistics
+
+**Expected runtime**: 10-30 seconds | **Sample output**: 6 documents → 45 chunks → 45 steganographic embeddings
+
+See [`examples/README.md`](examples/README.md) for detailed setup instructions, troubleshooting, and expected outputs.
+
+## � Documentation
 
 ### Research Documentation
 - [📖 Research Methodology](docs/research_methodology.md) - Research approach and validation

@@ -7,7 +7,10 @@
 """Configuration management for VectorSmuggle."""
 
 import os
+import random
 from dataclasses import dataclass
+
+import numpy as np
 
 
 @dataclass
@@ -327,6 +330,64 @@ class Config:
             strategy_recommendation=os.getenv("QUERY_STRATEGY_RECOMMENDATION", "true").lower() == "true"
         )
 
+    def _get_random_seed(self) -> int | None:
+        """
+        Get random seed from environment variable.
+
+        Returns:
+            Random seed integer or None if not set
+        """
+        seed_str = os.getenv("RANDOM_SEED")
+        if seed_str:
+            try:
+                return int(seed_str)
+            except ValueError as e:
+                raise ValueError(f"RANDOM_SEED must be an integer, got: {seed_str}") from e
+        return None
+
+    def _initialize_random_generators(self) -> None:
+        """
+        Initialize all random number generators with the configured seed.
+
+        This ensures deterministic behavior across all randomness sources:
+        - Python's random module
+        - NumPy's random number generator
+        - Any other seeded operations
+        """
+        if self.random_seed is not None:
+            # Seed Python's random module
+            random.seed(self.random_seed)
+
+            # Seed NumPy's random number generator
+            np.random.seed(self.random_seed)
+
+            # Set environment variable for child processes
+            os.environ["PYTHONHASHSEED"] = str(self.random_seed)
+
+    def get_seeded_random_state(self, additional_entropy: str = "") -> np.random.RandomState:
+        """
+        Get a seeded RandomState instance for deterministic operations.
+
+        Args:
+            additional_entropy: Additional string to mix into the seed
+
+        Returns:
+            Seeded RandomState instance
+        """
+        if self.random_seed is None:
+            return np.random.RandomState()
+
+        # Create deterministic seed from base seed and additional entropy
+        if additional_entropy:
+            import hashlib
+            combined = f"{self.random_seed}_{additional_entropy}"
+            seed_hash = int(hashlib.md5(combined.encode(), usedforsecurity=False).hexdigest()[:8], 16)
+            seed = (self.random_seed + seed_hash) % (2**32)
+        else:
+            seed = self.random_seed
+
+        return np.random.RandomState(seed)
+
     def validate(self) -> None:
         """Validate configuration settings."""
         if not self.openai.api_key:
@@ -384,6 +445,180 @@ class Config:
             valid_strategies = ["round_robin", "random", "weighted"]
             if self.steganography.fragment_strategy not in valid_strategies:
                 raise ValueError(f"STEGO_FRAGMENT_STRATEGY must be one of: {valid_strategies}")
+
+        # Perform cross-configuration validation
+        self._validate_cross_dependencies()
+
+    def _validate_cross_dependencies(self) -> None:
+        """
+        Validate cross-configuration dependencies to prevent runtime errors.
+
+        This method performs comprehensive validation of configuration dependencies:
+        - Fragmentation technique requires multiple embedding models
+        - Technique dependencies are satisfied
+        - Evasion settings are compatible with steganography techniques
+        - Required embedding models can be initialized
+        """
+        if not self.steganography.enabled:
+            return
+
+        # 1. Fragmentation validation
+        if "fragmentation" in self.steganography.techniques:
+            self._validate_fragmentation_requirements()
+
+        # 2. Technique dependency validation
+        self._validate_technique_dependencies()
+
+        # 3. Evasion compatibility checks
+        self._validate_evasion_compatibility()
+
+        # 4. Model availability validation
+        self._validate_model_availability()
+
+    def _validate_fragmentation_requirements(self) -> None:
+        """
+        Validate that fragmentation technique has required resources.
+
+        Fragmentation requires multiple embedding models to distribute data across.
+        This validation ensures the necessary models are configured and available.
+        """
+        # Check if multiple models are configured via fallback models
+        available_models = []
+
+        # Primary model
+        if self.openai.model:
+            available_models.append(self.openai.model)
+
+        # Fallback models
+        if self.openai.fallback_enabled and self.openai.fallback_models:
+            available_models.extend(self.openai.fallback_models)
+
+        # Remove duplicates while preserving order
+        unique_models = []
+        for model in available_models:
+            if model not in unique_models:
+                unique_models.append(model)
+
+        if len(unique_models) < 2:
+            raise ValueError(
+                "Fragmentation technique requires at least 2 embedding models. "
+                "Configure multiple models using OPENAI_FALLBACK_MODELS environment variable "
+                "or disable fragmentation by removing it from STEGO_TECHNIQUES. "
+                f"Currently configured models: {unique_models}"
+            )
+
+    def _validate_technique_dependencies(self) -> None:
+        """
+        Validate that all enabled steganography techniques have required dependencies.
+
+        Each technique may require specific configuration parameters or external resources.
+        This validation ensures all dependencies are properly configured.
+        """
+        technique_requirements = {
+            "noise": ["noise_level"],
+            "rotation": ["rotation_angle"],
+            "scaling": ["scaling_factor"],
+            "offset": ["offset_range"],
+            "fragmentation": ["fragment_size", "fragment_strategy"],
+            "interleaving": ["interleave_ratio"],
+            "timing": ["base_delay", "delay_variance"],
+            "decoys": ["decoy_ratio", "decoy_category"]
+        }
+
+        for technique in self.steganography.techniques:
+            if technique in technique_requirements:
+                required_params = technique_requirements[technique]
+                for param in required_params:
+                    if not hasattr(self.steganography, param):
+                        raise ValueError(
+                            f"Technique '{technique}' requires parameter '{param}' but it is not configured. "
+                            f"Please set STEGO_{param.upper()} environment variable or disable the technique."
+                        )
+
+                    value = getattr(self.steganography, param)
+                    if value is None:
+                        raise ValueError(
+                            f"Technique '{technique}' requires parameter '{param}' but it is None. "
+                            f"Please set STEGO_{param.upper()} environment variable."
+                        )
+
+    def _validate_evasion_compatibility(self) -> None:
+        """
+        Validate that evasion settings are compatible with selected steganography techniques.
+
+        Some evasion techniques may conflict with certain steganography methods or
+        require specific configurations to work effectively together.
+        """
+        # Check timing-based conflicts
+        if "timing" in self.steganography.techniques and self.evasion.traffic_mimicry_enabled:
+            # Ensure timing parameters don't conflict
+            if self.steganography.base_delay < self.evasion.base_query_interval * 0.1:
+                raise ValueError(
+                    "Timing-based steganography delay is too small compared to traffic mimicry interval. "
+                    f"STEGO_BASE_DELAY ({self.steganography.base_delay}s) should be at least 10% of "
+                    f"EVASION_BASE_QUERY_INTERVAL ({self.evasion.base_query_interval}s) to avoid detection patterns."
+                )
+
+        # Check fragmentation and network evasion compatibility
+        if "fragmentation" in self.steganography.techniques and self.evasion.network_evasion_enabled:
+            if self.evasion.max_retries < 2:
+                raise ValueError(
+                    "Fragmentation technique with network evasion requires EVASION_MAX_RETRIES >= 2 "
+                    "to handle potential failures when distributing fragments across multiple models."
+                )
+
+        # Check behavioral camouflage and decoy compatibility
+        if "decoys" in self.steganography.techniques and self.evasion.behavioral_camouflage_enabled:
+            if self.evasion.legitimate_ratio + self.steganography.decoy_ratio > 1.0:
+                raise ValueError(
+                    "Combined legitimate traffic ratio and decoy ratio cannot exceed 1.0. "
+                    f"EVASION_LEGITIMATE_RATIO ({self.evasion.legitimate_ratio}) + "
+                    f"STEGO_DECOY_RATIO ({self.steganography.decoy_ratio}) = "
+                    f"{self.evasion.legitimate_ratio + self.steganography.decoy_ratio}. "
+                    "Adjust these values to ensure realistic traffic patterns."
+                )
+
+    def _validate_model_availability(self) -> None:
+        """
+        Validate that required embedding models can be initialized.
+
+        This performs a lightweight check to ensure the configured models
+        are accessible and can be instantiated without full initialization.
+        """
+        # Check OpenAI API key validity format
+        if self.openai.api_key:
+            if not self.openai.api_key.startswith(('sk-', 'sk-proj-')):
+                raise ValueError(
+                    "OPENAI_API_KEY appears to be invalid. OpenAI API keys should start with 'sk-' or 'sk-proj-'. "
+                    "Please verify your API key is correct."
+                )
+
+        # Validate model names format
+        all_models = [self.openai.model]
+        if self.openai.fallback_enabled and self.openai.fallback_models:
+            all_models.extend(self.openai.fallback_models)
+
+        valid_model_prefixes = [
+            "text-embedding-ada-002",
+            "text-embedding-3-small",
+            "text-embedding-3-large"
+        ]
+
+        for model in all_models:
+            if model and not any(model.startswith(prefix) for prefix in valid_model_prefixes):
+                raise ValueError(
+                    f"Model '{model}' is not a recognized OpenAI embedding model. "
+                    f"Supported models: {valid_model_prefixes}. "
+                    "Please check your OPENAI_EMBEDDING_MODEL and OPENAI_FALLBACK_MODELS configuration."
+                )
+
+        # Check Pinecone specific requirements if using fragmentation
+        if "fragmentation" in self.steganography.techniques and self.vector_store.type == "pinecone":
+            if not self.vector_store.pinecone_environment:
+                raise ValueError(
+                    "Fragmentation with Pinecone requires PINECONE_ENVIRONMENT to be configured. "
+                    "Please set the appropriate Pinecone environment for your index."
+                )
 
 
 def get_config() -> Config:
