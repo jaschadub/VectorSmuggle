@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines comprehensive defensive measures against vector-based data exfiltration attacks. The strategies are organized by prevention, detection, response, and recovery phases, providing a layered security approach.
+This document outlines defensive measures against vector-based data exfiltration attacks. The strategies are organized by prevention, detection, response, and recovery phases, providing a layered security approach.
 
 ## Prevention Strategies
 

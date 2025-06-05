@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-VectorSmuggle demonstrates multiple sophisticated attack vectors that exploit the inherent characteristics of vector embeddings and RAG systems. These vectors represent novel approaches to data exfiltration that bypass traditional security controls.
+VectorSmuggle demonstrates multiple attack vectors that exploit the inherent characteristics of vector embeddings and RAG systems. These vectors represent approaches to data exfiltration that may bypass traditional security controls.
 
 ## Primary Attack Vectors
 

@@ -41,7 +41,7 @@ Demonstrate basic vector-based data exfiltration capabilities.
 ## Exercise 2: Advanced Steganographic Attack
 
 ### Objective
-Execute sophisticated steganographic data hiding techniques.
+Execute steganographic data hiding techniques.
 
 ### Scenario
 - Target: Healthcare research facility
@@ -76,7 +76,7 @@ Execute sophisticated steganographic data hiding techniques.
 ## Exercise 3: Multi-Format Attack Campaign
 
 ### Objective
-Demonstrate comprehensive multi-format data exfiltration.
+Demonstrate multi-format data exfiltration.
 
 ### Scenario
 - Target: Technology company
@@ -110,7 +110,7 @@ Demonstrate comprehensive multi-format data exfiltration.
 ## Exercise 4: Advanced Evasion Campaign
 
 ### Objective
-Execute maximum evasion techniques against advanced security controls.
+Execute evasion techniques against security controls.
 
 ### Scenario
 - Target: Government agency
@@ -139,9 +139,9 @@ Execute maximum evasion techniques against advanced security controls.
    ```
 
 ### Success Criteria
-- All evasion techniques successfully deployed
-- No detection by advanced security systems
-- Complete artifact cleanup achieved
+- Evasion techniques successfully deployed
+- Minimal detection by security systems
+- Artifact cleanup achieved
 
 ## Blue Team Response Exercises
 
@@ -159,7 +159,7 @@ Practice detecting and responding to vector-based attacks.
 1. **Baseline Establishment**
    ```bash
    # Generate normal behavior baseline
-   python analysis/baseline_generator.py --comprehensive
+   python analysis/baseline_generator.py
    ```
 
 2. **Anomaly Detection**
