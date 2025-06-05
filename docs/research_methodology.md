@@ -2,7 +2,7 @@
 
 ## Overview
 
-VectorSmuggle employs a systematic research approach to demonstrate and analyze vector-based data exfiltration techniques in AI/ML environments. This methodology ensures reproducible, ethical, and comprehensive security research.
+VectorSmuggle employs a systematic research approach to demonstrate and analyze vector-based data exfiltration techniques in AI/ML environments. This methodology aims for reproducible, ethical, and thorough security research.
 
 ## Research Framework
 

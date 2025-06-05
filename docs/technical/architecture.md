@@ -2,7 +2,7 @@
 
 ## Overview
 
-VectorSmuggle implements a modular, extensible architecture designed to demonstrate sophisticated vector-based data exfiltration techniques while maintaining clean separation of concerns and educational clarity.
+VectorSmuggle implements a modular, extensible architecture designed to demonstrate vector-based data exfiltration techniques while maintaining clean separation of concerns and educational clarity.
 
 ## High-Level Architecture
 
@@ -80,7 +80,7 @@ class SteganographyPipeline:
 
 ### 3. Evasion Layer
 
-**Advanced Evasion Techniques (`evasion/`)**
+**Evasion Techniques (`evasion/`)**
 - [`TrafficMimicry`](../../evasion/traffic_mimicry.py): Legitimate traffic simulation
 - [`BehavioralCamouflage`](../../evasion/behavioral_camouflage.py): User behavior simulation
 - [`NetworkEvasion`](../../evasion/network_evasion.py): Network-level evasion
@@ -107,7 +107,7 @@ class EvasionOrchestrator:
 
 ### 4. Query and Analysis Engine
 
-**Enhanced Query Capabilities (`query/`)**
+**Query Capabilities (`query/`)**
 - [`AdvancedQueryEngine`](../../query/advanced_engine.py): Multi-strategy search
 - [`ContextReconstructor`](../../query/context_reconstruction.py): Document structure rebuilding
 - [`CrossReferenceAnalyzer`](../../query/cross_reference.py): Relationship analysis

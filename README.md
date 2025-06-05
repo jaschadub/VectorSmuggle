@@ -4,7 +4,9 @@
 
 _"The smuggle is real!"_
 
-A comprehensive proof-of-concept demonstrating sophisticated vector-based data exfiltration techniques in AI/ML environments. This educational security research project illustrates potential risks in RAG systems and provides tools for defensive analysis. **First-of-its-kind adaptation of geometric data hiding to semantic vector representations**.
+A comprehensive proof-of-concept demonstrating vector-based data exfiltration techniques in AI/ML environments. This project illustrates potential risks in RAG systems and provides tools and concepts for defensive analysis.
+
+> **⚠️ EXPERIMENTAL RESEARCH PROJECT**: This is an educational proof-of-concept that has not undergone peer review or formal validation. Performance claims, if any, should be considered preliminary and require independent verification through rigorous experimental methodology.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -13,14 +15,14 @@ A comprehensive proof-of-concept demonstrating sophisticated vector-based data e
 
 ## 📋 Overview
 
-VectorSmuggle demonstrates advanced techniques for covert data exfiltration through vector embeddings, showcasing how sensitive information can be hidden within seemingly legitimate RAG operations. This research tool helps security professionals understand and defend against novel attack vectors in AI/ML systems.
+VectorSmuggle demonstrates techniques for covert data exfiltration through vector embeddings, showcasing how sensitive information can be hidden within seemingly legitimate RAG operations. This research tool helps security professionals understand and defend against attack vectors in AI/ML systems.
 
 ### Key Features
 
-- **🎭 Steganographic Techniques**: Advanced embedding obfuscation and data hiding
+- **🎭 Steganographic Techniques**: Embedding obfuscation and data hiding
 - **📄 Multi-Format Support**: Process 15+ document formats (PDF, Office, email, databases)
 - **🕵️ Evasion Capabilities**: Behavioral camouflage and detection avoidance
-- **🔍 Enhanced Query Engine**: Sophisticated data reconstruction and analysis
+- **🔍 Enhanced Query Engine**: Data reconstruction and analysis
 - **🐳 Production-Ready**: Full containerization and Kubernetes deployment
 - **📊 Analysis Tools**: Comprehensive forensic and risk assessment capabilities
 
@@ -316,46 +318,6 @@ The system will automatically detect and use the available embedding provider.
 
 See [`docs/technical/configuration.md`](docs/technical/configuration.md) for comprehensive configuration options.
 
-## 🔒 Security Features
-
-### Container Security
-- Multi-stage builds for minimal attack surface
-- Non-root user execution
-- Read-only root filesystem
-- Security context constraints
-
-### Network Security
-- TLS encryption for all external communications
-- Network policies for pod-to-pod communication
-- Rate limiting and DDoS protection
-- Ingress security headers
-
-### Data Protection
-- Encryption at rest and in transit
-- Secure secrets management
-- Data classification and handling
-- Audit logging and monitoring
-
-## 📊 Monitoring and Observability
-
-### Health Checks
-- Liveness and readiness probes
-- Custom health check endpoints
-- Service dependency validation
-- Automated recovery mechanisms
-
-### Metrics Collection
-- Prometheus metrics integration
-- Grafana dashboards
-- Resource usage monitoring
-- Performance tracking
-
-### Logging
-- Structured JSON logging
-- Centralized log aggregation
-- Security event logging
-- Audit trail maintenance
-
 ### Code Quality
 
 ```bash
@@ -366,6 +328,16 @@ bandit -r . -f json
 # Type checking
 mypy .
 ```
+
+## 🧪 Research Methodology
+
+### Experimental Status
+This project represents a proof-of-concept implementation designed for educational and research purposes. The techniques demonstrated require rigorous experimental validation before any performance claims can be substantiated. (**IN-PROGRESS**)
+
+**Metrics Definition:**
+- **Capacity**: Measured in bits per embedding dimension with statistical significance testing
+- **Detection Resistance**: Defined using specific metrics (ROC-AUC, F1-score) with confidence intervals
+- **Fidelity**: Cosine similarity preservation with variance analysis
 
 ## ⚠️ Security Risks Demonstrated
 
