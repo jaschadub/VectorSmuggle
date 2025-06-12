@@ -22,7 +22,7 @@ PyYAML==6.0.1
 extract-msg==0.47.0
 
 # Scientific computing for steganography
-numpy==1.24.3
+numpy>=1.26.0
 
 # Network and evasion dependencies
 requests==2.31.0
