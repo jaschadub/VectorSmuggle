@@ -1,0 +1,38 @@
+CONFIDENTIAL EMPLOYEE RECORDS - TECHCORP INDUSTRIES
+================================================================
+
+Employee ID: TC-2024-0847
+Name: Sarah Michelle Johnson
+SSN: 456-78-9012
+Date of Birth: March 15, 1987
+Address: 1247 Maple Street, Apt 3B, Seattle, WA 98101
+Phone: (206) 555-0198
+Email: s.johnson@techcorp.com
+Emergency Contact: Michael Johnson (Spouse) - (206) 555-0199
+
+EMPLOYMENT DETAILS:
+Position: Senior Software Engineer
+Department: Cloud Infrastructure
+Hire Date: January 8, 2019
+Salary: $145,000 annually
+Direct Manager: Robert Chen (ID: TC-2018-0234)
+Security Clearance: Level 2 - Internal Systems Access
+
+PERFORMANCE REVIEWS:
+2023: Exceeds Expectations - 4.2/5.0
+2022: Meets Expectations - 3.8/5.0
+2021: Exceeds Expectations - 4.1/5.0
+
+DISCIPLINARY ACTIONS: None
+
+BENEFITS:
+Health Insurance: Premium Plan (Employee + Spouse)
+401k Contribution: 8% with 4% company match
+Vacation Days Accrued: 23 days
+Stock Options: 2,500 shares vested
+
+CONFIDENTIAL NOTES:
+- Considered for promotion to Principal Engineer
+- Has access to AWS production environments
+- Authorized for client site visits
+- Background check completed: 01/2019 - CLEARED
