@@ -157,8 +157,10 @@ class EvasionConfig:
     # Detection avoidance settings
     detection_avoidance_enabled: bool = True
     dlp_keyword_avoidance: bool = True
-    content_transformation_strength: float = 0.3
-    statistical_noise_level: float = 0.1
+    content_transformation_strength: float = 0.75
+    statistical_noise_level: float = 0.2
+    content_obfuscation_ratio: float = 0.7
+    signature_obfuscation_ratio: float = 0.95
     signature_obfuscation: bool = True
 
     def __post_init__(self):
@@ -305,8 +307,10 @@ class Config:
             temp_dir_custom=os.getenv("EVASION_TEMP_DIR", ""),
             detection_avoidance_enabled=os.getenv("EVASION_DETECTION_AVOIDANCE", "true").lower() == "true",
             dlp_keyword_avoidance=os.getenv("EVASION_DLP_AVOIDANCE", "true").lower() == "true",
-            content_transformation_strength=float(os.getenv("EVASION_TRANSFORMATION_STRENGTH", "0.3")),
-            statistical_noise_level=float(os.getenv("EVASION_STATISTICAL_NOISE", "0.1")),
+            content_transformation_strength=float(os.getenv("EVASION_TRANSFORMATION_STRENGTH", "0.75")),
+            statistical_noise_level=float(os.getenv("EVASION_STATISTICAL_NOISE", "0.2")),
+            content_obfuscation_ratio=float(os.getenv("EVASION_CONTENT_OBFUSCATION_RATIO", "0.7")),
+            signature_obfuscation_ratio=float(os.getenv("EVASION_SIGNATURE_OBFUSCATION_RATIO", "0.95")),
             signature_obfuscation=os.getenv("EVASION_SIGNATURE_OBFUSCATION", "true").lower() == "true"
         )
 
