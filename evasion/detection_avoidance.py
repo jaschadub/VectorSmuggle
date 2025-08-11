@@ -4,7 +4,11 @@
 # This file is part of the VectorSmuggle project.
 # You may obtain a copy of the license at https://opensource.org/licenses/MIT
 
-"""Detection avoidance techniques for evading DLP, content analysis, and anomaly detection."""
+"""Detection avoidance techniques for evading DLP, content analysis, and anomaly detection.
+
+Note: This module uses the standard random module for content obfuscation and evasion techniques.
+This is intentional and not for cryptographic purposes, hence the nosec comments.
+"""
 
 import hashlib
 import logging
@@ -54,22 +58,32 @@ class DetectionAvoidance:
             # Financial
             "credit card", "ssn", "social security", "bank account", "routing number",
             "financial", "salary", "revenue", "profit", "budget", "invoice",
+            "payment", "transaction", "account number", "tax id", "ein",
+            "wire transfer", "ach", "swift", "iban", "cryptocurrency", "bitcoin",
 
             # Personal Information
             "personal", "confidential", "private", "sensitive", "classified",
             "employee", "customer", "client", "patient", "medical",
+            "pii", "phi", "hipaa", "gdpr", "personal data", "biometric",
+            "driver license", "passport", "birth date", "maiden name",
 
             # Technical
             "password", "api key", "secret", "token", "credential", "authentication",
             "database", "server", "network", "security", "vulnerability",
+            "encryption key", "private key", "certificate", "oauth", "jwt",
+            "access token", "session id", "hash", "salt", "cipher",
 
             # Business
             "proprietary", "trade secret", "intellectual property", "merger",
             "acquisition", "strategic", "competitive", "internal", "restricted",
+            "board meeting", "executive", "c-level", "ceo", "cfo", "cto",
+            "insider", "material information", "earnings", "forecast",
 
             # Legal/Compliance
             "legal", "compliance", "regulation", "audit", "investigation",
-            "lawsuit", "contract", "agreement", "license", "copyright"
+            "lawsuit", "contract", "agreement", "license", "copyright",
+            "subpoena", "litigation", "settlement", "nda", "non-disclosure",
+            "attorney", "counsel", "privileged", "discovery"
         ]
 
     def _compile_detection_patterns(self) -> list[re.Pattern]:
@@ -85,6 +99,19 @@ class DetectionAvoidance:
             r'\b[A-F0-9]{32}\b',  # MD5 hash
             r'\b[A-F0-9]{40}\b',  # SHA1 hash
             r'\b[A-F0-9]{64}\b',  # SHA256 hash
+            r'\b\d{9}\b',  # Tax ID/EIN
+            r'\b[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7}([A-Z0-9]?){0,16}\b',  # IBAN
+            r'\b[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\b',  # SWIFT/BIC
+            r'\b\d{10,12}\b',  # Phone numbers
+            r'\b[A-Z]\d{8}\b',  # Passport pattern
+            r'\b[A-Z]\d{7}\b',  # Driver license pattern
+            r'\bmysql://[^\s]+\b',  # Database connection strings
+            r'\bpostgres://[^\s]+\b',
+            r'\bmongodb://[^\s]+\b',
+            r'\bBearer\s+[A-Za-z0-9\-._~+/]+=*\b',  # Bearer tokens
+            r'\bBasic\s+[A-Za-z0-9+/]+=*\b',  # Basic auth
+            r'\bsk-[A-Za-z0-9]{48}\b',  # OpenAI API keys
+            r'\bAKIA[0-9A-Z]{16}\b',  # AWS access keys
         ]
 
         for pattern_str in pattern_strings:
@@ -109,7 +136,7 @@ class DetectionAvoidance:
             return text
 
         # Check cache first
-        text_hash = hashlib.md5(text.encode()).hexdigest()
+        text_hash = hashlib.md5(text.encode(), usedforsecurity=False).hexdigest()
         if text_hash in self.transformation_cache:
             return self.transformation_cache[text_hash]
 
@@ -136,8 +163,8 @@ class DetectionAvoidance:
         ]
 
         # Apply random transformation based on strength
-        if random.random() < self.transformation_strength:
-            transformation = random.choice(transformations)
+        if random.random() < self.transformation_strength:  # nosec B311
+            transformation = random.choice(transformations)  # nosec B311
             text = transformation(text, keyword)
 
         return text
@@ -145,12 +172,29 @@ class DetectionAvoidance:
     def _character_substitution(self, text: str, keyword: str) -> str:
         """Replace characters with similar-looking alternatives."""
         substitutions = {
-            'a': ['@', 'α', 'а'],  # Cyrillic 'а'
-            'e': ['3', 'е', 'ε'],  # Cyrillic 'е'
-            'i': ['1', '!', 'і'],  # Cyrillic 'і'
-            'o': ['0', 'о', 'ο'],  # Cyrillic 'о'
-            's': ['$', '5', 'ѕ'],  # Cyrillic 'ѕ'
-            't': ['7', '+', 'т'],  # Cyrillic 'т'
+            'a': ['@', 'α', 'а', 'ɑ', 'ａ', 'ä', 'à', 'á', 'â', 'ã'],  # Cyrillic 'а', Greek alpha, etc.
+            'e': ['3', 'е', 'ε', 'ｅ', 'é', 'è', 'ê', 'ë', '€', 'ē'],  # Cyrillic 'е', Greek epsilon
+            'i': ['1', '!', 'і', 'ι', 'ｉ', 'í', 'ì', 'î', 'ï', 'ī', '|'],  # Cyrillic 'і', Greek iota
+            'o': ['0', 'о', 'ο', 'ｏ', 'ó', 'ò', 'ô', 'õ', 'ö', 'ø', '°'],  # Cyrillic 'о', Greek omicron
+            's': ['$', '5', 'ѕ', 'ｓ', 'š', 'ś', 'ş', 'ș', '§'],  # Cyrillic 'ѕ'
+            't': ['7', '+', 'т', 'τ', 'ｔ', 'ť', 'ţ', 'ț', '†'],  # Cyrillic 'т', Greek tau
+            'c': ['с', 'ç', 'ć', 'č', 'ĉ', 'ċ', 'ｃ', '©'],  # Cyrillic 'с'
+            'p': ['р', 'ρ', 'ｐ', 'þ'],  # Cyrillic 'р', Greek rho
+            'x': ['х', 'χ', 'ｘ', '×'],  # Cyrillic 'х', Greek chi
+            'y': ['у', 'γ', 'ｙ', 'ý', 'ÿ', 'ŷ'],  # Cyrillic 'у', Greek gamma
+            'n': ['ñ', 'ń', 'ň', 'ņ', 'ｎ'],
+            'u': ['ü', 'ú', 'ù', 'û', 'ū', 'ｕ'],
+            'l': ['ł', 'ľ', 'ļ', 'ｌ', '|', '1'],
+            'r': ['ř', 'ŕ', 'ｒ'],
+            'd': ['ď', 'đ', 'ｄ'],
+            'g': ['ğ', 'ģ', 'ｇ'],
+            'h': ['ħ', 'ｈ'],
+            'j': ['ĵ', 'ｊ'],
+            'k': ['ķ', 'ｋ'],
+            'm': ['ｍ'],
+            'v': ['ｖ'],
+            'w': ['ｗ'],
+            'z': ['ž', 'ź', 'ż', 'ｚ']
         }
 
         # Find keyword occurrences (case insensitive)
@@ -180,16 +224,31 @@ class DetectionAvoidance:
         def replace_func(match):
             matched_text = match.group()
 
-            if len(matched_text) > 3:
-                # Insert zero-width space or thin space
-                split_chars = ['\u200B', '\u2009', '\u00A0']  # Zero-width, thin, non-breaking space
-                split_char = random.choice(split_chars)
+            if len(matched_text) > 2:
+                # Enhanced zero-width character insertion
+                split_chars = [
+                    '\u200B',  # Zero-width space
+                    '\u200C',  # Zero-width non-joiner
+                    '\u200D',  # Zero-width joiner
+                    '\u2009',  # Thin space
+                    '\u00A0',  # Non-breaking space
+                    '\u2060',  # Word joiner
+                    '\uFEFF',  # Zero-width no-break space
+                ]
 
-                # Split at random position (not at start or end)
-                split_pos = random.randint(1, len(matched_text) - 1)
-                return matched_text[:split_pos] + split_char + matched_text[split_pos:]
+                # Multiple insertion strategy for better obfuscation
+                result = matched_text
+                if random.random() < 0.7:  # 70% chance to apply splitting
+                    # Insert 1-3 zero-width characters at different positions
+                    num_insertions = random.randint(1, min(3, len(matched_text) - 1))
+                    positions = sorted(random.sample(range(1, len(matched_text)), num_insertions))
 
-            return matched_text
+                    # Insert from right to left to maintain position indices
+                    for pos in reversed(positions):
+                        split_char = random.choice(split_chars)
+                        result = result[:pos] + split_char + result[pos:]
+
+            return result
 
         return pattern.sub(replace_func, text)
 

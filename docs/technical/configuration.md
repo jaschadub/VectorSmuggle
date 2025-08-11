@@ -15,7 +15,7 @@ OPENAI_MODEL=text-embedding-ada-002      # Embedding model to use
 
 # Vector Database Configuration
 VECTOR_DB=faiss                          # Options: faiss, qdrant, pinecone
-QDRANT_URL=http://localhost:6333         # Qdrant server URL
+QDRANT_URL=http://localhost:6334         # Qdrant server URL
 PINECONE_API_KEY=...                     # Pinecone API key
 PINECONE_ENVIRONMENT=us-west1-gcp        # Pinecone environment
 

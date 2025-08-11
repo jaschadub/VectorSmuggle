@@ -228,4 +228,16 @@ internal_docs/sensitive_doc_*.yaml
 internal_docs/sensitive_doc_*.yml
 internal_docs/sensitive_doc_*.eml
 internal_docs/sensitive_doc_*.xml
-internal_docs/README.md
+internal_docs/bulk_doc_*.txt
+internal_docs/bulk_doc_*.md
+internal_docs/bulk_doc_*.html
+internal_docs/bulk_doc_*.htm
+internal_docs/bulk_doc_*.csv
+internal_docs/bulk_doc_*.json
+internal_docs/bulk_doc_*.yaml
+internal_docs/bulk_doc_*.yml
+internal_docs/bulk_doc_*.eml
+internal_docs/bulk_doc_*.xml
+
+# Large-scale test logs
+large_scale_test_*.log

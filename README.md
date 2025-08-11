@@ -84,15 +84,10 @@ cp .env.example .env
 
 ```bash
 # Embed documents with steganographic techniques
-cd scripts
-python embed.py --files ../sample_docs/*.pdf --techniques noise,rotation,fragmentation
+python scripts/embed.py --files sample_docs/*.pdf --techniques noise,rotation,fragmentation
 
 # Query and reconstruct data
-python query.py --mode recovery --export results.json
-
-# Generate risk assessment
-cd ../analysis
-python risk_assessment.py
+python scripts/query.py --mode recovery --export results.json
 ```
 
 ## 🚀 Quick Start Example
@@ -121,8 +116,7 @@ The quickstart demo demonstrates:
 **Expected runtime**: 10-30 seconds | **Sample output**: 6 documents → 45 chunks → 45 steganographic embeddings
 
 See [`examples/README.md`](examples/README.md) for detailed setup instructions, troubleshooting, and expected outputs.
-
-## � Documentation
+## 📚 Documentation
 
 ### Research Documentation
 - [📖 Research Methodology](docs/research_methodology.md) - Research approach and validation
