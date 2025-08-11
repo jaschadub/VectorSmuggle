@@ -64,7 +64,7 @@ export VECTOR_DB=faiss
 
 # For Qdrant
 export VECTOR_DB=qdrant
-export QDRANT_URL=http://localhost:6333
+export QDRANT_URL=http://localhost:6334
 
 # For Pinecone
 export VECTOR_DB=pinecone
