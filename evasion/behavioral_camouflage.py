@@ -262,7 +262,7 @@ class BehavioralCamouflage:
 
         legit_idx = 0
 
-        for i, susp_activity in enumerate(suspicious):
+        for _i, susp_activity in enumerate(suspicious):
             # Add batch of legitimate activities
             batch_size = legit_per_batch + random.randint(-1, 2)  # Add some variance
             for _ in range(batch_size):
@@ -286,14 +286,9 @@ class BehavioralCamouflage:
         suspicious: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
         """Randomly mix all activities while maintaining ratio."""
-        all_activities = legitimate + suspicious
-
         # Shuffle while maintaining timestamp order within each type
         legitimate.sort(key=lambda x: x.get("timestamp", datetime.utcnow()))
         suspicious.sort(key=lambda x: x.get("timestamp", datetime.utcnow()))
-
-        # Create weighted random selection
-        weights = [self.legitimate_ratio] * len(legitimate) + [1 - self.legitimate_ratio] * len(suspicious)
 
         mixed = []
         remaining_legit = legitimate.copy()
@@ -424,7 +419,7 @@ class BehavioralCamouflage:
             suspicion_score += 0.3
 
         # Activity type consistency
-        activity_types = set(a.get("step", "unknown") for a in activities)
+        activity_types = {a.get("step", "unknown") for a in activities}
         if len(activity_types) < 2:  # Too focused
             suspicion_score += 0.2
 

@@ -4,7 +4,7 @@ import logging
 import re
 from typing import Any
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class ContentPreprocessor:

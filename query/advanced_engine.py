@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 from langchain.chains import RetrievalQA
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity

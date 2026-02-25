@@ -6,10 +6,10 @@ import pickle
 import time
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 
 
@@ -56,7 +56,7 @@ class QueryCache:
         except Exception as e:
             self.logger.warning(f"Failed to save cache index: {e}")
 
-    def get(self, query: str, strategy: str, k: int) -> Optional[list[Document]]:
+    def get(self, query: str, strategy: str, k: int) -> list[Document] | None:
         """Get cached results for a query."""
         cache_key = self._generate_cache_key(query, strategy, k)
 
@@ -202,7 +202,7 @@ class AdaptiveRetriever:
             "document_length_std": np.std([len(doc.page_content) for doc in documents]),
             "total_tokens": sum(len(doc.page_content.split()) for doc in documents),
             "avg_tokens_per_doc": np.mean([len(doc.page_content.split()) for doc in documents]),
-            "unique_words": len(set(word.lower() for doc in documents for word in doc.page_content.split())),
+            "unique_words": len({word.lower() for doc in documents for word in doc.page_content.split()}),
             "vocabulary_diversity": 0.0
         }
 

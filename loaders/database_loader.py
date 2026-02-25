@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class DatabaseLoader:

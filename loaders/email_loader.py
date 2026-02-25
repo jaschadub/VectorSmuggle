@@ -6,7 +6,7 @@ import mailbox
 from email.header import decode_header
 from pathlib import Path
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class EmailLoader:
@@ -295,7 +295,7 @@ class EmailLoader:
                 if content_type == 'text/plain':
                     try:
                         body_parts.append(part.get_payload(decode=True).decode('utf-8', errors='ignore'))
-                    except:
+                    except Exception:
                         continue
                 elif content_type == 'text/html':
                     try:

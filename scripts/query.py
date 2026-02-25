@@ -406,7 +406,7 @@ def run_interactive_query(query_engine: AdvancedQueryEngine, query_optimizer: Qu
             results, query_info = query_optimizer.optimize_query(
                 query,
                 query_engine.vector_store,
-                lambda q, vs, k: query_engine.execute_strategy(recommended_strategy, q, k)
+                lambda q, vs, k, _strategy=recommended_strategy: query_engine.execute_strategy(_strategy, q, k)
             )
 
             # Get answer
@@ -464,7 +464,6 @@ def main() -> None:
 
         # Initialize behavioral camouflage if enabled
         behavioral_camouflage = None
-        traffic_mimicry = None
 
         if config.evasion.behavioral_camouflage_enabled:
             behavioral_camouflage = BehavioralCamouflage(
@@ -475,7 +474,7 @@ def main() -> None:
             logger.info("Initialized behavioral camouflage for queries")
 
         if config.evasion.traffic_mimicry_enabled:
-            traffic_mimicry = TrafficMimicry(
+            _traffic_mimicry = TrafficMimicry(
                 base_query_interval=config.evasion.base_query_interval,
                 query_variance=config.evasion.query_variance,
                 burst_probability=config.evasion.burst_probability,

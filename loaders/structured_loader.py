@@ -5,7 +5,7 @@ import json
 import logging
 from pathlib import Path
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class StructuredLoader:
@@ -190,8 +190,8 @@ class StructuredLoader:
         """
         try:
             from bs4 import BeautifulSoup
-        except ImportError:
-            raise ImportError("beautifulsoup4 is required for XML/HTML files. Install with: pip install beautifulsoup4")
+        except ImportError as err:
+            raise ImportError("beautifulsoup4 is required for XML/HTML files. Install with: pip install beautifulsoup4") from err
 
         try:
             with open(self.file_path, encoding='utf-8') as file:
@@ -241,8 +241,8 @@ class StructuredLoader:
         """
         try:
             import yaml
-        except ImportError:
-            raise ImportError("PyYAML is required for YAML files. Install with: pip install PyYAML")
+        except ImportError as err:
+            raise ImportError("PyYAML is required for YAML files. Install with: pip install PyYAML") from err
 
         try:
             with open(self.file_path, encoding='utf-8') as file:

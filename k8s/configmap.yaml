@@ -76,7 +76,7 @@ data:
   # Operational Security
   evasion-opsec: "true"
   evasion-auto-cleanup: "true"
-  evasion-log-retention-hours: "6"
+  evasion-log-retention-hours: "24"
   evasion-secure-delete-passes: "3"
   
   # Detection Avoidance

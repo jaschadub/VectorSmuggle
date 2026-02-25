@@ -4,11 +4,11 @@ import logging
 import re
 from collections import defaultdict
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 import numpy as np
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from sklearn.cluster import DBSCAN
 from sklearn.metrics.pairwise import cosine_similarity
@@ -112,7 +112,7 @@ class MetadataCorrelator:
         correlations = defaultdict(list)
 
         for i, frag1 in enumerate(fragments):
-            for j, frag2 in enumerate(fragments[i+1:], i+1):
+            for _j, frag2 in enumerate(fragments[i+1:], i+1):
                 correlation_score = self._calculate_metadata_similarity(frag1, frag2)
 
                 if correlation_score > 0.7:
@@ -181,7 +181,7 @@ class TimelineReconstructor:
 
         return temporal_markers
 
-    def build_timeline(self, fragments: list[DocumentFragment]) -> list[tuple[DocumentFragment, Optional[datetime]]]:
+    def build_timeline(self, fragments: list[DocumentFragment]) -> list[tuple[DocumentFragment, datetime | None]]:
         """Build a timeline from document fragments."""
         timeline_entries = []
 
@@ -204,12 +204,12 @@ class TimelineReconstructor:
 
         return timeline_entries
 
-    def detect_temporal_relationships(self, timeline: list[tuple[DocumentFragment, Optional[datetime]]]) -> list[dict[str, Any]]:
+    def detect_temporal_relationships(self, timeline: list[tuple[DocumentFragment, datetime | None]]) -> list[dict[str, Any]]:
         """Detect temporal relationships between fragments."""
         relationships = []
 
         for i, (frag1, date1) in enumerate(timeline):
-            for j, (frag2, date2) in enumerate(timeline[i+1:], i+1):
+            for _j, (frag2, date2) in enumerate(timeline[i+1:], i+1):
                 if date1 and date2:
                     time_diff = abs((date2 - date1).days)
 

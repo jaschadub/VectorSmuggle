@@ -6,10 +6,10 @@ import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -268,7 +268,7 @@ class PartialRecovery:
                 return True
         return False
 
-    def _attempt_sentence_completion(self, content: str, fragments: list[DataFragment]) -> Optional[str]:
+    def _attempt_sentence_completion(self, content: str, fragments: list[DataFragment]) -> str | None:
         """Attempt to complete incomplete sentences using other fragments."""
         # Simple approach: look for similar content in other fragments
         incomplete_parts = []

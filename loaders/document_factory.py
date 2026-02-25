@@ -4,8 +4,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from langchain.schema import Document
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.documents import Document
 
 from .email_loader import EmailLoader
 from .office_loader import OfficeLoader

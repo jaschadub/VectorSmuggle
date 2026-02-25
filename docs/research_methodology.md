@@ -101,7 +101,7 @@ VectorSmuggle employs a systematic research approach to demonstrate and analyze 
 
 **Effectiveness Metrics:**
 - Data reconstruction accuracy
-- Steganographic capacity (refined to 0.854 bits/dimension average)
+- Steganographic capacity (0.82 bits/dimension; see paper results table for per-technique breakdown)
 - Detection evasion rate (85.3% average across methods)
 - Query response time
 - Storage efficiency

@@ -200,7 +200,7 @@ reports/
 temp_test_data/
 test_output/
 
-# DO NOT RERMOVE
+# DO NOT REMOVE
 tests/
 docker-compose.test.yml
 Dockerfile.test

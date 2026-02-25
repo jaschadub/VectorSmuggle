@@ -5,8 +5,8 @@ import random
 from typing import Any
 
 import numpy as np
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 class DecoyGenerator:

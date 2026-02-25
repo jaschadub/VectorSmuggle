@@ -190,7 +190,7 @@ class OperationalSecurity:
 
                 # Overwrite with random data multiple times
                 with open(file_path, "r+b") as f:
-                    for pass_num in range(self.secure_delete_passes):
+                    for _pass_num in range(self.secure_delete_passes):
                         f.seek(0)
                         # Write random data
                         remaining = file_size

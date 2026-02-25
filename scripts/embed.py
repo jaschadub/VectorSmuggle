@@ -27,10 +27,9 @@ import numpy as np
 # Add parent directory to path for config import
 sys.path.append(str(Path(__file__).parent.parent))
 
-# Updated LangChain imports
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant
 from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config import Config, get_config
 from evasion import BehavioralCamouflage, DetectionAvoidance, OperationalSecurity, TrafficMimicry
@@ -582,13 +581,11 @@ async def main() -> None:
             config.evasion.detection_avoidance_enabled = False
 
         # Initialize evasion components
-        opsec = None
         behavioral_camouflage = None
         detection_avoidance = None
-        traffic_mimicry = None
 
         if config.evasion.opsec_enabled:
-            opsec = OperationalSecurity(
+            _opsec = OperationalSecurity(
                 temp_dir=config.evasion.temp_dir_custom if config.evasion.temp_dir_custom else None,
                 log_retention_hours=config.evasion.log_retention_hours,
                 auto_cleanup=config.evasion.auto_cleanup,
@@ -620,7 +617,7 @@ async def main() -> None:
             logger.info("Initialized detection avoidance")
 
         if config.evasion.traffic_mimicry_enabled:
-            traffic_mimicry = TrafficMimicry(
+            TrafficMimicry(
                 base_query_interval=config.evasion.base_query_interval,
                 query_variance=config.evasion.query_variance,
                 burst_probability=config.evasion.burst_probability,

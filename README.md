@@ -90,9 +90,9 @@ python scripts/embed.py --files sample_docs/*.pdf --techniques noise,rotation,fr
 python scripts/query.py --mode recovery --export results.json
 ```
 
-## 🚀 Quick Start Example
+### Interactive Demo
 
-For a comprehensive demonstration of VectorSmuggle's capabilities, try our interactive quickstart demo:
+For a comprehensive demonstration of VectorSmuggle's capabilities, try the interactive quickstart demo:
 
 ```bash
 # Run the complete workflow demonstration
@@ -116,6 +116,7 @@ The quickstart demo demonstrates:
 **Expected runtime**: 10-30 seconds | **Sample output**: 6 documents → 45 chunks → 45 steganographic embeddings
 
 See [`examples/README.md`](examples/README.md) for detailed setup instructions, troubleshooting, and expected outputs.
+
 ## 📚 Documentation
 
 ### Research Documentation
@@ -123,18 +124,23 @@ See [`examples/README.md`](examples/README.md) for detailed setup instructions, 
 - [⚔️ Attack Vectors](docs/attack_vectors.md) - Comprehensive attack analysis
 - [🛡️ Defense Strategies](docs/defense_strategies.md) - Countermeasures and detection
 - [⚖️ Compliance Impact](docs/compliance_impact.md) - Regulatory implications
+- [🔬 Vector-Payload Dissociation](docs/vector_payload_dissociation.md) - Dissociation technique analysis
 
 ### Technical Documentation
 - [🏗️ System Architecture](docs/technical/architecture.md) - Design and components
 - [📋 API Reference](docs/technical/api_reference.md) - Module documentation
 - [⚙️ Configuration Guide](docs/technical/configuration.md) - Setup and options
 - [🔧 Troubleshooting](docs/technical/troubleshooting.md) - Common issues
+- [🗄️ Multi-Database Architecture](docs/multi_database_effectiveness_architecture.md) - Multi-DB testing design
 
 ### Usage Guides
 - [🚀 Quick Start Guide](docs/guides/quick_start.md) - Getting started
 - [🎯 Advanced Usage](docs/guides/advanced_usage.md) - Complex scenarios
 - [🔒 Security Testing](docs/guides/security_testing.md) - Testing procedures
 - [🚢 Deployment Guide](docs/guides/deployment.md) - Production deployment
+- [🧪 Large-Scale Testing](docs/large_scale_testing.md) - Large-scale validation framework
+- [🗄️ Multi-Database Setup](docs/multi_database_setup.md) - Multi-DB testing setup
+- [🔀 Payload Dissociation Testing](docs/guides/vector_payload_dissociation_testing.md) - Dissociation test guide
 
 ## 🔧 Core Components
 

@@ -3,11 +3,11 @@
 import logging
 import re
 from collections import Counter, defaultdict
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 import numpy as np
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
@@ -44,7 +44,7 @@ class Entity:
 class EntityExtractor:
     """Extracts entities from document content."""
 
-    def __init__(self, llm: Optional[OpenAI] = None):
+    def __init__(self, llm: OpenAI | None = None):
         self.llm = llm
         self.logger = logging.getLogger(__name__)
 
@@ -306,10 +306,10 @@ class NetworkAnalyzer:
         # Add edges based on co-occurrence
         entity_list = list(entities.items())
         for i, (key1, entity1) in enumerate(entity_list):
-            for j, (key2, entity2) in enumerate(entity_list[i+1:], i+1):
+            for _j, (key2, entity2) in enumerate(entity_list[i+1:], i+1):
                 # Check if entities co-occur in documents
-                docs1 = set(mention["document_id"] for mention in entity1.mentions)
-                docs2 = set(mention["document_id"] for mention in entity2.mentions)
+                docs1 = {mention["document_id"] for mention in entity1.mentions}
+                docs2 = {mention["document_id"] for mention in entity2.mentions}
 
                 common_docs = docs1.intersection(docs2)
                 if common_docs:
@@ -438,7 +438,7 @@ class AnomalyDetector:
 
         # Group entities by type
         entity_types = defaultdict(list)
-        for entity_key, entity in entities.items():
+        for _entity_key, entity in entities.items():
             entity_types[entity.entity_type].append(entity)
 
         # Detect anomalies within each type
@@ -497,7 +497,7 @@ class AnomalyDetector:
 class CrossReferenceAnalyzer:
     """Main class for cross-reference analysis and relationship mapping."""
 
-    def __init__(self, embeddings: OpenAIEmbeddings, llm: Optional[OpenAI] = None):
+    def __init__(self, embeddings: OpenAIEmbeddings, llm: OpenAI | None = None):
         self.embeddings = embeddings
         self.llm = llm
         self.logger = logging.getLogger(__name__)
@@ -573,13 +573,13 @@ class CrossReferenceAnalyzer:
             "frequent_entities": []
         }
 
-        for entity_key, entity in entities.items():
+        for _entity_key, entity in entities.items():
             entity_info = {
                 "text": entity.text,
                 "type": entity.entity_type,
                 "confidence": entity.confidence,
                 "mention_count": len(entity.mentions),
-                "documents": list(set(m["document_id"] for m in entity.mentions))
+                "documents": list({m["document_id"] for m in entity.mentions})
             }
 
             formatted["by_type"][entity.entity_type].append(entity_info)

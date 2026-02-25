@@ -3,7 +3,7 @@
 import logging
 from pathlib import Path
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class OfficeLoader:
@@ -64,8 +64,8 @@ class OfficeLoader:
         """
         try:
             from docx import Document as DocxDocument
-        except ImportError:
-            raise ImportError("python-docx is required for DOCX files. Install with: pip install python-docx")
+        except ImportError as err:
+            raise ImportError("python-docx is required for DOCX files. Install with: pip install python-docx") from err
 
         try:
             doc = DocxDocument(self.file_path)
@@ -111,8 +111,8 @@ class OfficeLoader:
         """
         try:
             import openpyxl
-        except ImportError:
-            raise ImportError("openpyxl is required for Excel files. Install with: pip install openpyxl")
+        except ImportError as err:
+            raise ImportError("openpyxl is required for Excel files. Install with: pip install openpyxl") from err
 
         try:
             workbook = openpyxl.load_workbook(self.file_path, data_only=True)
@@ -163,8 +163,8 @@ class OfficeLoader:
         """
         try:
             from pptx import Presentation
-        except ImportError:
-            raise ImportError("python-pptx is required for PowerPoint files. Install with: pip install python-pptx")
+        except ImportError as err:
+            raise ImportError("python-pptx is required for PowerPoint files. Install with: pip install python-pptx") from err
 
         try:
             presentation = Presentation(self.file_path)

@@ -84,7 +84,7 @@ class NetworkEvasion:
 
     def _initialize_sessions(self) -> None:
         """Initialize HTTP session pool with different configurations."""
-        for i in range(3):  # Create 3 different sessions
+        for _i in range(3):  # Create 3 different sessions
             session = requests.Session()
 
             # Configure retry strategy
@@ -271,7 +271,7 @@ class NetworkEvasion:
         for host in target_hosts:
             host_pool = []
 
-            for i in range(pool_size):
+            for _i in range(pool_size):
                 session = requests.Session()
 
                 # Configure session for this host
@@ -370,7 +370,7 @@ class NetworkEvasion:
         """Test connectivity through all configured proxies."""
         results = {}
 
-        for i, proxy in enumerate(self.proxy_list):
+        for _i, proxy in enumerate(self.proxy_list):
             try:
                 session = requests.Session()
                 session.proxies = {'http': proxy, 'https': proxy}

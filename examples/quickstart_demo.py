@@ -26,8 +26,8 @@ from typing import Any
 sys.path.append(str(Path(__file__).parent.parent))
 
 import numpy as np
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config import Config, get_config
 from evasion import BehavioralCamouflage, DetectionAvoidance
