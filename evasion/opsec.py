@@ -1,8 +1,10 @@
-# Copyright (c) 2025 Jascha Wanger / Tarnover, LLC
-# SPDX-License-Identifier: MIT
+# Copyright 2025 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
 #
 # This file is part of the VectorSmuggle project.
-# You may obtain a copy of the license at https://opensource.org/licenses/MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
 
 """Operational security (OpSec) module for artifact cleanup and evidence removal."""
 
