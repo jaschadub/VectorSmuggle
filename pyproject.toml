@@ -22,7 +22,16 @@ ignore = ["E402", "T201", "A003"]  # Allow module imports, print statements, and
 "tests/test_steganography.py" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["config"]
+known-first-party = [
+    "config",
+    "analysis",
+    "evasion",
+    "loaders",
+    "query",
+    "steganography",
+    "utils",
+    "database_adapters",
+]
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests"]
