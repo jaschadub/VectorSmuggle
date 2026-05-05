@@ -201,7 +201,7 @@ temp_test_data/
 test_output/
 
 # DO NOT REMOVE
-tests/
+# tests/  # tracked: see tests/data/ and tests/results/ below for excluded subtrees
 docker-compose.test.yml
 Dockerfile.test
 run_research_tests.sh
@@ -214,8 +214,9 @@ tests/results/
 output/
 logs/
 .env.template
-research/
+/research/
 analysis/
+!tests/research/
 
 # Generated test documents (sensitive data for testing)
 internal_docs/sensitive_doc_*.txt
