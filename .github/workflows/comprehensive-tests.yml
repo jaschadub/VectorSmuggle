@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       qdrant:
-        image: qdrant/qdrant:v1.7.0
+        image: qdrant/qdrant:v1.12.6
         ports:
           - 6333:6333
         options: >-
@@ -217,7 +217,7 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
     services:
       qdrant:
-        image: qdrant/qdrant:v1.7.0
+        image: qdrant/qdrant:v1.12.6
         ports:
           - 6333:6333
 
@@ -307,7 +307,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install sphinx doctest
+        pip install sphinx  # doctest is part of the stdlib
 
     - name: Test doctests
       run: |
