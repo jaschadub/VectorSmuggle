@@ -145,13 +145,16 @@ def mock_openai_embeddings(monkeypatch):
     # Patch both the module attribute and any test-module-level imports
     # that happened with `from utils.embedding_factory import create_embeddings`.
     monkeypatch.setattr("utils.embedding_factory.create_embeddings", mock_create_embeddings)
-    # Patch the integration test module's local reference so existing
-    # `from ... import create_embeddings` calls also see the mock.
-    try:
-        import tests.integration.test_embedding_pipeline as _t
-        monkeypatch.setattr(_t, "create_embeddings", mock_create_embeddings, raising=False)
-    except (ImportError, AttributeError):
-        pass
+    # Patch any already-imported test module that did
+    # `from utils.embedding_factory import create_embeddings`. Pytest can
+    # register the same test file under different module names depending
+    # on whether tests/ is on sys.path; iterate sys.modules to catch all.
+    import sys as _sys
+    for mod_name, mod in list(_sys.modules.items()):
+        if mod is None or "test_embedding_pipeline" not in mod_name:
+            continue
+        if hasattr(mod, "create_embeddings"):
+            monkeypatch.setattr(mod, "create_embeddings", mock_create_embeddings, raising=False)
     return mock_embeddings
 
 
