@@ -17,6 +17,9 @@ ignore = ["E402", "T201", "A003"]  # Allow module imports, print statements, and
 # Query modules contain long descriptive strings used in research output.
 "query/optimization.py" = ["E501"]
 "query/recovery_tools.py" = ["E501"]
+# Standalone CLI scripts under tests/ have long descriptive strings for reports.
+"tests/generate_comprehensive_report.py" = ["E501"]
+"tests/test_steganography.py" = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["config"]

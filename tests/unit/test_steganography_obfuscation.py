@@ -1,7 +1,7 @@
 """Unit tests for VectorSmuggle steganography obfuscation module."""
 
-import pytest
 import numpy as np
+import pytest
 
 from steganography.obfuscation import EmbeddingObfuscator
 
@@ -239,13 +239,14 @@ class TestEmbeddingObfuscator:
     @pytest.mark.unit
     def test_memory_efficiency(self, obfuscator, large_embeddings):
         """Test memory efficiency of obfuscation techniques."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss
 
-        noisy = obfuscator.inject_noise(large_embeddings)
+        obfuscator.inject_noise(large_embeddings)
 
         peak_memory = process.memory_info().rss
         memory_increase = peak_memory - initial_memory

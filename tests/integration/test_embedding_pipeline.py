@@ -1,11 +1,8 @@
 """Integration tests for VectorSmuggle embedding pipeline."""
 
-import pytest
-import numpy as np
-import tempfile
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
+import numpy as np
+import pytest
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -95,7 +92,7 @@ class TestEmbeddingPipeline:
         assert all(len(vec) > 0 for vec in embedding_vectors)
 
         # 5. Verify pipeline integrity
-        for i, (text, vector) in enumerate(zip(texts, embedding_vectors)):
+        for _i, (text, vector) in enumerate(zip(texts, embedding_vectors, strict=False)):
             assert len(text) > 0
             assert len(vector) > 0
             assert isinstance(vector, list)
@@ -204,7 +201,7 @@ class TestEmbeddingPipeline:
         start_time = time.time()
         embeddings = create_embeddings(None, None)
         texts = [doc.page_content for doc in processed_documents]
-        embedding_vectors = embeddings.embed_documents(texts[:100])  # Limit for mock
+        embeddings.embed_documents(texts[:100])  # Limit for mock
         embed_time = time.time() - start_time
 
         # Performance assertions (adjust thresholds based on requirements)
@@ -217,8 +214,9 @@ class TestEmbeddingPipeline:
     @pytest.mark.integration
     def test_pipeline_memory_usage(self, sample_documents_on_disk, mock_openai_embeddings):
         """Test memory usage throughout the pipeline."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss
@@ -236,7 +234,7 @@ class TestEmbeddingPipeline:
 
         embeddings = create_embeddings(None, None)
         texts = [doc.page_content for doc in processed_documents]
-        embedding_vectors = embeddings.embed_documents(texts)
+        embeddings.embed_documents(texts)
 
         final_memory = process.memory_info().rss
 
@@ -254,7 +252,6 @@ class TestEmbeddingPipeline:
     def test_concurrent_pipeline_execution(self, sample_documents_on_disk, mock_openai_embeddings):
         """Test pipeline execution with concurrent requests."""
         import threading
-        import time
 
         results = {}
         errors = {}
@@ -321,7 +318,7 @@ class TestEmbeddingPipeline:
         assert len(processed1) == len(processed2)
 
         # Content should be identical
-        for doc1, doc2 in zip(processed1, processed2):
+        for doc1, doc2 in zip(processed1, processed2, strict=False):
             assert doc1.page_content == doc2.page_content
             # Metadata might differ in timestamps, but core data should match
             assert doc1.metadata.get("source") == doc2.metadata.get("source")

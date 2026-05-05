@@ -1,14 +1,12 @@
 """Pytest configuration and shared fixtures for VectorSmuggle tests."""
 
-import os
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, Any, List
 from unittest.mock import MagicMock
 
-import pytest
 import numpy as np
+import pytest
 from langchain_core.documents import Document
 
 # Add parent directory to path for imports
@@ -127,13 +125,13 @@ def large_embeddings():
 @pytest.fixture
 def mock_openai_embeddings(monkeypatch):
     """Mock OpenAI embeddings API."""
-    def mock_embed_documents(texts: List[str]) -> List[List[float]]:
+    def mock_embed_documents(texts: list[str]) -> list[list[float]]:
         # Return deterministic embeddings for testing
         return [
             [0.1] * 1536 for _ in texts
         ]
 
-    def mock_embed_query(text: str) -> List[float]:
+    def mock_embed_query(text: str) -> list[float]:
         return [0.1] * 1536
 
     mock_embeddings = MagicMock()
@@ -300,7 +298,7 @@ def assert_helpers():
             assert not np.isinf(embeddings).any()  # No infinite values
 
         @staticmethod
-        def assert_documents_valid(documents: List[Document]):
+        def assert_documents_valid(documents: list[Document]):
             """Assert documents are valid."""
             assert isinstance(documents, list)
             assert all(isinstance(doc, Document) for doc in documents)

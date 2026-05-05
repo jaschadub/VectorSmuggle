@@ -9,8 +9,8 @@ These tests validate the core research claims:
 Run with: pytest tests/research/ -m research -v
 """
 
-import pytest
 import numpy as np
+import pytest
 from sklearn.metrics.pairwise import cosine_similarity
 
 from steganography.obfuscation import EmbeddingObfuscator
@@ -202,6 +202,6 @@ class TestRecoveryFeasibility:
         # Should recover most of the structure (noise & scaling have residuals)
         sim = np.mean([
             np.dot(o, r) / (np.linalg.norm(o) * np.linalg.norm(r))
-            for o, r in zip(embeddings, recovered)
+            for o, r in zip(embeddings, recovered, strict=False)
         ])
         assert sim > 0.95, f"Recovery quality too low: {sim}"

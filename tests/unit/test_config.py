@@ -1,10 +1,11 @@
 """Unit tests for VectorSmuggle configuration module."""
 
 import os
-import pytest
 from unittest.mock import patch
 
-from config import Config, get_config
+import pytest
+
+from config import Config
 
 
 class TestConfig:

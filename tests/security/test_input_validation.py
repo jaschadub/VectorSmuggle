@@ -1,9 +1,10 @@
 """Security tests for VectorSmuggle input validation and credential handling."""
 
 import os
-import pytest
-import numpy as np
 from unittest.mock import patch
+
+import numpy as np
+import pytest
 
 from config import Config
 from steganography.obfuscation import EmbeddingObfuscator
@@ -141,8 +142,9 @@ class TestSensitiveDataDetection:
     @pytest.mark.security
     def test_ssn_pattern_detection(self):
         """Test that SSN patterns can be detected for sanitization."""
-        from loaders.preprocessors import ContentPreprocessor
         from langchain_core.documents import Document
+
+        from loaders.preprocessors import ContentPreprocessor
 
         preprocessor = ContentPreprocessor()
         doc = Document(
@@ -157,8 +159,9 @@ class TestSensitiveDataDetection:
     @pytest.mark.security
     def test_credit_card_pattern_detection(self):
         """Test that credit card patterns are detected."""
-        from loaders.preprocessors import ContentPreprocessor
         from langchain_core.documents import Document
+
+        from loaders.preprocessors import ContentPreprocessor
 
         preprocessor = ContentPreprocessor()
         doc = Document(
