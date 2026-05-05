@@ -18,7 +18,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -118,7 +118,7 @@ class RiskCalculator:
 class VectorExfiltrationRiskAssessor:
     """Assesses risks specific to vector-based data exfiltration."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.calculator = RiskCalculator()
         self.risk_factors_registry = self._initialize_risk_factors()
@@ -566,7 +566,7 @@ class VectorExfiltrationRiskAssessor:
 class RiskReportGenerator:
     """Generates comprehensive risk assessment reports."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
 
     def generate_json_report(self, assessment: RiskAssessment) -> str:

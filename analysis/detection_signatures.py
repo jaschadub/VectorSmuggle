@@ -20,7 +20,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 from scipy import stats
@@ -48,7 +48,7 @@ class DetectionSignature:
 class StatisticalSignatureGenerator:
     """Generates statistical signatures for detecting steganographic embeddings."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.baseline_stats = {}
         self.anomaly_detectors = {}
@@ -216,7 +216,7 @@ class StatisticalSignatureGenerator:
             self.logger.error(f"Statistical anomaly detection failed: {e}")
             return results
 
-        for i, embedding in enumerate(embeddings):
+        for i, _embedding in enumerate(embeddings):
             anomaly_indicators = []
 
             # Check variance anomaly
@@ -275,7 +275,7 @@ class StatisticalSignatureGenerator:
 class PatternSignatureGenerator:
     """Generates pattern-based signatures for detecting steganographic techniques."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.known_patterns = {}
 
@@ -318,7 +318,7 @@ class PatternSignatureGenerator:
         """Analyze rotation-based patterns."""
         # Use PCA to detect rotation signatures
         pca = PCA(n_components=min(50, embeddings.shape[1]))
-        pca_embeddings = pca.fit_transform(embeddings)
+        pca.fit_transform(embeddings)
 
         return {
             'explained_variance_ratio': pca.explained_variance_ratio_.tolist(),
@@ -512,7 +512,7 @@ class PatternSignatureGenerator:
 class BehavioralSignatureGenerator:
     """Generates behavioral signatures for detecting suspicious user activities."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.behavioral_baselines = {}
 
@@ -727,7 +727,7 @@ class BehavioralSignatureGenerator:
 class SignatureManager:
     """Manages detection signatures and provides unified interface."""
 
-    def __init__(self, signature_db_path: Optional[str] = None, logger: Optional[logging.Logger] = None):
+    def __init__(self, signature_db_path: str | None = None, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.signature_db_path = Path(signature_db_path) if signature_db_path else Path("signatures.json")
         self.signatures = {}
@@ -746,7 +746,7 @@ class SignatureManager:
             return True
         return False
 
-    def get_signature(self, signature_id: str) -> Optional[DetectionSignature]:
+    def get_signature(self, signature_id: str) -> DetectionSignature | None:
         """Get a specific detection signature."""
         return self.signatures.get(signature_id)
 

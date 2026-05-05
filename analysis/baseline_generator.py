@@ -20,7 +20,7 @@ import logging
 import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -56,7 +56,7 @@ class BaselineActivity:
 class LegitimateUserSimulator:
     """Simulates legitimate user behavior patterns."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.user_patterns = self._initialize_user_patterns()
         self.activity_templates = self._initialize_activity_templates()
@@ -235,7 +235,7 @@ class LegitimateUserSimulator:
         time_distribution: dict[int, float],
         start_time: datetime,
         duration_hours: int
-    ) -> Optional[int]:
+    ) -> int | None:
         """Choose an hour based on weighted distribution."""
         end_hour = start_time.hour + duration_hours
         valid_hours = []
@@ -306,7 +306,7 @@ class LegitimateUserSimulator:
 class TrafficPatternGenerator:
     """Generates realistic network traffic patterns."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.network_patterns = self._initialize_network_patterns()
 
@@ -413,7 +413,7 @@ class TrafficPatternGenerator:
 class BaselineDatasetGenerator:
     """Generates comprehensive baseline datasets."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.user_simulator = LegitimateUserSimulator(logger)
         self.traffic_generator = TrafficPatternGenerator(logger)
@@ -422,7 +422,7 @@ class BaselineDatasetGenerator:
         self,
         num_users: int = 50,
         days: int = 7,
-        start_date: Optional[datetime] = None
+        start_date: datetime | None = None
     ) -> dict[str, Any]:
         """Generate comprehensive baseline dataset."""
         if start_date is None:
@@ -605,7 +605,7 @@ class BaselineDatasetGenerator:
 async def generate_realtime_baseline(
     duration_minutes: int = 60,
     users_per_minute: int = 5,
-    output_callback: Optional[callable] = None
+    output_callback: callable | None = None
 ) -> list[dict[str, Any]]:
     """Generate real-time baseline activity."""
     logger = logging.getLogger(__name__)

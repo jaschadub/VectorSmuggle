@@ -14,9 +14,12 @@ ignore = ["E402", "T201", "A003"]  # Allow module imports, print statements, and
 [tool.ruff.lint.per-file-ignores]
 # Generated test data tooling has long inline string fixtures.
 "generate_test_documents.py" = ["E501"]
-# Query modules contain long descriptive strings used in research output.
+# Query and analysis modules contain long descriptive strings used in
+# research output and synthetic-PII test fixtures.
 "query/optimization.py" = ["E501"]
 "query/recovery_tools.py" = ["E501"]
+"analysis/baseline_generator.py" = ["E501"]
+"analysis/risk_assessment.py" = ["E501"]
 # Standalone CLI scripts under tests/ have long descriptive strings for reports.
 "tests/generate_comprehensive_report.py" = ["E501"]
 "tests/test_steganography.py" = ["E501"]

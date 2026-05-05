@@ -20,7 +20,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -52,7 +52,7 @@ class AttackTimeline:
 class EvidenceCollector:
     """Collects and preserves digital evidence."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.evidence_store = []
         self.chain_of_custody = []
@@ -284,7 +284,7 @@ class EvidenceCollector:
 class TimelineReconstructor:
     """Reconstructs attack timelines from evidence."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
         self.attack_phases = [
             "reconnaissance",
@@ -438,7 +438,7 @@ class TimelineReconstructor:
         evidence_bonus = min(0.3, len(evidence_items) * 0.05)
 
         # Increase confidence based on evidence types
-        evidence_types = set(e.evidence_type for e in evidence_items)
+        evidence_types = {e.evidence_type for e in evidence_items}
         type_bonus = min(0.2, len(evidence_types) * 0.05)
 
         return min(1.0, base_confidence + evidence_bonus + type_bonus)
@@ -456,7 +456,7 @@ class TimelineReconstructor:
         evidence_score = min(1.0, len(evidence_items) / 50)  # Normalize to 50 evidence items
 
         # Phase coverage score
-        unique_phases = set(p["phase"] for p in phases)
+        unique_phases = {p["phase"] for p in phases}
         phase_score = len(unique_phases) / len(self.attack_phases)
 
         # Time consistency score
@@ -486,7 +486,7 @@ class TimelineReconstructor:
 class ArtifactAnalyzer:
     """Analyzes digital artifacts for forensic investigation."""
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
 
     def analyze_embedding_artifacts(self, embeddings: np.ndarray) -> dict[str, Any]:
