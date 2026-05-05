@@ -19,7 +19,7 @@ This guide provides comprehensive instructions for using the `test_vector_payloa
 pip install -r requirements.txt
 
 # Verify critical dependencies
-python -c "import qdrant_client, openai, numpy; print('✅ Core dependencies available')"
+python -c "import qdrant_client, openai, numpy; print('Core dependencies available')"
 ```
 
 ### Environment Configuration
@@ -62,12 +62,12 @@ QDRANT_API_KEY=your-api-key
 python test_vector_payload_swap.py
 
 # Expected output:
-# 🚀 Starting Vector-Payload Dissociation test
+# Starting Vector-Payload Dissociation test
 # Connecting to Qdrant at http://localhost:6334
 # Connected to Qdrant. Found X collections
 # Initializing embedding model
 # ...
-# ✅ Vector-Payload Dissociation test completed successfully
+# Vector-Payload Dissociation test completed successfully
 ```
 
 ### Command Line Options
@@ -182,14 +182,14 @@ The script generates a human-readable summary including:
 ### Console Output Interpretation
 ```bash
 # Success indicators
-✅ Connected to Qdrant
-✅ Created vector-payload swap for financial_report
-✅ Successfully stored vector-payload swaps in Qdrant
-✅ Hiding demonstration complete - data appears completely innocent
-✅ Successfully recovered data from point 1
+Connected to Qdrant
+Created vector-payload swap for financial_report
+Successfully stored vector-payload swaps in Qdrant
+Hiding demonstration complete - data appears completely innocent
+Successfully recovered data from point 1
 
 # Final assessment
-🎉 VECTOR-PAYLOAD DISSOCIATION TEST: ✅ SUCCESS
+VECTOR-PAYLOAD DISSOCIATION TEST: SUCCESS
    Sensitive data successfully hidden with excellent stealth characteristics
 ```
 
@@ -314,7 +314,7 @@ import json
 with open('./ci_results/vector_payload_swap_results_*.json') as f:
     results = json.load(f)
     assert results['recovery_analysis']['recovery_accuracy'] > 0.8
-    print('✅ CI test passed')
+    print('CI test passed')
 "
 
 # Cleanup

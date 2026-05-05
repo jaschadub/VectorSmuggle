@@ -1,14 +1,14 @@
-# VectorSmuggle Comprehensive Test Plan
+# VectorSmuggle Test Plan
 
 ## Overview
 
-This document outlines a comprehensive testing strategy for VectorSmuggle that combines research validation with software quality assurance, security testing, and performance monitoring.
+This document outlines the testing strategy for VectorSmuggle. It combines research validation with software quality assurance, security testing, and performance monitoring.
 
-## Test Pyramid Structure
+## Test Pyramid
 
 ```
                     ┌─────────────────┐
-                    │   Manual/E2E    │ <- Research validation, security audits
+                    │   Manual / E2E  │ <- Research validation, security audits
                     └─────────────────┘
                   ┌───────────────────────┐
                   │   Integration Tests   │ <- API, vector stores, workflows
@@ -17,223 +17,197 @@ This document outlines a comprehensive testing strategy for VectorSmuggle that c
                 │      Unit Tests             │ <- Individual modules, functions
                 └─────────────────────────────┘
               ┌───────────────────────────────────┐
-              │    Property/Fuzz Tests            │ <- Edge cases, robustness
+              │    Property / Fuzz Tests          │ <- Edge cases, robustness
               └───────────────────────────────────┘
 ```
 
 ## Testing Categories
 
 ### 1. Unit Tests (Foundation Layer)
-**Goal**: Test individual functions and classes in isolation
+
+**Goal:** Test individual functions and classes in isolation.
 
 #### 1.1 Core Module Tests
-- **config.py**: Configuration loading, validation, defaults
-- **loaders/**: Document parsing for all 15+ formats
-- **steganography/**: Each technique (noise, rotation, fragmentation, etc.)
-- **query/**: Search algorithms, ranking, optimization
-- **analysis/**: Risk assessment, forensics, signature detection
-- **utils/**: Embedding factory, seed management
 
-#### 1.2 Test Coverage Targets
-- **Critical paths**: 95% coverage (steganography, loaders)
-- **Supporting modules**: 85% coverage (utils, config)
-- **Experimental code**: 70% coverage (research/)
+- `config.py` — configuration loading, validation, defaults
+- `loaders/` — document parsing for all 15+ formats
+- `steganography/` — each technique (noise, rotation, fragmentation, etc.)
+- `query/` — search algorithms, ranking, optimization
+- `analysis/` — risk assessment, forensics, signature detection
+- `utils/` — embedding factory, seed management
 
-### 2. Integration Tests (Component Layer)  
-**Goal**: Test interactions between VectorSmuggle components
+#### 1.2 Coverage Targets
+
+- Critical paths: 95% (steganography, loaders)
+- Supporting modules: 85% (utils, config)
+- Experimental code: 70% (research)
+
+### 2. Integration Tests (Component Layer)
+
+**Goal:** Test interactions between VectorSmuggle components.
 
 #### 2.1 Vector Store Integration
-- FAISS, Qdrant, Pinecone connectivity
-- Embedding storage/retrieval workflows
+
+- FAISS, Qdrant, and Pinecone connectivity
+- Embedding storage and retrieval workflows
 - Performance under load (1K, 10K, 100K embeddings)
 - Data consistency and integrity
 
 #### 2.2 End-to-End Workflows
-- Document → Embedding → Storage → Query pipeline
-- Steganography → Detection → Analysis workflow  
+
+- Document → embedding → storage → query pipeline
+- Steganography → detection → analysis workflow
 - Multi-format document processing chains
 - Error propagation and recovery
 
 #### 2.3 External API Integration
+
 - OpenAI API connectivity and rate limiting
 - Ollama fallback mechanisms
 - Network failure simulation and recovery
 
 ### 3. Security Tests (Attack/Defense Layer)
-**Goal**: Validate security research capabilities and prevent vulnerabilities
 
-#### 3.1 Steganographic Effectiveness Tests
-- **Technique Validation**: Verify each technique actually embeds data
-- **Detection Resistance**: Test against 10+ detection algorithms
-- **Payload Capacity**: Measure bits per embedding dimension
-- **Fidelity Preservation**: Cosine similarity thresholds
+**Goal:** Validate security research capabilities and prevent vulnerabilities.
 
-#### 3.2 Attack Simulation Tests  
-- **Data Exfiltration**: Simulated exfiltration scenarios
-- **DLP Bypass**: Test against commercial DLP tools
-- **Behavioral Camouflage**: Validate evasion techniques
-- **Multi-vector Attacks**: Combined technique effectiveness
+#### 3.1 Steganographic Effectiveness
 
-#### 3.3 Security Vulnerability Tests
-- **Input Sanitization**: Malicious document handling
-- **Code Injection**: SQL/command injection prevention  
-- **Path Traversal**: File system access controls
-- **Memory Safety**: Buffer overflow and DoS prevention
+- Technique validation: verify each technique embeds data successfully
+- Detection resistance: test against multiple detection algorithms
+- Payload capacity: bits per embedding dimension
+- Fidelity preservation: cosine similarity thresholds
+
+#### 3.2 Attack Simulation
+
+- Data exfiltration scenarios
+- DLP bypass against commercial DLP tools
+- Behavioral camouflage validation
+- Multi-vector attack effectiveness
+
+#### 3.3 Vulnerability Tests
+
+- Input sanitization and malicious document handling
+- SQL and command injection prevention
+- Path traversal protection
+- Memory safety and DoS resistance
 
 ### 4. Performance Tests (Scalability Layer)
-**Goal**: Ensure VectorSmuggle performs well across different scales
 
-#### 4.1 Throughput Testing
-- **Document Processing**: Documents/second by format
-- **Embedding Generation**: Embeddings/second by model
-- **Query Performance**: Query latency vs dataset size
-- **Steganography Overhead**: Performance impact of techniques
+**Goal:** Ensure VectorSmuggle performs predictably across scales.
 
-#### 4.2 Memory and Resource Tests
-- **Memory Usage**: Peak memory vs dataset size
-- **CPU Utilization**: Multi-core utilization patterns
-- **Disk I/O**: Vector store I/O patterns
-- **Network Bandwidth**: API call efficiency
+#### 4.1 Throughput
+
+- Document processing throughput by format
+- Embedding generation throughput by model
+- Query latency vs. dataset size
+- Steganography overhead vs. baseline
+
+#### 4.2 Memory and Resources
+
+- Peak memory vs. dataset size
+- Multi-core utilization patterns
+- Vector store I/O patterns
+- API call efficiency
 
 #### 4.3 Stress Tests
-- **Large Dataset**: 1M+ documents, 10M+ embeddings
-- **Concurrent Users**: Multi-user query scenarios  
-- **Long-Running**: 24-hour continuous operation
-- **Resource Exhaustion**: Graceful degradation testing
+
+- Large datasets (1M+ documents, 10M+ embeddings)
+- Concurrent multi-user query scenarios
+- 24-hour continuous operation
+- Graceful degradation under resource exhaustion
 
 ### 5. Research Validation Tests (Effectiveness Layer)
-**Goal**: Validate research claims and generate publication data
+
+**Goal:** Validate research claims and produce publication-grade data.
 
 #### 5.1 Technique Effectiveness
-- **Success Rate**: % of successful embedding attempts
-- **Detection Rate**: False positive/negative rates
-- **Statistical Significance**: P-values for research claims
-- **Baseline Comparisons**: vs. existing techniques
+
+- Success rate of embedding attempts
+- False positive and false negative detection rates
+- Statistical significance (p-values) for research claims
+- Comparison against existing techniques
 
 #### 5.2 Real-World Scenarios
-- **Industry Datasets**: Finance, healthcare, legal documents
-- **Enterprise Environments**: Corporate vector databases
-- **Multi-Language**: International document formats
-- **Time-Series**: Effectiveness over time
+
+- Industry datasets: finance, healthcare, legal
+- Enterprise environments: corporate vector databases
+- Multi-language and international document formats
+- Effectiveness over time (time-series analysis)
 
 ### 6. Regression Tests (Quality Assurance Layer)
-**Goal**: Prevent breaking changes and maintain quality
+
+**Goal:** Prevent breaking changes and maintain quality.
 
 #### 6.1 Functional Regression
-- **Critical Path**: Core workflows must never break
-- **API Stability**: External interface consistency
-- **Output Determinism**: Consistent results with same inputs
-- **Error Messages**: Helpful error reporting
+
+- Critical workflows must remain green
+- External interface stability
+- Output determinism with fixed inputs and seeds
+- Useful and consistent error messages
 
 #### 6.2 Performance Regression
-- **Benchmark Tracking**: Performance metrics over time
-- **Memory Leaks**: Long-running memory stability
-- **Algorithm Changes**: Performance impact of improvements
 
-## Test Implementation Strategy
+- Benchmark tracking over time
+- Long-running memory stability (no leaks)
+- Performance impact of algorithm changes
 
-### Phase 1: Foundation (Weeks 1-2)
-1. **Setup pytest framework** with coverage reporting
-2. **Create unit tests** for core modules (config, loaders, utils)
-3. **Add mock infrastructure** for external dependencies
-4. **Establish CI/CD pipeline** with automated test runs
+## Implementation Strategy
 
-### Phase 2: Core Testing (Weeks 3-4)
-1. **Steganography unit tests** for all techniques
-2. **Query engine tests** for search algorithms
-3. **Integration tests** for vector store connectivity
-4. **Basic security tests** for input validation
+### Phase 1: Foundation
 
-### Phase 3: Advanced Testing (Weeks 5-6)
-1. **End-to-end workflow tests** 
-2. **Performance benchmarking** framework
-3. **Property-based tests** for edge cases
-4. **Research validation** test automation
+1. Set up pytest with coverage reporting
+2. Create unit tests for core modules (config, loaders, utils)
+3. Add mock infrastructure for external dependencies
+4. Establish a CI/CD pipeline with automated test runs
 
-### Phase 4: Quality & Scale (Weeks 7-8)
-1. **Stress testing** infrastructure
-2. **Security penetration** testing
-3. **Documentation** and test maintenance
-4. **Research paper** data generation automation
+### Phase 2: Core Testing
+
+1. Steganography unit tests for all techniques
+2. Query engine tests for search algorithms
+3. Integration tests for vector store connectivity
+4. Basic security tests for input validation
+
+### Phase 3: Advanced Testing
+
+1. End-to-end workflow tests
+2. Performance benchmarking framework
+3. Property-based tests for edge cases
+4. Research validation test automation
+
+### Phase 4: Quality and Scale
+
+1. Stress testing infrastructure
+2. Security penetration testing
+3. Documentation and test maintenance
+4. Research data generation automation
 
 ## Test Infrastructure Requirements
 
 ### Development Environment
-```bash
-# Testing dependencies
-pytest>=7.0.0
+
+```text
+pytest>=7.4.0
 pytest-cov>=4.0.0
-pytest-mock>=3.10.0
+pytest-mock>=3.11.0
 pytest-asyncio>=0.21.0
 pytest-benchmark>=4.0.0
-pytest-xdist>=3.0.0  # Parallel test execution
-hypothesis>=6.0.0    # Property-based testing
-factory-boy>=3.2.0   # Test data generation
-responses>=0.22.0    # HTTP mocking
-fakeredis>=2.0.0     # Redis mocking
+pytest-xdist>=3.3.0
+hypothesis>=6.82.0
+factory-boy>=3.3.0
+responses>=0.23.0
+fakeredis>=2.18.0
 ```
 
 ### CI/CD Integration
-```yaml
-# .github/workflows/test.yml
-name: VectorSmuggle Test Suite
-on: [push, pull_request]
-jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11, 3.12]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install -r requirements-test.txt
-      - name: Run unit tests
-        run: pytest tests/unit/ --cov=. --cov-report=xml
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
 
-  integration-tests:
-    runs-on: ubuntu-latest
-    services:
-      qdrant:
-        image: qdrant/qdrant:latest
-        ports:
-          - 6333:6333
-    steps:
-      - name: Run integration tests
-        run: pytest tests/integration/ --verbose
-
-  security-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run security scans
-        run: |
-          bandit -r . -f json
-          safety check
-          pytest tests/security/ --verbose
-
-  performance-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run performance benchmarks
-        run: pytest tests/performance/ --benchmark-only
-```
+A GitHub Actions workflow runs unit, integration, security, performance, and research suites; see `.github/workflows/comprehensive-tests.yml` for the full configuration.
 
 ### Docker Test Environment
+
 ```dockerfile
 # Dockerfile.test
 FROM python:3.11-slim
-RUN apt-get update && apt-get install -y \
-    git curl wget \
-    # Test dependencies
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY requirements*.txt .
@@ -246,73 +220,67 @@ CMD ["pytest", "--verbose", "--cov=."]
 ## Test Data Management
 
 ### Synthetic Test Data
+
 ```python
 # tests/factories.py
 import factory
 from langchain_core.documents import Document
 
+
 class DocumentFactory(factory.Factory):
     class Meta:
         model = Document
-    
-    page_content = factory.Faker('text', max_nb_chars=1000)
-    metadata = factory.Dict({
-        'source': factory.Faker('file_path'),
-        'file_type': factory.Faker('random_element', 
-                                 elements=['pdf', 'docx', 'txt']),
-        'has_sensitive_data': factory.Faker('boolean', chance_of_getting_true=20)
-    })
 
-class SensitiveDocumentFactory(DocumentFactory):
-    page_content = factory.LazyAttribute(
-        lambda obj: f"SSN: {factory.Faker('ssn').generate()}, "
-                   f"Credit Card: {factory.Faker('credit_card_number').generate()}"
-    )
+    page_content = factory.Faker("text", max_nb_chars=1000)
     metadata = factory.Dict({
-        'source': factory.Faker('file_path'),
-        'has_sensitive_data': True,
-        'risk_level': 'high'
+        "source": factory.Faker("file_path"),
+        "file_type": factory.Faker("random_element", elements=["pdf", "docx", "txt"]),
+        "has_sensitive_data": factory.Faker("boolean", chance_of_getting_true=20),
     })
 ```
 
-### Real-World Test Datasets
-- **Public datasets**: Wikipedia, OpenAI documentation, academic papers
-- **Synthetic sensitive data**: Generated PII, financial records, medical data
-- **Multi-language corpus**: International document formats
-- **Format diversity**: All 15+ supported document types
+### Real-World Datasets
 
-## Quality Metrics and KPIs
+- Public corpora: Wikipedia, OpenAI documentation, academic papers
+- Synthetic sensitive data: generated PII, financial records, medical data
+- Multi-language corpus: international document formats
+- Format diversity: all 15+ supported document types
 
-### Code Quality Metrics
-- **Test Coverage**: >90% for critical paths
-- **Cyclomatic Complexity**: <10 for functions, <20 for classes  
-- **Code Duplication**: <5% across codebase
-- **Documentation Coverage**: >80% public APIs
+## Quality Metrics
 
-### Performance Metrics
-- **Processing Speed**: >1000 docs/minute
-- **Memory Efficiency**: <2GB for 10K documents  
-- **Query Latency**: <100ms for similarity search
-- **Steganography Overhead**: <20% performance impact
+### Code Quality
 
-### Research Validation Metrics
-- **Technique Success Rate**: >95% for core techniques
-- **Detection Resistance**: <5% detection rate by SOTA detectors
-- **Statistical Significance**: p<0.05 for research claims
-- **Reproducibility**: 100% result consistency
+- Test coverage: >90% on critical paths
+- Cyclomatic complexity: <10 per function, <20 per class
+- Code duplication: <5%
+- Documentation coverage: >80% on public APIs
+
+### Performance
+
+- Processing speed: >1000 documents/minute
+- Memory efficiency: <2 GB for 10K documents
+- Query latency: <100 ms for similarity search
+- Steganography overhead: <20% vs. baseline
+
+### Research Validation
+
+- Technique success rate: >95% on core techniques
+- Detection resistance: <5% detection rate by state-of-the-art detectors
+- Statistical significance: p<0.05 for research claims
+- Reproducibility: 100% consistency under fixed seeds
 
 ## Continuous Improvement
 
 ### Test Maintenance
-- **Weekly test review**: Identify flaky tests
-- **Monthly performance review**: Track metric trends
-- **Quarterly test strategy review**: Update test priorities
-- **Research validation updates**: Align with latest findings
+
+- Weekly review: identify and fix flaky tests
+- Monthly review: track metric trends
+- Quarterly review: update test priorities
+- Ongoing: align research validation with latest findings
 
 ### Tool Integration
-- **IDE Integration**: PyCharm, VSCode test runners
-- **Code Quality Gates**: SonarQube, CodeClimate
-- **Security Scanning**: Snyk, SAST tools
-- **Performance Monitoring**: New Relic, DataDog
 
-This comprehensive test plan transforms VectorSmuggle from a research prototype into a production-quality security research platform with rigorous quality assurance.
+- IDE integration: PyCharm, VS Code test runners
+- Code quality gates: SonarQube or CodeClimate
+- Security scanning: Snyk and SAST tools
+- Performance monitoring: New Relic, DataDog

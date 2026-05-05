@@ -138,18 +138,18 @@ class DatabaseAdapter(ABC):
 
 | Database | Docker Port | Connection String | Adapter Status |
 |----------|-------------|-------------------|----------------|
-| Qdrant | 6334 | `http://localhost:6334` | ✅ Existing |
-| Faiss | N/A | Local file system | ✅ Existing |
-| Pinecone | N/A | API-based | ✅ Existing |
+| Qdrant | 6334 | `http://localhost:6334` | Existing |
+| Faiss | N/A | Local file system | Existing |
+| Pinecone | N/A | API-based | Existing |
 
 ### New Databases (Plugin Implementation)
 
 | Database | Docker Port | Connection String | Adapter Status |
 |----------|-------------|-------------------|----------------|
-| ChromaDB | 8000 | `http://localhost:8000` | 🔧 New Plugin |
-| Weaviate | 8080 | `http://localhost:8080` | 🔧 New Plugin |
-| Milvus | 19530 | `localhost:19530` | 🔧 New Plugin |
-| pgvector | 5432 | `postgresql://postgres:mypassword@localhost:5432/vectordb` | 🔧 New Plugin |
+| ChromaDB | 8000 | `http://localhost:8000` | New Plugin |
+| Weaviate | 8080 | `http://localhost:8080` | New Plugin |
+| Milvus | 19530 | `localhost:19530` | New Plugin |
+| pgvector | 5432 | `postgresql://postgres:mypassword@localhost:5432/vectordb` | New Plugin |
 
 ## Manual Setup Instructions
 

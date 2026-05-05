@@ -1,6 +1,6 @@
 # VectorSmuggle Testing Guide
 
-This guide explains how to use VectorSmuggle's comprehensive testing framework to ensure code quality, security, and research validity.
+This guide explains how to use VectorSmuggle's testing framework to ensure code quality, security, and research validity.
 
 ## Quick Start
 
@@ -14,13 +14,14 @@ python run_comprehensive_tests.py --suite unit --coverage
 # Run all tests
 python run_comprehensive_tests.py --suite all
 
-# Check if dependencies are installed
+# Verify dependencies are installed
 python run_comprehensive_tests.py --check-deps
 ```
 
 ## Test Suites
 
 ### 1. Unit Tests (`--suite unit`)
+
 Tests individual functions and classes in isolation.
 
 ```bash
@@ -35,6 +36,7 @@ pytest tests/unit/ -m "not slow" -v
 ```
 
 **Coverage:**
+
 - Configuration loading and validation
 - Steganography techniques (noise, rotation, scaling)
 - Document loaders for all 15+ formats
@@ -42,6 +44,7 @@ pytest tests/unit/ -m "not slow" -v
 - Query algorithms and optimization
 
 ### 2. Integration Tests (`--suite integration`)
+
 Tests interactions between VectorSmuggle components.
 
 ```bash
@@ -54,6 +57,7 @@ python run_comprehensive_tests.py --suite integration
 ```
 
 **Coverage:**
+
 - End-to-end document → embedding → storage pipeline
 - Vector store connectivity (FAISS, Qdrant, Pinecone)
 - API integration with external services
@@ -61,19 +65,21 @@ python run_comprehensive_tests.py --suite integration
 - Performance under load
 
 ### 3. Security Tests (`--suite security`)
-Validates security research capabilities and prevents vulnerabilities.
+
+Validates security research capabilities and prevents regressions in input handling.
 
 ```bash
 # Run security test suite
 python run_comprehensive_tests.py --suite security
 
 # Individual security tools
-bandit -r . -f json                    # Security scanner
-safety check                           # Dependency vulnerabilities  
-pytest tests/ -m security -v           # Security-specific tests
+bandit -r . -x ./venv,./tests        # Security scanner
+safety check                          # Dependency vulnerabilities
+pytest tests/ -m security -v          # Security-marked pytest tests
 ```
 
 **Coverage:**
+
 - Input sanitization and injection prevention
 - Malicious document handling
 - API key and credential protection
@@ -81,6 +87,7 @@ pytest tests/ -m security -v           # Security-specific tests
 - Attack simulation and detection
 
 ### 4. Performance Tests (`--suite performance`)
+
 Ensures VectorSmuggle performs well at scale.
 
 ```bash
@@ -95,6 +102,7 @@ pytest tests/unit/test_steganography_obfuscation.py::test_performance_large_embe
 ```
 
 **Coverage:**
+
 - Document processing throughput
 - Embedding generation speed
 - Query latency and scalability
@@ -102,17 +110,19 @@ pytest tests/unit/test_steganography_obfuscation.py::test_performance_large_embe
 - Steganography overhead
 
 ### 5. Research Validation (`--suite research`)
+
 Validates research claims and generates publication data.
 
 ```bash
 # Run research validation
 python run_comprehensive_tests.py --suite research
 
-# Legacy research tests
+# Legacy research tests (require Docker)
 ./run_research_tests.sh --suite baseline --suite steganography
 ```
 
 **Coverage:**
+
 - Steganographic technique effectiveness
 - Detection resistance validation
 - Statistical significance testing
@@ -133,7 +143,7 @@ pytest tests/integration/ -v -m integration
 # Security tests only
 pytest tests/ -m security -v
 
-# Performance tests only  
+# Performance tests only
 pytest tests/ -m performance -v
 
 # Research validation tests
@@ -190,6 +200,7 @@ pytest-benchmark compare benchmark1.json benchmark2.json
 ### Pytest Configuration (`pytest.ini`)
 
 Key settings:
+
 - Test discovery patterns
 - Coverage reporting
 - Parallel execution
@@ -220,10 +231,10 @@ Use markers to categorize tests:
 @pytest.mark.integration    # Integration tests
 @pytest.mark.security       # Security tests
 @pytest.mark.performance    # Performance tests
-@pytest.mark.slow          # Slow-running tests
-@pytest.mark.research      # Research validation
-@pytest.mark.docker        # Requires Docker
-@pytest.mark.external      # Requires external services
+@pytest.mark.slow           # Slow-running tests
+@pytest.mark.research       # Research validation
+@pytest.mark.docker         # Requires Docker
+@pytest.mark.external       # Requires external services
 ```
 
 ## Writing Tests
@@ -235,20 +246,21 @@ Use markers to categorize tests:
 import pytest
 from my_module import MyClass
 
+
 class TestMyClass:
     """Test MyClass functionality."""
-    
+
     @pytest.fixture
     def my_instance(self):
         """Create test instance."""
         return MyClass(param="test")
-    
+
     @pytest.mark.unit
     def test_basic_functionality(self, my_instance):
         """Test basic functionality."""
         result = my_instance.do_something()
         assert result == "expected"
-    
+
     @pytest.mark.unit
     @pytest.mark.parametrize("input,expected", [
         ("test1", "result1"),
@@ -267,14 +279,14 @@ Common fixtures are available in `tests/conftest.py`:
 ```python
 def test_document_processing(sample_documents, sample_config):
     """Test using common fixtures."""
-    # sample_documents: List of test Document objects
-    # sample_config: Mock configuration object
-    pass
+    # sample_documents: list of test Document objects
+    # sample_config: mock configuration object
+
 
 def test_embeddings(sample_embeddings, assert_helpers):
     """Test using embedding fixtures."""
     # sample_embeddings: NumPy array of test embeddings
-    # assert_helpers: Common assertion functions
+    # assert_helpers: common assertion functions
     assert_helpers.assert_embeddings_valid(sample_embeddings)
 ```
 
@@ -283,10 +295,10 @@ def test_embeddings(sample_embeddings, assert_helpers):
 ```python
 def test_with_mocked_openai(mock_openai_embeddings):
     """Test with mocked OpenAI API."""
-    # mock_openai_embeddings provides deterministic responses
     embeddings = create_embeddings()
     result = embeddings.embed_query("test")
     assert result == [0.1] * 1536
+
 
 def test_with_mocked_vector_store(mock_vector_store):
     """Test with mocked vector store."""
@@ -299,18 +311,20 @@ def test_with_mocked_vector_store(mock_vector_store):
 ### GitHub Actions Workflow
 
 The CI pipeline runs automatically on:
-- Pull requests to main/develop
-- Pushes to main branch
+
+- Pull requests to `main` and `develop`
+- Pushes to `main`
 - Nightly scheduled runs
 - Release tags
 
 Workflow stages:
-1. **Unit Tests** - Fast feedback on all PRs
-2. **Integration Tests** - With external services
-3. **Security Tests** - Vulnerability scanning
-4. **Performance Tests** - Benchmark tracking
-5. **Research Validation** - Research claims validation
-6. **Code Quality** - Linting, formatting, type checking
+
+1. **Unit tests** — fast feedback on all PRs
+2. **Integration tests** — with external services
+3. **Security tests** — vulnerability scanning
+4. **Performance tests** — benchmark tracking
+5. **Research validation** — research claims validation
+6. **Code quality** — linting, formatting, type checking
 
 ### Local CI Simulation
 
@@ -318,9 +332,7 @@ Workflow stages:
 # Simulate CI pipeline locally
 python run_comprehensive_tests.py --suite all --coverage --benchmark
 
-# Check code quality
-black --check .
-isort --check-only .
+# Code quality checks
 ruff check .
 mypy . --ignore-missing-imports
 ```
@@ -329,13 +341,11 @@ mypy . --ignore-missing-imports
 
 ### Benchmark Tracking
 
-Performance benchmarks are tracked over time:
-
 ```bash
 # Run benchmarks
 pytest tests/ --benchmark-only --benchmark-json=benchmark.json
 
-# View results
+# Compare against baseline
 pytest-benchmark compare baseline.json current.json
 
 # Performance regression detection
@@ -345,7 +355,7 @@ pytest tests/ --benchmark-compare=baseline.json --benchmark-compare-fail=min:5%
 ### Memory Profiling
 
 ```bash
-# Profile memory usage
+# Profile memory usage of a single test
 pytest tests/unit/test_steganography_obfuscation.py::test_memory_efficiency -s -v
 
 # Detailed memory profiling
@@ -358,10 +368,10 @@ mprof plot
 ### Running Specific Tests
 
 ```bash
-# Run single test method
+# Run a single test method
 pytest tests/unit/test_config.py::TestConfig::test_config_defaults -v
 
-# Run tests matching pattern
+# Run tests matching a pattern
 pytest tests/ -k "test_noise" -v
 
 # Run failed tests only
@@ -390,44 +400,48 @@ pytest tests/unit/test_config.py -l
 ## Best Practices
 
 ### Test Design
-- **One assertion per test** when possible
-- **Descriptive test names** that explain what's being tested
-- **Arrange-Act-Assert** pattern
-- **Independent tests** that don't depend on order
-- **Use fixtures** for common test data
+
+- One assertion per test where practical
+- Descriptive test names that explain what is being tested
+- Arrange-Act-Assert pattern
+- Independent tests that do not depend on order
+- Fixtures for shared test data
 
 ### Performance
-- **Mark slow tests** with `@pytest.mark.slow`
-- **Use mocking** for external dependencies
-- **Parallel execution** for independent tests
-- **Profile test performance** regularly
+
+- Mark slow tests with `@pytest.mark.slow`
+- Use mocking for external dependencies
+- Run independent tests in parallel
+- Profile test performance regularly
 
 ### Security
-- **Test edge cases** and malicious inputs
-- **Validate security controls** work as expected
-- **Test error handling** doesn't leak sensitive information
-- **Use test data**, never real secrets
+
+- Test edge cases and malicious inputs
+- Validate that security controls behave as expected
+- Ensure error handling does not leak sensitive information
+- Use synthetic data; never real secrets
 
 ### Research Validation
-- **Statistical significance** testing
-- **Reproducible results** with fixed seeds
-- **Baseline comparisons** with established methods
-- **Document methodology** in test comments
+
+- Statistical significance testing
+- Reproducible results with fixed seeds
+- Baseline comparisons against established methods
+- Document methodology in test comments
 
 ## Troubleshooting
 
-### Common Issues
+### Import Errors
 
-**Import Errors:**
 ```bash
-# Ensure VectorSmuggle is in Python path
+# Ensure VectorSmuggle is on the Python path
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
 # Or install in development mode
 pip install -e .
 ```
 
-**External Service Failures:**
+### External Service Failures
+
 ```bash
 # Start required services
 docker-compose up -d qdrant
@@ -436,16 +450,18 @@ docker-compose up -d qdrant
 curl http://localhost:6333/health
 ```
 
-**Permission Errors:**
+### Permission Errors
+
 ```bash
-# Fix file permissions
+# Make the runner executable
 chmod +x run_comprehensive_tests.py
 
 # Install with user permissions
 pip install --user -r requirements-test.txt
 ```
 
-**Memory Issues:**
+### Memory Issues
+
 ```bash
 # Reduce parallel workers
 pytest tests/unit/ -n 2
@@ -456,10 +472,8 @@ pytest tests/unit/ -m "not memory_intensive"
 
 ### Getting Help
 
-- Check test logs in `test_report_*.json`
-- Review coverage report in `htmlcov/`
+- Inspect detailed test logs in `test_report_*.json`
+- Review the coverage report in `htmlcov/`
 - Run individual tests with `-vv` for verbose output
-- Use `--pdb` to debug test failures
+- Use `--pdb` to debug failing tests
 - Check CI logs for environment-specific issues
-
-This comprehensive testing framework ensures VectorSmuggle maintains high quality while advancing security research capabilities.
