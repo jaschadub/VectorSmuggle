@@ -215,7 +215,7 @@ output/
 logs/
 .env.template
 /research/
-analysis/
+# analysis/  # tracked: contains the defensive baseline detectors
 !tests/research/
 
 # Generated test documents (sensitive data for testing)
