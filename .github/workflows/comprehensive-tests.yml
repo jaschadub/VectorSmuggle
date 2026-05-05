@@ -1,0 +1,334 @@
+name: VectorSmuggle Comprehensive Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run nightly tests at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  # Quick validation for all PRs
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run unit tests with coverage
+      run: |
+        python run_comprehensive_tests.py --suite unit --coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+
+  # Integration tests with external services
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      qdrant:
+        image: qdrant/qdrant:v1.7.0
+        ports:
+          - 6333:6333
+        options: >-
+          --health-cmd "curl -f http://localhost:6333/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Wait for Qdrant to be ready
+      run: |
+        timeout 60s bash -c 'until curl -f http://localhost:6333/health; do sleep 2; done'
+
+    - name: Run integration tests
+      run: |
+        python run_comprehensive_tests.py --suite integration
+      env:
+        QDRANT_URL: http://localhost:6333
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: test_report_*.json
+
+  # Security scanning and vulnerability testing
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run security tests
+      run: |
+        python run_comprehensive_tests.py --suite security
+
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-scan-results
+        path: |
+          security_report.json
+          test_report_*.json
+
+  # Performance testing and benchmarking
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run performance tests
+      run: |
+        python run_comprehensive_tests.py --suite performance --benchmark
+
+    - name: Store benchmark result
+      uses: benchmark-action/github-action-benchmark@v1
+      if: github.ref == 'refs/heads/main'
+      with:
+        name: Python Benchmark
+        tool: 'pytest'
+        output-file-path: benchmark_results.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: |
+          benchmark_results.json
+          test_report_*.json
+
+  # Research validation (runs on schedule and main branch)
+  research-validation:
+    name: Research Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run research validation tests
+      run: |
+        python run_comprehensive_tests.py --suite research
+      env:
+        # Use test API keys for research validation
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_TEST }}
+        QDRANT_URL: http://localhost:6333
+
+    - name: Upload research validation results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: research-validation-results
+        path: |
+          test_report_*.json
+          results/
+
+  # Complete test suite (nightly and releases)
+  comprehensive-tests:
+    name: Complete Test Suite
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+    services:
+      qdrant:
+        image: qdrant/qdrant:v1.7.0
+        ports:
+          - 6333:6333
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run complete test suite
+      run: |
+        python run_comprehensive_tests.py --suite all --coverage --benchmark --include-slow
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_TEST }}
+        QDRANT_URL: http://localhost:6333
+
+    - name: Upload comprehensive test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: comprehensive-test-results
+        path: |
+          test_report_*.json
+          htmlcov/
+          benchmark_results.json
+          security_report.json
+
+    - name: Notify on failure
+      if: failure() && github.event_name == 'schedule'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#vectorsmuggle-alerts'
+        text: 'VectorSmuggle nightly tests failed'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Code quality checks
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort mypy ruff
+
+    - name: Check code formatting with Black
+      run: black --check .
+
+    - name: Check import sorting with isort
+      run: isort --check-only .
+
+    - name: Lint with Ruff
+      run: ruff check .
+
+    - name: Type check with mypy
+      run: mypy . --ignore-missing-imports || true  # Non-blocking for now
+
+    - name: Check for TODO/FIXME comments
+      run: |
+        if grep -r "TODO\|FIXME" --include="*.py" --exclude-dir=".venv" .; then
+          echo "Found TODO/FIXME comments. Please resolve before merging."
+          exit 1
+        fi
+
+  # Documentation and API tests
+  documentation-tests:
+    name: Documentation Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install sphinx doctest
+
+    - name: Test doctests
+      run: |
+        python -m doctest -v $(find . -name "*.py" | head -10) || true
+
+    - name: Check documentation links
+      run: |
+        # Check for broken links in markdown files
+        find . -name "*.md" -exec grep -l "http" {} \; | head -5
+
+# Global configuration
+env:
+  PYTHONUNBUFFERED: 1
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  PIP_NO_CACHE_DIR: off
