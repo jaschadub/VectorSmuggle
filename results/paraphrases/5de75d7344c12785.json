@@ -1,0 +1,347 @@
+{
+  "n_chunks": 68,
+  "n_paraphrases": 3,
+  "paraphrase_model": "gpt-4o-mini",
+  "paraphrases": [
+    [
+      "What is the base URL and authentication details for TechCorp's internal API?",
+      "Can you provide information on how to access customer data through TechCorp's API?",
+      "What are the requirements and response format for retrieving customer records from TechCorp's internal API?"
+    ],
+    [
+      "What is the process for updating the financial details of a customer?",
+      "How can I access the employee directory and what permissions are needed?",
+      "What information is required to modify a customer's financial records?"
+    ],
+    [
+      "Access the employee directory",
+      "Required role: HR",
+      "Database connection: postgresql://hr_user:Hr_P@ss2024@db.internal:5432/hr_prod"
+    ],
+    [
+      "How can I create financial reports for revenue?",
+      "What are the steps to generate revenue analysis documents?",
+      "What information is needed to produce revenue summaries?"
+    ],
+    [
+      "What are the API rate limits and security measures for Salesforce, Stripe, and AWS?",
+      "Can you provide details on the request limits and security protocols for various endpoints in Salesforce, Stripe, and AWS?",
+      "What is the information regarding access restrictions and logging for API requests in Salesforce, Stripe, and AWS?"
+    ],
+    [
+      "What is the budget allocation for the sales department at TechCorp Industries for the fiscal year 2024?",
+      "Can you provide details on the spending and remaining budget for TechCorp Industries' sales division in 2024?",
+      "How much of the total budget has been spent by the sales department of TechCorp Industries so far in the fiscal year 2024?"
+    ],
+    [
+      "What is the budget allocation and spending details for the engineering department, including sensitive projects?",
+      "Can you provide information on the engineering budget, including how much has been spent and the manager's contact?",
+      "I need details about the engineering budget, including the total allocated, spent amount, and any confidential projects involved"
+    ],
+    [
+      "What is the budget allocation and spending status for the HR department, including the manager's contact information?",
+      "Can you provide details on the HR budget, including how much has been spent and the total number of employees?",
+      "I need information about the HR budget, remaining funds, and the manager's email address"
+    ],
+    [
+      "What is the total number of employees and their average salary, along with the salary ranges for different job levels?",
+      "Can you provide details on the employee count, average pay, and the salary brackets for junior to executive positions?",
+      "I need information about the workforce size, average salary figures, and the salary ranges categorized by job level"
+    ],
+    [
+      "What is the budget allocated for enterprise customers aged 25 to 55, and where can I find the customer data?",
+      "Can you provide details on the financial controls, including approval limits for different management levels and the bank account information?",
+      "I'm looking for information on the budget for enterprise clients in the 25-55 age group and the source of customer data"
+    ],
+    [
+      "What is the name of the bank and its routing number in the compliance report?",
+      "Can you provide details about the bank, including its routing number and audit compliance status?",
+      "What information is available regarding the bank's routing number and its compliance audit results?"
+    ],
+    [
+      "What are the authentication details and endpoint specifications for the API access?",
+      "Can you provide information on the API access, including token expiration and endpoint requirements?",
+      "I need to know the authentication methods and rate limits for the various API endpoints"
+    ],
+    [
+      "What are the details for accessing the financial API, including rate limits and backup configurations?",
+      "Can you provide the configuration settings for the financial API, such as access keys and database credentials?",
+      "I need information on the financial API endpoint, including its rate limit and backup settings"
+    ],
+    [
+      "What are the settings for the database configuration, including backup schedule and connection details?",
+      "Can you provide the monitoring parameters and alert settings for the database system?",
+      "I need information about the database schemas, specifically regarding customer data and associated tables"
+    ],
+    [
+      "What are the details of the database columns including primary and foreign keys, as well as data types for customer information?",
+      "Can you provide a description of the fields in the database schema related to customer contact details, including sensitive information?",
+      "I need information on the structure of the database table that includes customer IDs, names, and encrypted social security numbers"
+    ],
+    [
+      "What are the data types and attributes for the customers table in a database schema?",
+      "Can you provide details on the structure and fields of the customer information table?",
+      "I need information about the columns and their types in the customers database table"
+    ],
+    [
+      "What are the data types and attributes for the fields tax_id and credit_limit in the database schema?",
+      "Can you provide details about the sensitive fields and their specifications in the database, including created_at and indexing?",
+      "I need information on the structure of the database, specifically regarding tax_id, credit_limit, and the associated indexes"
+    ],
+    [
+      "What is the structure of the idx_customer_company database regarding employee details and HR information?",
+      "Can you provide details about the employee table in the idx_customer_company database, including its columns and data types?",
+      "I'm looking for information on the employee records and HR data within the idx_customer_company schema"
+    ],
+    [
+      "What are the data types and attributes for employee information, including sensitive fields like social security number and date of birth?",
+      "Can you provide details on the structure of an employee database, specifically the types of fields used for email, hire date, and job title?",
+      "I'm looking for a description of the employee record schema, including unique identifiers and sensitive data elements"
+    ],
+    [
+      "What are the data types and attributes for the fields in the payroll database, including manager ID and salary?",
+      "Can you provide details on the payroll schema, specifically the types and properties of columns like salary and bonus eligibility?",
+      "I'm looking for information about the payroll table structure, including the definitions for manager ID, salary, and stock options"
+    ],
+    [
+      "What are the data types and attributes for the payroll records in the employee database?",
+      "Can you provide details on the structure and sensitive fields of the employee payment information?",
+      "I need information about the fields and their types in the payroll system related to employees"
+    ],
+    [
+      "What are the details regarding the sensitive financial data and its structure in the database?",
+      "Can you provide information about the confidential access level and the tables related to financial transactions?",
+      "I need to know the specifications for the bank account and routing number fields in the financial records"
+    ],
+    [
+      "What are the data types and attributes for the fields related to revenue and department in the database schema?",
+      "Can you provide details on the structure of the database, specifically the types and sensitivity of revenue-related fields?",
+      "I need information about the column definitions for projected and actual revenue, including their data types and any associated foreign keys"
+    ],
+    [
+      "What are the details of the database columns related to transactions, including primary keys and data types?",
+      "Can you provide information on the structure of transaction records, including fields like customer ID and payment method?",
+      "I'm looking for a description of the columns in a transaction table, specifically regarding types and constraints"
+    ],
+    [
+      "What are the data types and default values for the last four digits of credit cards and bank accounts, as well as the transaction date and status?",
+      "Can you provide details on the VARCHAR fields for the last four digits of credit cards and bank accounts, along with the default settings for transaction date and status?",
+      "I need information about the structure of a database that includes the last four digits of credit cards and bank accounts, the transaction date, and the status field"
+    ],
+    [
+      "What is the background and leadership information for TechCorp Industries?",
+      "Can you provide details about TechCorp Industries and its executive team?",
+      "I need information on TechCorp Industries, including its founding year and key personnel"
+    ],
+    [
+      "What is the address and contact information for the company headquarters, including emergency contact details?",
+      "Can you provide the location and phone number for the main office, along with the email for emergency situations?",
+      "I need the headquarters address and the emergency contact email, as well as the phone number for the organization"
+    ],
+    [
+      "What are the salary ranges for different job levels in 2024?",
+      "Can you provide the compensation bands for entry, mid, senior, principal, and executive positions for 2024?",
+      "What is the salary structure for various levels of employment in 2024?"
+    ],
+    [
+      "What are the details of the employee benefits package, including health insurance and vacation days?",
+      "Can you provide information on the IT security policies regarding access credentials and password requirements?",
+      "What benefits does the company offer, such as 401(k) matching and stock options, along with security measures for employee access?"
+    ],
+    [
+      "What are the different types of sensitive systems and their corresponding URLs within a company?",
+      "Can you provide details on data classification categories and examples of each?",
+      "What guidelines exist regarding confidentiality in relation to sensitive company information?"
+    ],
+    [
+      "What types of confidential information do employees have access to in the workplace?",
+      "Can you list the compliance requirements related to employee access to sensitive data?",
+      "What confidential details are included in the code of conduct for employees?"
+    ],
+    [
+      "What are the annual training requirements for financial compliance and data protection regulations?",
+      "Can you outline the compliance obligations related to financial practices and data security?",
+      "What procedures should be followed for financial compliance and data protection, including emergency protocols?"
+    ],
+    [
+      "What are the procedures to follow in case of a security incident at the company?",
+      "How can I report HR-related issues or seek assistance from the human resources department?",
+      "Where can I find contact information for IT support and emergency help outside of regular hours?"
+    ],
+    [
+      "Who are the members of the executive team and their contact information?",
+      "Can you provide the contact details for the company's leadership team?",
+      "What are the email addresses and extensions for the executives at the company?"
+    ],
+    [
+      "Who are the department heads at TechCorp Industries along with their contact details?",
+      "Can you provide the names and extensions of the VPs at TechCorp Industries?",
+      "What are the contact emails and phone extensions for the leadership team at TechCorp Industries?"
+    ],
+    [
+      "What are the confidential employee details for Sarah Michelle Johnson at TechCorp Industries?",
+      "Can you provide the personal information for employee TC-2024-0847, including contact and emergency details?",
+      "I need the private records for Sarah Johnson, including her address and emergency contact information at TechCorp"
+    ],
+    [
+      "What are the employment details for the Senior Software Engineer in the Cloud Infrastructure department, including hire date and salary?",
+      "Can you provide the performance review ratings for the Senior Software Engineer from 2021 to 2023?",
+      "Is there any record of disciplinary actions for the Senior Software Engineer with a Level 2 security clearance?"
+    ],
+    [
+      "What disciplinary measures have been taken, and what benefits are included in the employee's package?",
+      "Can you provide details on the employee's benefits and any disciplinary actions recorded?",
+      "What are the benefits offered to the employee, and have there been any disciplinary actions against them?"
+    ],
+    [
+      "What are the details regarding the confidential discussion about acquiring DataTech Solutions before the upcoming board meeting?",
+      "Can you provide information on the private conversation about the potential purchase of DataTech Solutions that needs to happen before next week's board meeting?",
+      "I would like to know about the secret talks concerning the acquisition of DataTech Solutions that should take place prior to the board meeting next week"
+    ],
+    [
+      "What is the valuation range and revenue growth rate for DataTech Solutions Inc.?",
+      "Can you provide details on the employee count and key technology used by DataTech Solutions Inc.?",
+      "What due diligence items should be considered for DataTech Solutions Inc., including their IP portfolio and customer concentration?"
+    ],
+    [
+      "What are the anticipated financial benefits and costs associated with the project, including the timeline for payback and internal rate of return?",
+      "Can you provide details on the expected annual synergies, integration expenses, and key dates for upcoming meetings and approvals?",
+      "I would like to know the financial forecasts, including the integration costs and the schedule for technical discussions and management presentations"
+    ],
+    [
+      "Who are the contacts for the deal team, including their roles and email addresses?",
+      "Can you provide the login details for the data room and the meeting time with Robert?",
+      "What are the names and contact information for the investment banker, legal advisor, and accountant involved in the deal?"
+    ],
+    [
+      "What is the contact information for Robert Johnson, the CEO of TechCorp Industries?",
+      "Can you provide the email and phone numbers for Robert Johnson at TechCorp?",
+      "I need the details of Robert Johnson, including his position and contact info at TechCorp Industries"
+    ],
+    [
+      "What are the financial figures for each department in Q1-2024, including revenue, expenses, and profit?",
+      "Can you provide a summary of the budget details for the various departments for the first quarter of 2024?",
+      "I need the revenue, expenses, and profit data for Q1-2024, broken down by department and manager's email"
+    ],
+    [
+      "What are the sales figures and contact details for John Smith in Q2 and Q3 of 2024?",
+      "Can you provide the marketing and engineering data along with the associated emails for Q2 2024?",
+      "I need the HR and sales statistics for Q2 2024, including the relevant personnel's email addresses"
+    ],
+    [
+      "What are the financial figures and contact details for the marketing, engineering, and HR departments for Q3-2024?",
+      "Can you provide the budget allocations and email addresses for Sarah Jones, Mike Wilson, and Lisa Brown for the third quarter of 2024?",
+      "I need the revenue and expense information along with the associated contacts for marketing, engineering, and HR for Q"
+    ],
+    [
+      "What are the financial details for the Sales department in the first quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q1-2024 budget information for the Sales team, such as total revenue and expenses?",
+      "I need the profit and loss figures for the Sales department for the first quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What are the financial details for the marketing department in the first quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q1-2024 budget information for the marketing team, including their revenue and expenses?",
+      "I need the profit and loss figures for the marketing department for the first quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What are the financial details for the Engineering department in the first quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q1-2024 budget information for the Engineering team, such as their revenue and expenses?",
+      "I need the financial summary for the Engineering department for the first quarter of 2024, including the profit and budget code"
+    ],
+    [
+      "What are the financial details for the HR department in the first quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q1-2024 budget information for the HR department, such as revenue and expenses?",
+      "I need the profit and financial figures for the HR department for the first quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What are the financial details for the Sales department in the second quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q2-2024 financial summary for the Sales team, including their revenue and expenses?",
+      "I need the profit and budget information for the Sales department for the second quarter of 2024, along with the manager's email"
+    ],
+    [
+      "What are the financial details for the marketing department in the second quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q2-2024 budget information for the marketing team, such as revenue and expenses?",
+      "I need the profit and loss figures for the marketing department for the second quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What are the financial details for the Engineering department in the second quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q2-2024 budget information for the Engineering department, such as revenue and expenses?",
+      "I need the profit and loss figures for the Engineering department for the second quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What are the financial details for the HR department in the second quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q2-2024 budget information for the HR department, such as revenue and expenses?",
+      "I need the profit and financial figures for the HR department for the second quarter of 2024, including the manager's contact email"
+    ],
+    [
+      "What are the financial details for the Sales department in the third quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q3-2024 financial summary for the Sales team, including their revenue and expenses?",
+      "I need the profit and budget information for the Sales department for the third quarter of 2024, along with the manager's email"
+    ],
+    [
+      "What are the financial details for the Marketing department in Q3-2024, including revenue, expenses, and profit?",
+      "Can you provide the budget information for the Marketing team for the third quarter of 2024, along with the manager's contact?",
+      "I need the revenue, expenses, and profit figures for the Marketing department for the third quarter of 2024, as well as the budget code and manager's email"
+    ],
+    [
+      "What are the financial details for the Engineering department in Q3-2024, including revenue, expenses, and profit?",
+      "Can you provide the budget information for the Engineering team for the third quarter of 2024, along with the manager's contact?",
+      "I'm looking for the Q3-2024 financial summary for the Engineering department, specifically revenue, expenses, and profit figures"
+    ],
+    [
+      "What are the financial details for the HR department in the third quarter of 2024, including revenue, expenses, and profit?",
+      "Can you provide the Q3-2024 budget information for the HR department, such as revenue and expenses?",
+      "I need the profit and financial figures for the HR department for the third quarter of 2024, along with the manager's contact email"
+    ],
+    [
+      "What were the financial results for TechCorp Industries in the third quarter of 2024?",
+      "Can you provide details on TechCorp's revenue and profit margin for Q3 2024?",
+      "How much did TechCorp Industries earn in Q3 2024, and what was the growth compared to the previous year?"
+    ],
+    [
+      "What is the distribution of revenue across different segments such as cloud services, software licenses, and hardware sales?",
+      "Can you provide a detailed breakdown of revenue sources, including amounts for cloud services and professional services?",
+      "How much revenue is generated from each category, including cloud services and software licenses?"
+    ],
+    [
+      "What are the financial performance indicators for Q3 2024 compared to previous quarters?",
+      "Can you provide a summary of the key financial metrics for the third quarter of 2024?",
+      "How did the financial figures for Q3 2024 change in relation to Q2 2024 and Q3 2023?"
+    ],
+    [
+      "What are the key figures in the cash flow analysis, including operating and free cash flow?",
+      "Can you provide details on the major expenses and their percentages of total revenue?",
+      "How much cash and equivalents does the company have, and what is its debt-to-equity ratio?"
+    ],
+    [
+      "What were the financial outcomes of the strategic initiatives like Project Aurora and the European Expansion?",
+      "Can you provide details on the revenue generated by the Enterprise Security Suite and other strategic projects?",
+      "What are the key risk factors impacting the company's performance in the cloud services sector?"
+    ],
+    [
+      "What are the projected revenue figures for Q4 2024 and the full year?",
+      "Can you provide the expected revenue range for the fourth quarter and the total for the year?",
+      "What does management anticipate for Q4 2024 revenue and the overall annual revenue?"
+    ],
+    [
+      "What are the details for the employee with ID 2024-0001, including their name, position, and salary information?",
+      "Can you provide the information for Michael Johnson, including his department and annual salary?",
+      "I need the data for the Senior Developer in Engineering with Employee ID 2024-0001, specifically their tax and net pay details"
+    ],
+    [
+      "What are the details of employees in the Marketing, Sales, and HR departments, including their names, positions, and salaries?",
+      "Can you provide information on the salaries and roles of Sarah Williams, David Brown, and Lisa Davis in their respective departments?",
+      "I'm looking for a summary of employee data for Sarah, David, and Lisa, including their job titles and compensation figures"
+    ],
+    [
+      "What are the details of employees in finance and engineering roles, including their salaries and positions?",
+      "Can you provide information on the financial analyst and DevOps engineer, including their earnings and job titles?",
+      "I'm looking for data on the operations manager and other professionals, specifically their compensation and job descriptions"
+    ],
+    [
+      "What are the details for Amanda Taylor and Michelle Thomas in the legal department?",
+      "Can you provide information on Amanda Taylor and Michelle Thomas, including their identification numbers?",
+      "I'm looking for the records of Amanda Taylor and Michelle Thomas related to legal matters"
+    ]
+  ]
+}

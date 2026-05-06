@@ -1,0 +1,298 @@
+{
+  "timestamp": "20260505_220054",
+  "n_vectors": 200,
+  "dim": 128,
+  "seed": 42,
+  "noise_level": 0.01,
+  "backends": [
+    "faiss_flat",
+    "faiss_hnsw",
+    "chroma",
+    "qdrant_f32",
+    "qdrant_q8"
+  ],
+  "techniques": [
+    "clean",
+    "noise",
+    "rotation",
+    "scaling",
+    "offset"
+  ],
+  "results": [
+    {
+      "backend": "faiss_flat",
+      "technique": "clean",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0,
+      "recover_cos": 1.0,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.0004977159551344812,
+      "search_seconds": 0.0009901110315695405
+    },
+    {
+      "backend": "faiss_hnsw",
+      "technique": "clean",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0,
+      "recover_cos": 1.0,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.005749083997216076,
+      "search_seconds": 0.0022885060170665383
+    },
+    {
+      "backend": "chroma",
+      "technique": "clean",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0,
+      "recover_cos": 1.0,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.014603933959733695,
+      "search_seconds": 0.03915224800584838
+    },
+    {
+      "backend": "qdrant_f32",
+      "technique": "clean",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0,
+      "recover_cos": 1.0,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.019538358028512448,
+      "search_seconds": 0.1014868039637804
+    },
+    {
+      "backend": "qdrant_q8",
+      "technique": "clean",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0,
+      "recover_cos": 1.0,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.01781992899486795,
+      "search_seconds": 0.09548861696384847
+    },
+    {
+      "backend": "faiss_flat",
+      "technique": "noise",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9937583801386151,
+      "recover_cos": 0.9937583801386151,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.00036112399538978934,
+      "search_seconds": 0.0010696320096030831
+    },
+    {
+      "backend": "faiss_hnsw",
+      "technique": "noise",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9937583801386151,
+      "recover_cos": 0.9937583801386151,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.005577352014370263,
+      "search_seconds": 0.0021416039671748877
+    },
+    {
+      "backend": "chroma",
+      "technique": "noise",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9937583801333085,
+      "recover_cos": 0.9937583801333085,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.01692731899674982,
+      "search_seconds": 0.04751665098592639
+    },
+    {
+      "backend": "qdrant_f32",
+      "technique": "noise",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9937583801386151,
+      "recover_cos": 0.9937583801386151,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.01833473501028493,
+      "search_seconds": 0.09811756602721289
+    },
+    {
+      "backend": "qdrant_q8",
+      "technique": "noise",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9937583801386151,
+      "recover_cos": 0.9937583801386151,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.017388384032528847,
+      "search_seconds": 0.09788406296866015
+    },
+    {
+      "backend": "faiss_flat",
+      "technique": "rotation",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9998890271522676,
+      "recover_cos": 0.9998890271522676,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.0005248160450719297,
+      "search_seconds": 0.00109649304067716
+    },
+    {
+      "backend": "faiss_hnsw",
+      "technique": "rotation",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9998890271522676,
+      "recover_cos": 0.9998890271522676,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.01221779698971659,
+      "search_seconds": 0.002068663015961647
+    },
+    {
+      "backend": "chroma",
+      "technique": "rotation",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9998890271555786,
+      "recover_cos": 0.9998890271555786,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.013767413969617337,
+      "search_seconds": 0.041985518008004874
+    },
+    {
+      "backend": "qdrant_f32",
+      "technique": "rotation",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9998890271522676,
+      "recover_cos": 0.9998890271522676,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.016736296005547047,
+      "search_seconds": 0.08772177901118994
+    },
+    {
+      "backend": "qdrant_q8",
+      "technique": "rotation",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9998890271522676,
+      "recover_cos": 0.9998890271522676,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.01810341200325638,
+      "search_seconds": 0.09243174095172435
+    },
+    {
+      "backend": "faiss_flat",
+      "technique": "scaling",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.000000023038735,
+      "recover_cos": 1.000000023038735,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.0003556039882823825,
+      "search_seconds": 0.000950569985434413
+    },
+    {
+      "backend": "faiss_hnsw",
+      "technique": "scaling",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.000000023038735,
+      "recover_cos": 1.000000023038735,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.006526242999825627,
+      "search_seconds": 0.0020648029749281704
+    },
+    {
+      "backend": "chroma",
+      "technique": "scaling",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.0000000230387345,
+      "recover_cos": 1.0000000230387345,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.013405918958596885,
+      "search_seconds": 0.04683726199436933
+    },
+    {
+      "backend": "qdrant_f32",
+      "technique": "scaling",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.000000023038735,
+      "recover_cos": 1.000000023038735,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.018820309021975845,
+      "search_seconds": 0.1014590309932828
+    },
+    {
+      "backend": "qdrant_q8",
+      "technique": "scaling",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 1.000000023038735,
+      "recover_cos": 1.000000023038735,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.017863919027149677,
+      "search_seconds": 0.10337974200956523
+    },
+    {
+      "backend": "faiss_flat",
+      "technique": "offset",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9508452716329576,
+      "recover_cos": 0.9508452716329576,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.00034235400380566716,
+      "search_seconds": 0.0009686000412330031
+    },
+    {
+      "backend": "faiss_hnsw",
+      "technique": "offset",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9508452716329576,
+      "recover_cos": 0.9508452716329576,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.008435374009422958,
+      "search_seconds": 0.0020377530017867684
+    },
+    {
+      "backend": "chroma",
+      "technique": "offset",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9508452716664465,
+      "recover_cos": 0.9508452716664465,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.017195921973325312,
+      "search_seconds": 0.03932097798679024
+    },
+    {
+      "backend": "qdrant_f32",
+      "technique": "offset",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9508452716329576,
+      "recover_cos": 0.9508452716329576,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.023182607954367995,
+      "search_seconds": 0.09855785802938044
+    },
+    {
+      "backend": "qdrant_q8",
+      "technique": "offset",
+      "n_vectors": 200,
+      "dim": 128,
+      "insert_drift": 0.9508452716329576,
+      "recover_cos": 0.9508452716329576,
+      "self_query_recall_at_1": 1.0,
+      "insert_seconds": 0.017623697000090033,
+      "search_seconds": 0.11747791804373264
+    }
+  ]
+}

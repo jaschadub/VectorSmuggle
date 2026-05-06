@@ -1,0 +1,66 @@
+{
+  "timestamp": "20260505_221103",
+  "embedding_model": "text-embedding-3-large",
+  "paraphrase_model": "gpt-4o-mini",
+  "n_chunks": 68,
+  "n_paraphrases_per_chunk": 3,
+  "n_queries_total": 204,
+  "noise_level": 0.01,
+  "rows": [
+    {
+      "technique": "clean",
+      "n_queries": 204,
+      "recall_at_1": 0.8284313725490197,
+      "recall_at_3": 0.9901960784313726,
+      "recall_at_5": 0.9950980392156863,
+      "mrr": 0.9021241830065361,
+      "mean_correct_score": 0.5797358481030838,
+      "mean_top1_score": 0.5871846266821319,
+      "mean_margin": 0.0868486192296533
+    },
+    {
+      "technique": "noise",
+      "n_queries": 204,
+      "recall_at_1": 0.803921568627451,
+      "recall_at_3": 0.9852941176470589,
+      "recall_at_5": 0.9950980392156863,
+      "mrr": 0.8880718954248369,
+      "mean_correct_score": 0.5064823474077618,
+      "mean_top1_score": 0.5133803717645944,
+      "mean_margin": 0.07582572160982619
+    },
+    {
+      "technique": "rotation",
+      "n_queries": 204,
+      "recall_at_1": 0.8284313725490197,
+      "recall_at_3": 0.9901960784313726,
+      "recall_at_5": 0.9950980392156863,
+      "mrr": 0.9021241830065361,
+      "mean_correct_score": 0.5797702011232283,
+      "mean_top1_score": 0.5872190339015979,
+      "mean_margin": 0.08685596608648113
+    },
+    {
+      "technique": "scaling",
+      "n_queries": 204,
+      "recall_at_1": 0.8284313725490197,
+      "recall_at_3": 0.9901960784313726,
+      "recall_at_5": 0.9950980392156863,
+      "mrr": 0.9021241830065361,
+      "mean_correct_score": 0.5797358489796227,
+      "mean_top1_score": 0.5871846221533477,
+      "mean_margin": 0.08684861397041994
+    },
+    {
+      "technique": "offset",
+      "n_queries": 204,
+      "recall_at_1": 0.7450980392156863,
+      "recall_at_3": 0.8921568627450981,
+      "recall_at_5": 0.9607843137254902,
+      "mrr": 0.8321078431372547,
+      "mean_correct_score": 0.2976104584979076,
+      "mean_top1_score": 0.31536277770703913,
+      "mean_margin": 0.043798301807221246
+    }
+  ]
+}
