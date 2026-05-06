@@ -202,6 +202,11 @@ def expand_backends(only: list[str] | None) -> list[tuple[str, type[VectorBacken
         if name == "qdrant":
             out.append(("qdrant_f32", cls, {"quantize": False}))
             out.append(("qdrant_q8", cls, {"quantize": True}))
+        elif name == "faiss_pq":
+            # Two PQ configs: m=8 (typical aggressive) and m=16 (medium).
+            # m=4 would be even more aggressive; m=32 closer to scalar-int8.
+            out.append(("faiss_pq_m8", cls, {"m": 8}))
+            out.append(("faiss_pq_m16", cls, {"m": 16}))
         else:
             out.append((name, cls, {}))
     if only:

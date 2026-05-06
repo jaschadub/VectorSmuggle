@@ -58,12 +58,17 @@ from vector_backends.base import (
     available_backends,
     list_backends,
 )
-from vector_backends.faiss_backend import FaissFlatBackend, FaissHNSWBackend
+from vector_backends.faiss_backend import (
+    FaissFlatBackend,
+    FaissHNSWBackend,
+    FaissPQBackend,
+)
 
 __all__ = [
     "BackendUnavailable",
     "FaissFlatBackend",
     "FaissHNSWBackend",
+    "FaissPQBackend",
     "InsertRecord",
     "SearchResult",
     "VectorBackend",

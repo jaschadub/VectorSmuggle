@@ -165,3 +165,117 @@ class FaissHNSWBackend(_FaissBase):
         index.hnsw.efConstruction = self._ef_construction
         index.hnsw.efSearch = self._ef_search
         return index
+
+
+class FaissPQBackend(_FaissBase):
+    """Product-quantized FAISS (IVF-PQ).
+
+    Unlike scalar int8 quantization (Qdrant default), product
+    quantization actually decimates the stored representation. Each
+    vector is split into ``m`` sub-vectors of ``dim/m`` dimensions; each
+    sub-vector is replaced by the index of its nearest centroid in a
+    learned 256-entry codebook. Storage drops from ``4*dim`` bytes to
+    ``m`` bytes per vector --- a 32-96x compression ratio for typical
+    embedding dimensions.
+
+    The relevant property for the steganography paper: PQ is destructive
+    to the stored vector. ``get_by_id`` returns the *quantized
+    reconstruction*, not the original float32 input, so the attacker's
+    bit channel is genuinely narrowed (not just rerouted, as with scalar
+    int8 in Qdrant). The cross-backend study measures how much by
+    comparing recover_cos against the lossless baselines.
+
+    Default parameters target a typical production setting:
+      - ``m = 8`` sub-quantizers
+      - 8 bits per code (the standard FAISS choice)
+      - IVF with 100 cells, 10 probes at search time
+
+    A trained corpus is required; we use the inserted vectors as the
+    training set with a fallback to a synthetic Gaussian batch when the
+    inserted batch is too small for training (FAISS requires at least
+    ``39 * 2^bits`` training vectors per quantizer).
+    """
+
+    name = "faiss_pq"
+
+    def __init__(
+        self,
+        m: int = 8,
+        bits: int = 8,
+        nlist: int = 100,
+        nprobe: int = 10,
+    ) -> None:
+        super().__init__()
+        self._m = m
+        self._bits = bits
+        self._nlist = nlist
+        self._nprobe = nprobe
+        self._trained = False
+
+    def _build_index(self, dim: int) -> Any:  # noqa: ANN401
+        # IVF-PQ builds on a flat IP coarse quantizer; the PQ code
+        # is the second-stage compression.
+        if dim % self._m != 0:
+            raise ValueError(
+                f"FaissPQBackend requires dim ({dim}) to be a multiple "
+                f"of m ({self._m})"
+            )
+        coarse = self._faiss.IndexFlatIP(dim)
+        index = self._faiss.IndexIVFPQ(
+            coarse, dim, self._nlist, self._m, self._bits
+        )
+        index.metric_type = self._faiss.METRIC_INNER_PRODUCT
+        index.nprobe = self._nprobe
+        # Enable direct map so reconstruct() works after add(). Without
+        # this, FAISS only stores PQ codes and cannot recover the
+        # decoded vector by id.
+        index.set_direct_map_type(self._faiss.DirectMap.Hashtable)
+        return index
+
+    def insert(self, records: Iterable[InsertRecord]) -> None:
+        if self._index is None:
+            raise RuntimeError("backend not opened; call .open(dim) first")
+        records_list = list(records)
+        if not records_list:
+            return
+        vectors = np.stack([r.vector for r in records_list]).astype(np.float32)
+        normalized = _normalize(vectors)
+
+        # Train on first call; fall back to synthetic Gaussians if
+        # caller didn't provide enough training data.
+        if not self._trained:
+            min_train = max(self._nlist, 39 * (1 << self._bits))
+            if normalized.shape[0] < min_train:
+                rng = np.random.default_rng(42)
+                synth = rng.normal(0, 1, size=(min_train, normalized.shape[1])).astype(np.float32)
+                synth = _normalize(synth)
+                training = np.vstack([normalized, synth])[:min_train]
+            else:
+                training = normalized
+            self._index.train(training)
+            self._trained = True
+
+        self._index.add(normalized)
+        for rec, vec in zip(records_list, normalized, strict=True):
+            self._id_to_pos[rec.id] = len(self._positions)
+            self._positions.append(rec.id)
+            # For PQ, what we actually want from get_by_id is the
+            # quantized reconstruction --- that's what the attacker
+            # would read back from the store. Cache the input for now;
+            # we read back via the index's reconstruct() method.
+            self._stored_vectors.append(vec.copy())
+            self._metadata[rec.id] = dict(rec.metadata)
+
+    def get_by_id(self, record_id: str) -> tuple[np.ndarray, dict[str, Any]]:
+        """Return the PQ-reconstructed vector --- the lossy form an
+        attacker reads back from a real PQ-indexed store."""
+        if record_id not in self._id_to_pos:
+            raise KeyError(record_id)
+        pos = self._id_to_pos[record_id]
+        # IndexIVFPQ.reconstruct(i) gives the decoded approximation.
+        reconstructed = self._index.reconstruct(pos).astype(np.float32)
+        return reconstructed, dict(self._metadata[record_id])
+
+    def close(self) -> None:
+        super().close()
+        self._trained = False

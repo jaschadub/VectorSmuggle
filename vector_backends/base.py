@@ -131,11 +131,16 @@ class VectorBackend(ABC):
 def list_backends() -> dict[str, type[VectorBackend]]:
     """Return every concrete backend class shipped in this package."""
     # Imported here to avoid pulling optional deps at package import.
-    from vector_backends.faiss_backend import FaissFlatBackend, FaissHNSWBackend
+    from vector_backends.faiss_backend import (
+        FaissFlatBackend,
+        FaissHNSWBackend,
+        FaissPQBackend,
+    )
 
     backends: dict[str, type[VectorBackend]] = {
         FaissFlatBackend.name: FaissFlatBackend,
         FaissHNSWBackend.name: FaissHNSWBackend,
+        FaissPQBackend.name: FaissPQBackend,
     }
 
     # Optional backends are wrapped in try/except so importing one with

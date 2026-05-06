@@ -1,0 +1,110 @@
+{
+  "timestamp": "20260505_224350",
+  "n_per_split": 200,
+  "dim": 128,
+  "budgets": [
+    0.05,
+    0.1,
+    0.2,
+    0.5
+  ],
+  "n_steps": 30,
+  "results": [
+    {
+      "name": "naive_gaussian",
+      "budget": 0.05,
+      "cos_orig_obf": 0.9987648979173906,
+      "if_auc": 0.47014999999999996,
+      "ocsvm_auc": 0.5799749999999999,
+      "notes": "random unit-direction noise, no detector knowledge"
+    },
+    {
+      "name": "adaptive_iforest",
+      "budget": 0.05,
+      "cos_orig_obf": 0.9999535080445809,
+      "if_auc": 0.40437499999999993,
+      "ocsvm_auc": 0.46777500000000005,
+      "notes": "finite-difference greedy walk against trained IF"
+    },
+    {
+      "name": "adaptive_ocsvm",
+      "budget": 0.05,
+      "cos_orig_obf": 0.9999959562191448,
+      "if_auc": 0.2229,
+      "ocsvm_auc": 0.0,
+      "notes": "PGD against OCSVM RBF score (analytic gradient)"
+    },
+    {
+      "name": "naive_gaussian",
+      "budget": 0.1,
+      "cos_orig_obf": 0.995074293443254,
+      "if_auc": 0.48355000000000004,
+      "ocsvm_auc": 0.690625,
+      "notes": "random unit-direction noise, no detector knowledge"
+    },
+    {
+      "name": "adaptive_iforest",
+      "budget": 0.1,
+      "cos_orig_obf": 0.9995114474993563,
+      "if_auc": 0.326625,
+      "ocsvm_auc": 0.43735,
+      "notes": "finite-difference greedy walk against trained IF"
+    },
+    {
+      "name": "adaptive_ocsvm",
+      "budget": 0.1,
+      "cos_orig_obf": 0.9999820864014035,
+      "if_auc": 0.06910000000000001,
+      "ocsvm_auc": 0.0,
+      "notes": "PGD against OCSVM RBF score (analytic gradient)"
+    },
+    {
+      "name": "naive_gaussian",
+      "budget": 0.2,
+      "cos_orig_obf": 0.9807246489664458,
+      "if_auc": 0.5557,
+      "ocsvm_auc": 0.881375,
+      "notes": "random unit-direction noise, no detector knowledge"
+    },
+    {
+      "name": "adaptive_iforest",
+      "budget": 0.2,
+      "cos_orig_obf": 0.9957356138503279,
+      "if_auc": 0.215475,
+      "ocsvm_auc": 0.341575,
+      "notes": "finite-difference greedy walk against trained IF"
+    },
+    {
+      "name": "adaptive_ocsvm",
+      "budget": 0.2,
+      "cos_orig_obf": 0.9999103749980316,
+      "if_auc": 0.0010000000000000002,
+      "ocsvm_auc": 0.0,
+      "notes": "PGD against OCSVM RBF score (analytic gradient)"
+    },
+    {
+      "name": "naive_gaussian",
+      "budget": 0.5,
+      "cos_orig_obf": 0.8941005046130799,
+      "if_auc": 0.889575,
+      "ocsvm_auc": 1.0,
+      "notes": "random unit-direction noise, no detector knowledge"
+    },
+    {
+      "name": "adaptive_iforest",
+      "budget": 0.5,
+      "cos_orig_obf": 0.9696065003326239,
+      "if_auc": 0.1029,
+      "ocsvm_auc": 0.383475,
+      "notes": "finite-difference greedy walk against trained IF"
+    },
+    {
+      "name": "adaptive_ocsvm",
+      "budget": 0.5,
+      "cos_orig_obf": 0.9986120760861907,
+      "if_auc": 0.0,
+      "ocsvm_auc": 0.0,
+      "notes": "PGD against OCSVM RBF score (analytic gradient)"
+    }
+  ]
+}
