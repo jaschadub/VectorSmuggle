@@ -8,6 +8,11 @@ A research framework demonstrating vector-based data exfiltration techniques in 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Security Research](https://img.shields.io/badge/purpose-security%20research-red.svg)](https://github.com/jaschadub/VectorSmuggle)
 [![Educational](https://img.shields.io/badge/use-educational%20only-green.svg)](https://github.com/jaschadub/VectorSmuggle)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20058256.svg)](https://doi.org/10.5281/zenodo.20058256)
+
+> **Companion preprint:** Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. Zenodo. <https://doi.org/10.5281/zenodo.20058256>
+>
+> **Constructive defense:** [VectorPin](https://github.com/ThirdKeyAI/VectorPin) — cryptographic provenance for embedding stores, locked to the threat model evaluated here.
 
 ## Overview
 
@@ -446,31 +451,48 @@ For questions, suggestions, or responsible disclosure of security issues:
 
 ## Citation
 
-If you use VectorSmuggle in your research, please cite it as follows.
+If you reference VectorSmuggle in your research, please cite the companion
+preprint (which describes the threat model, empirical results, and the
+VectorPin defense) and the software framework itself.
 
-### BibTeX
+### Preprint (preferred)
+
+> Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. Zenodo. <https://doi.org/10.5281/zenodo.20058256>
 
 ```bibtex
-@software{vectorsmuggle2025,
-  title={VectorSmuggle: A Framework for Vector-Based Data Exfiltration Research},
-  author={Wanger, Jascha},
-  organization={Tarnover, LLC},
-  year={2025},
-  url={https://github.com/jaschadub/VectorSmuggle},
-  note={Educational security research framework for AI/ML systems}
+@misc{wanger2026vectorsmuggle,
+  title  = {{VectorSmuggle}: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense},
+  author = {Wanger, Jascha},
+  year   = {2026},
+  publisher = {Zenodo},
+  doi    = {10.5281/zenodo.20058256},
+  url    = {https://doi.org/10.5281/zenodo.20058256}
+}
+```
+
+### Software framework
+
+```bibtex
+@software{vectorsmuggle-framework,
+  title  = {{VectorSmuggle}: A research framework for vector-based data exfiltration},
+  author = {Wanger, Jascha},
+  organization = {Tarnover, LLC},
+  year   = {2025},
+  url    = {https://github.com/jaschadub/VectorSmuggle},
+  note   = {Apache-2.0; companion to \href{https://doi.org/10.5281/zenodo.20058256}{the Zenodo preprint}}
 }
 ```
 
 ### APA
 
 ```
-Wanger, J. (2025). VectorSmuggle: A Framework for Vector-Based Data Exfiltration Research [Computer software]. Tarnover, LLC. https://github.com/jaschadub/VectorSmuggle
+Wanger, J. (2026). VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense. Zenodo. https://doi.org/10.5281/zenodo.20058256
 ```
 
 ### IEEE
 
 ```
-J. Wanger, "VectorSmuggle: A Framework for Vector-Based Data Exfiltration Research," Tarnover, LLC, 2025. [Online]. Available: https://github.com/jaschadub/VectorSmuggle
+J. Wanger, "VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense," Zenodo, 2026. [Online]. Available: https://doi.org/10.5281/zenodo.20058256
 ```
 
 ---

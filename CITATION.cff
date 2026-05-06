@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use VectorSmuggle in your work, please cite the companion preprint and the software framework."
+type: software
+title: "VectorSmuggle: A research framework for vector-based data exfiltration"
+authors:
+  - family-names: Wanger
+    given-names: Jascha
+    affiliation: "Tarnover, LLC"
+abstract: >-
+  VectorSmuggle is the research framework that accompanies the preprint
+  "VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a
+  Cryptographic Provenance Defense." It implements six steganographic
+  techniques against vector embedding stores, the empirical evaluation
+  pipeline (rotation sweep, paraphrased-query retrieval, cross-backend
+  round-trip, adaptive-attacker detector studies), and the defensive
+  baselines used in the paper.
+license: Apache-2.0
+repository-code: "https://github.com/jaschadub/VectorSmuggle"
+preferred-citation:
+  type: article
+  title: "VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense"
+  authors:
+    - family-names: Wanger
+      given-names: Jascha
+      affiliation: "ThirdKey / Tarnover, LLC"
+  year: 2026
+  doi: "10.5281/zenodo.20058256"
+  url: "https://doi.org/10.5281/zenodo.20058256"
+references:
+  - type: software
+    title: "VectorPin: Verifiable integrity for AI embedding stores"
+    authors:
+      - family-names: Wanger
+        given-names: Jascha
+    license: Apache-2.0
+    url: "https://github.com/ThirdKeyAI/VectorPin"
+    notes: "Defensive cryptographic-provenance protocol motivated by the empirical findings in this repo."
