@@ -193,6 +193,9 @@ secrets.json
 test_results/
 results/
 reports/
+
+# Downloaded research corpora (BEIR zips, embedding caches)
+data/corpora/
 *.effectiveness_report.md
 *_effectiveness_report.md
 
