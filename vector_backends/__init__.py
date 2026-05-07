@@ -2,10 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Round-trip-focused vector store backends for empirical research.
 
-This package is distinct from the legacy ``database_adapters/`` package
-in this repo. The legacy package is oriented toward subprocess-driven
-effectiveness tests for an earlier framework. This package is oriented
-toward the question that matters for the steganography research:
+The point of this package is to answer the question that matters for
+the steganography research:
 
     "Does an obfuscated vector survive a round-trip through a real
     vector database with its default index/quantization, and does the

@@ -22,47 +22,42 @@ VectorSmuggle investigates how sensitive information can be hidden within seemin
 
 - **Steganographic techniques**: Embedding obfuscation through noise injection, rotation, scaling, offset, fragmentation, and decoy interleaving
 - **Multi-format ingestion**: Support for 15+ document formats (PDF, Office, email, structured data, databases)
-- **Evasion layer**: Behavioral camouflage, traffic mimicry, and detection avoidance
-- **Enhanced query engine**: Multi-strategy retrieval and data reconstruction
-- **Containerized deployment**: Docker and Kubernetes manifests for reproducible environments
-- **Analysis tooling**: Forensic collection, risk assessment, and detection signature generation
+- **Multi-backend evaluation**: FAISS Flat / HNSW / PQ, Chroma HNSW, Qdrant float32 and int8 — used for the cross-backend bit-channel survival study
+- **Multi-model evaluation**: OpenAI plus four local Ollama models (`nomic-embed-text`, `embeddinggemma`, `snowflake-arctic-embed`, `mxbai-embed-large`)
+- **Detection battery**: Isolation Forest and One-Class SVM detectors used as defenders inside every empirical script
+- **Reproducibility**: deterministic per-run seeding and timestamped result directories under `results/`
 
 ## Architecture
 
 ```mermaid
-graph TB
-    A[Document Sources] --> B[Multi-Format Loaders]
-    B --> C[Content Preprocessors]
-    C --> D[Steganography Engine]
-    D --> E[Evasion Layer]
-    E --> F[Vector Stores]
-    F --> G[Enhanced Query Engine]
-    G --> H[Analysis & Recovery Tools]
+graph LR
+    A[Documents] --> B[Loaders]
+    B --> C[Preprocessor]
+    C --> D[Embedder]
+    D --> E[Obfuscator]
+    E --> F[Vector Backend]
+    F --> G[Query Engine]
+    G --> H[Recovery / Analysis]
 
-    subgraph "Core Modules"
-        B
-        C
-        D
-        E
-        G
-        H
+    subgraph defenders [Defenders]
+        I[Isolation Forest]
+        J[One-Class SVM]
     end
-
-    subgraph "External Services"
-        F
-        I[OpenAI API]
-        J[Monitoring Systems]
-    end
+    D -.->|clean baseline| I
+    D -.->|clean baseline| J
+    E -.->|obfuscated| I
+    E -.->|obfuscated| J
 ```
+
+See [`docs/architecture.md`](docs/architecture.md) for the module-by-module description.
 
 ## Quick Start
 
 ### Prerequisites
 
 - Python 3.11 or later
-- OpenAI API key (or Ollama with `nomic-embed-text:latest` as a local fallback)
-- Docker (optional, for containerized runs)
-- Kubernetes cluster (optional, for production-style deployment)
+- OpenAI API key (for the paper's headline numbers) or Ollama with at least one local embedding model
+- Docker (optional, for the containerized run path)
 
 ### Installation
 
@@ -118,227 +113,83 @@ See [`examples/README.md`](examples/README.md) for detailed setup instructions, 
 
 ## Documentation
 
-### Research
+The research narrative — threat model, technique catalog, empirical results, and the VectorPin defense — lives in the preprint at <https://doi.org/10.5281/zenodo.20058256>. The repository documentation covers how to run, configure, and extend the framework.
 
-- [Research methodology](docs/research_methodology.md) — research approach and validation
-- [Attack vectors](docs/attack_vectors.md) — comprehensive attack analysis
-- [Defense strategies](docs/defense_strategies.md) — countermeasures and detection
-- [Compliance impact](docs/compliance_impact.md) — regulatory implications
-- [Vector-payload dissociation](docs/vector_payload_dissociation.md) — dissociation technique analysis
+- [Architecture](docs/architecture.md) — module layout and pipeline
+- [Configuration](docs/configuration.md) — environment variables and runtime settings
+- [Usage](docs/usage.md) — quick-start, paper reproduction, library use
+- [API reference](docs/api_reference.md) — public module APIs
+- [Deployment](docs/deployment.md) — running in Docker and bringing up local backends
+- [Troubleshooting](docs/troubleshooting.md) — common failure modes
 
-### Technical
+For testing, see [TEST_PLAN.md](TEST_PLAN.md) and [TESTING_GUIDE.md](TESTING_GUIDE.md).
 
-- [System architecture](docs/technical/architecture.md) — design and components
-- [API reference](docs/technical/api_reference.md) — module documentation
-- [Configuration guide](docs/technical/configuration.md) — setup and options
-- [Troubleshooting](docs/technical/troubleshooting.md) — common issues
-- [Multi-database architecture](docs/multi_database_effectiveness_architecture.md) — multi-DB testing design
+## Library use
 
-### Usage Guides
-
-- [Quick start](docs/guides/quick_start.md) — getting started
-- [Advanced usage](docs/guides/advanced_usage.md) — complex scenarios
-- [Security testing](docs/guides/security_testing.md) — testing procedures
-- [Deployment](docs/guides/deployment.md) — production deployment
-- [Large-scale testing](docs/large_scale_testing.md) — large-scale validation framework
-- [Multi-database setup](docs/multi_database_setup.md) — multi-DB testing setup
-- [Payload dissociation testing](docs/guides/vector_payload_dissociation_testing.md) — dissociation test guide
-
-### Testing
-
-- [Test plan](TEST_PLAN.md) — testing strategy and coverage targets
-- [Testing guide](TESTING_GUIDE.md) — running the test suite
-
-## Core Components
-
-### Steganographic Engine
-
-Techniques for hiding data within vector embeddings:
+The pipeline modules are importable. A typical custom experiment looks like:
 
 ```python
-from steganography import EmbeddingObfuscator, MultiModelFragmenter
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# Apply noise-based steganography
-obfuscator = EmbeddingObfuscator(noise_level=0.01)
-hidden_embeddings = obfuscator.obfuscate(embeddings, techniques=["noise", "rotation"])
+from loaders.document_factory import DocumentLoaderFactory
+from steganography.obfuscation import EmbeddingObfuscator
+from analysis.detectors import IsolationForestDetector
+from analysis.detectors.isolation_forest_detector import evaluate
 
-# Fragment across multiple models
-fragmenter = MultiModelFragmenter()
-fragments = fragmenter.fragment_and_embed(sensitive_data)
+docs = DocumentLoaderFactory().load_documents(["sample_docs/financial_report_q3_2024.md"])
+chunks = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=50).split_documents(docs)
+
+embedder = OpenAIEmbeddings(model="text-embedding-3-large")
+clean = embedder.embed_documents([c.page_content for c in chunks])
+
+obfuscator = EmbeddingObfuscator(seed=42, noise_level=0.01)
+rotated, rotation_matrix = obfuscator.apply_rotation(clean)
+
+detector = IsolationForestDetector(n_estimators=200, contamination=0.05).fit(clean[:34])
+metrics = evaluate(detector, clean[34:], rotated[34:])
+print(metrics["auc"])  # ~0.5 — rotation is not detected by distribution-based methods
 ```
 
-### Multi-Format Document Processing
-
-```python
-from loaders import DocumentLoaderFactory
-
-factory = DocumentLoaderFactory()
-documents = factory.load_documents([
-    "financial_report.pdf",
-    "employee_data.xlsx",
-    "emails.mbox",
-    "database_export.sqlite",
-])
-```
-
-### Evasion Capabilities
-
-```python
-from evasion import BehavioralCamouflage, TrafficMimicry
-
-# Simulate legitimate user behavior
-camouflage = BehavioralCamouflage(legitimate_ratio=0.8)
-camouflage.generate_cover_story("data analysis project")
-
-# Mimic normal traffic patterns
-mimicry = TrafficMimicry(base_interval=300.0)
-await mimicry.execute_with_timing(upload_operation)
-```
-
-### Enhanced Query Engine
-
-```python
-from query import AdvancedQueryEngine, DataRecoveryTools
-
-engine = AdvancedQueryEngine(vector_store, llm, embeddings)
-recovery = DataRecoveryTools(embeddings)
-
-# Multi-strategy search and reconstruction
-results = engine.multi_strategy_search("sensitive financial data")
-reconstructed = recovery.recover_data(results)
-```
-
-## Analysis Tools
-
-### Risk Assessment
-
-```python
-from analysis.risk_assessment import VectorExfiltrationRiskAssessor
-
-assessor = VectorExfiltrationRiskAssessor()
-assessment = assessor.perform_comprehensive_assessment(documents, embeddings, config)
-print(f"Risk Level: {assessment.overall_risk_level}")
-```
-
-### Forensic Analysis
-
-```python
-from analysis.forensic_tools import EvidenceCollector, TimelineReconstructor
-
-collector = EvidenceCollector()
-evidence = collector.collect_vector_store_evidence(vector_data)
-
-reconstructor = TimelineReconstructor()
-timeline = reconstructor.reconstruct_timeline(evidence)
-```
-
-### Detection Signatures
-
-```python
-from analysis.detection_signatures import StatisticalSignatureGenerator
-
-generator = StatisticalSignatureGenerator()
-generator.establish_baseline(clean_embeddings)
-signatures = generator.generate_statistical_signatures()
-```
-
-### Baseline Generation
-
-```python
-from analysis.baseline_generator import BaselineDatasetGenerator
-
-generator = BaselineDatasetGenerator()
-dataset = generator.generate_baseline_dataset(num_users=50, days=7)
-```
+See [`docs/api_reference.md`](docs/api_reference.md) for the public module APIs.
 
 ## Deployment
 
-### Docker
+VectorSmuggle is a research framework, so "deployment" usually means running the experiments inside a container for reproducibility:
 
 ```bash
-# Development
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-
-# Production
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker build -t vectorsmuggle:latest .
+docker run --rm -e OPENAI_API_KEY=sk-... -v "$PWD/results:/app/results" \
+  vectorsmuggle:latest python scripts/empirical_study.py
 ```
 
-### Kubernetes
+The cross-backend study expects local Qdrant and Chroma; bring them up with:
 
 ```bash
-# Deploy
-kubectl apply -f k8s/ -n vectorsmuggle
-
-# Verify
-kubectl get pods -n vectorsmuggle
-kubectl rollout status deployment/vectorsmuggle -n vectorsmuggle
+cd test_vector_dbs_docker && docker compose up -d
 ```
 
-### Automated Deployment
-
-```bash
-# Full deployment with monitoring
-./scripts/deploy/deploy.sh --environment production --platform kubernetes --build
-
-# Health check
-./scripts/deploy/health-check.sh --detailed --export health-report.json
-```
+See [`docs/deployment.md`](docs/deployment.md) for the full workflow.
 
 ## Configuration
 
-### Environment Variables
+The minimum settings to run the empirical study against OpenAI:
 
 ```bash
-# Core settings
 OPENAI_API_KEY=sk-...
-VECTOR_DB=qdrant
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+VECTOR_DB=faiss
 CHUNK_SIZE=512
-
-# Embedding fallback settings
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_EMBEDDING_MODEL=nomic-embed-text:latest
-
-# Steganography settings
-STEGO_ENABLED=true
-STEGO_TECHNIQUES=noise,rotation,fragmentation
-STEGO_NOISE_LEVEL=0.01
-
-# Evasion settings
-EVASION_TRAFFIC_MIMICRY=true
-EVASION_BEHAVIORAL_CAMOUFLAGE=true
-EVASION_LEGITIMATE_RATIO=0.8
-
-# Query settings
-QUERY_CACHE_ENABLED=true
-QUERY_MULTI_STEP_REASONING=true
-QUERY_CONTEXT_RECONSTRUCTION=true
 ```
 
-### Embedding Model Fallback
-
-VectorSmuggle includes automatic fallback for embedding providers:
-
-1. **Primary**: OpenAI embeddings (requires API key)
-2. **Fallback**: Ollama with `nomic-embed-text:latest` (local)
-
-#### Ollama Setup
+For local embedding via Ollama, install a model and run the multi-model study:
 
 ```bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Pull the embedding model
-ollama pull nomic-embed-text:latest
-
-# Start the Ollama service
-ollama serve
+ollama pull nomic-embed-text
+python scripts/multi_model_study.py
 ```
 
-The system detects and uses the available provider automatically.
-
-### Advanced Configuration
-
-See [`docs/technical/configuration.md`](docs/technical/configuration.md) for the full set of configuration options.
+The full set of environment variables — including the steganography intensity parameters used to reproduce specific paper measurements — is documented in [`docs/configuration.md`](docs/configuration.md).
 
 ## Testing and Code Quality
 
@@ -360,74 +211,26 @@ ruff check .
 bandit -r . -x ./venv,./tests
 ```
 
-## Research Methodology
+## Research
 
-This project is a proof-of-concept implementation intended for educational and research use. The techniques demonstrated require rigorous experimental validation before any quantitative performance claims can be substantiated. (Status: in progress.)
+The empirical study, threat model, technique catalog, and the constructive defense (VectorPin) are described in the companion preprint at <https://doi.org/10.5281/zenodo.20058256>. The numbers in the paper are produced by the scripts in `scripts/` against the corpus in `sample_docs/`; see [`docs/usage.md`](docs/usage.md) for the reproduction workflow.
 
-Metric definitions:
+Headline findings:
 
-- **Capacity**: bits per embedding dimension, with statistical significance testing
-- **Detection resistance**: ROC-AUC and F1-score, reported with confidence intervals
-- **Fidelity**: cosine similarity preservation with variance analysis
+- Distribution-shifting perturbations (noise, scaling, offset, combinations) are detectable in our corpus by an off-the-shelf Isolation Forest or One-Class SVM trained on a clean baseline.
+- Orthogonal rotation defeats distribution-based detection at every parameter setting we swept, and the finding generalizes across five embedding models (OpenAI `text-embedding-3-large` plus four local Ollama models).
+- The bit channel survives normal vector-database deployments: cross-backend round-trips, int8 scalar quantization, and FAISS PQ all leave enough signal for end-to-end recovery.
+- White-box adaptive attackers drive both detector AUCs to near-zero, confirming that statistical detection is not a load-bearing control.
 
-## Security Risks Demonstrated
+The constructive defense, VectorPin, signs each embedding to its source content and producing model with Ed25519 over a canonical byte representation. Any post-embedding modification — including all studied techniques — breaks signature verification. See <https://github.com/ThirdKeyAI/VectorPin>.
 
-- **Covert exfiltration**: Embedding pipelines can leak sensitive data without obvious signals
-- **DLP bypass**: Traditional Data Loss Prevention tools cannot detect semantic leaks via vectors
-- **Insider threats**: Malicious actors can pose as legitimate LLM/RAG engineers
-- **External storage**: Sensitive data ends up in third-party vector databases
-- **Steganographic hiding**: Data concealed within otherwise legitimate-looking embeddings
-- **Behavioral camouflage**: Attack activity disguised as normal user behavior
+## Educational use
 
-## Defensive Measures
-
-- **Egress monitoring**: Track outbound connections to vector databases
-- **Embedding analysis**: Statistical analysis of vector spaces for anomalies
-- **Behavioral detection**: User activity pattern analysis
-- **Content sanitization**: Remove sensitive information before embedding
-- **Access controls**: Strict permissions and authentication requirements
-- **Audit logging**: Comprehensive logging of all embedding operations
-
-## Educational Use Cases
-
-### Security Training
-
-- Red team exercises and attack simulations
-- Blue team defense strategy development
-- Security awareness training programs
-- Incident response scenario planning
-
-### Research Applications
-
-- Academic security research projects
-- Vulnerability assessment methodologies
-- Defense mechanism development
-- Threat modeling frameworks
-
-### Compliance Testing
-
-- Regulatory compliance validation
-- Data protection impact assessments
-- Security control effectiveness testing
-- Risk assessment procedures
+VectorSmuggle is intended for use in red-team exercises, blue-team detector development, and academic security research. Sample applications include studying how steganographic perturbations interact with deployed RAG defenses, evaluating new detector designs against the technique catalog, and probing how vector backends transform embeddings under quantization.
 
 ## Contributing
 
-Contributions from the security research community are welcome:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add your feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a pull request
-
-### Contribution Guidelines
-
-- Follow existing code style and conventions
-- Add comprehensive tests for new features
-- Update documentation for any user-visible changes
-- Ensure all linting and security checks pass
-- Prioritize educational value
+Contributions are welcome. Open a pull request with a clear description of the change, ensure `ruff check .` and the test suite pass, and update documentation for user-visible behavior changes. For larger changes, open an issue first so we can discuss the approach.
 
 ## License
 
