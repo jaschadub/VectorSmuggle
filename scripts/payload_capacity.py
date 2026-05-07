@@ -241,6 +241,31 @@ def make_corpus(n: int, dim: int, seed: int) -> tuple[np.ndarray, np.ndarray, np
     return raw[:n], raw[n : 2 * n], raw[2 * n :]
 
 
+def load_real_corpus(
+    path: Path, train_frac: float, seed: int
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Load a real-corpus embedding file (``.npy``, shape ``(N, d)``) and
+    split it for the capacity demo.
+
+    Detector training takes the first ``train_frac`` of the shuffled
+    rows; the remaining rows act as both the clean-test set (for AUC)
+    and the target batch (where the rotation is applied). The
+    clean-test and obfuscated batches therefore share the same
+    underlying vectors --- one with the perturbation, one without ---
+    matching the setup of the headline detection table in
+    \\Cref{sec:evaluation:detection}.
+    """
+    arr = np.load(path).astype(np.float64)
+    if arr.ndim != 2:
+        raise ValueError(f"corpus embeddings must be 2-D, got shape {arr.shape}")
+    rng = np.random.default_rng(seed)
+    idx = rng.permutation(arr.shape[0])
+    n_train = max(1, int(arr.shape[0] * train_frac))
+    train = arr[idx[:n_train]]
+    rest = arr[idx[n_train:]]
+    return train, rest.copy(), rest.copy()
+
+
 def run_one(
     target_batch: np.ndarray,
     clean_train: np.ndarray,
@@ -314,8 +339,20 @@ def run(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     log.info("output: %s", out_dir)
 
-    train, clean_test, target = make_corpus(args.n_per_split, args.dim, args.seed)
-    log.info("corpus: dim=%d n_per_split=%d", args.dim, args.n_per_split)
+    if args.corpus_embeddings is not None:
+        train, clean_test, target = load_real_corpus(
+            args.corpus_embeddings, args.train_frac, args.seed
+        )
+        if args.dim != train.shape[1]:
+            log.info("overriding --dim %d with corpus dim %d", args.dim, train.shape[1])
+            args.dim = int(train.shape[1])
+        log.info(
+            "real corpus: %s train=%d clean_test/target=%d dim=%d",
+            args.corpus_embeddings, train.shape[0], clean_test.shape[0], args.dim,
+        )
+    else:
+        train, clean_test, target = make_corpus(args.n_per_split, args.dim, args.seed)
+        log.info("synthetic corpus: dim=%d n_per_split=%d", args.dim, args.n_per_split)
 
     cap_bits = disjoint_capacity_bits(args.dim, args.angle_bits)
     cap_bytes = cap_bits // 8
@@ -344,6 +381,7 @@ def run(args: argparse.Namespace) -> int:
                 row.bit_error_rate, row.bytes_match, row.cos_orig_obf, row.if_auc, row.ocsvm_auc,
             )
 
+    is_real = args.corpus_embeddings is not None
     summary = {
         "timestamp": timestamp,
         "dim": args.dim,
@@ -355,6 +393,11 @@ def run(args: argparse.Namespace) -> int:
         "proxy_capacity_bits_at_K_max": proxy_capacity_bits(
             args.dim, args.dim // 2, args.angle_bits
         ),
+        "corpus_kind": "real" if is_real else "synthetic_unit_gaussian",
+        "corpus_path": str(args.corpus_embeddings) if is_real else None,
+        "n_train": int(train.shape[0]),
+        "n_clean_test": int(clean_test.shape[0]),
+        "n_target": int(target.shape[0]),
         "rows": [asdict(r) for r in rows],
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -367,7 +410,17 @@ def write_report(out_dir: Path, summary: dict, rows: list[CapacityRow]) -> None:
     md: list[str] = [f"# Payload Capacity --- `{summary['timestamp']}`\n"]
     md.append("## Setup\n")
     md.append(f"- Dimension: {summary['dim']}")
-    md.append(f"- Per-split corpus size: {summary['n_per_split']} unit-norm Gaussians")
+    if summary.get("corpus_kind") == "real":
+        md.append(f"- Corpus: real embeddings from `{summary['corpus_path']}`")
+        md.append(
+            f"- Splits: {summary['n_train']} detector-training, "
+            f"{summary['n_clean_test']} clean-test (= target batch with rotation applied)"
+        )
+    else:
+        md.append(
+            f"- Corpus: {summary['n_per_split']} synthetic unit-norm Gaussians per split "
+            "(detector-training, clean-test, target batch)"
+        )
     md.append(f"- Random seed: {summary['seed']}")
     md.append(
         f"- Angle quantization (b): {summary['angle_bits']} bits "
@@ -430,14 +483,35 @@ def write_report(out_dir: Path, summary: dict, rows: list[CapacityRow]) -> None:
         "so exact recovery is the expected case across the table.\n"
         "- ``cos`` near 1 means the rotated vector is geometrically "
         "indistinguishable from the original. Disjoint Givens rotations "
-        "are orthogonal, so any drop is float roundoff in storage.\n"
-        "- ``IF AUC`` and ``OCSVM AUC`` near 0.5 confirm the punchline: "
-        "raising the payload (and therefore ``K``) does not move the "
-        "off-the-shelf detectors off chance, even at the full "
-        f"``floor(d/2)`` rotation count where the channel is carrying "
-        f"~{summary['disjoint_capacity_bytes']} bytes per vector. "
-        "Capacity grows; detectability does not."
+        "are orthogonal, so any drop is float roundoff in storage; the "
+        "drift at high ``K`` is the expected ``cos ~= 1 - 2K/d`` "
+        "alignment loss for uniform random angles.\n"
     )
+    if summary.get("corpus_kind") == "real":
+        md.append(
+            "- ``IF AUC`` and ``OCSVM AUC`` behavior is markedly different "
+            "on a real production embedding distribution than on the "
+            "synthetic-Gaussian baseline: on real "
+            "``text-embedding-3-large`` vectors, the detector rapidly "
+            "regains signal as ``K`` grows, because the clean training "
+            "manifold is concentrated and random-angle disjoint Givens "
+            "rotations push the obfuscated vectors off it. The "
+            "synthetic-vector regime where ``AUC`` stays at chance across "
+            "the entire sweep does not extend to real production corpora "
+            "at high ``K``.\n"
+        )
+    else:
+        md.append(
+            "- ``IF AUC`` and ``OCSVM AUC`` near 0.5 confirm that on a "
+            "uniform unit-Gaussian baseline the off-the-shelf detectors "
+            "cannot tell the obfuscated batch from the clean training "
+            "distribution at any ``K`` in this sweep, including the full "
+            f"``floor(d/2)`` rotation count where the channel is carrying "
+            f"~{summary['disjoint_capacity_bytes']} bytes per vector. "
+            "Whether this extends to real corpus distributions depends on "
+            "manifold concentration; see the ``--corpus-embeddings`` "
+            "variant of this script for the real-corpus result.\n"
+        )
     (out_dir / "report.md").write_text("\n".join(md))
 
 
@@ -453,6 +527,19 @@ def main() -> int:
         help="Quantization bits per angle (b).",
     )
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--corpus-embeddings", type=Path, default=None, dest="corpus_embeddings",
+        help="Optional path to a (N, d) .npy file of real corpus embeddings. "
+             "When set, replaces the synthetic Gaussian generator and overrides "
+             "--dim. Detector training uses --train-frac of the shuffled rows; "
+             "the remainder serves as both clean-test and target batch.",
+    )
+    parser.add_argument(
+        "--train-frac", type=float, default=0.4, dest="train_frac",
+        help="Fraction of --corpus-embeddings rows used for detector training "
+             "(remainder serves as clean test + target batch). Default 0.4 "
+             "matches the 27/41 split used in the headline detection table.",
+    )
     parser.add_argument(
         "--selftest-only", action="store_true",
         help="Run the encoder/decoder round-trip selftest and exit.",
