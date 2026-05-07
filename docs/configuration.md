@@ -1,224 +1,73 @@
-# Configuration Guide
+# Configuration
 
-## Overview
-
-VectorSmuggle uses environment variables and configuration files for flexible deployment across different environments.
-
-## Environment Variables
-
-### Core Configuration
-
-```bash
-# OpenAI API Configuration
-OPENAI_API_KEY=sk-...                    # Required: OpenAI API key
-OPENAI_MODEL=text-embedding-ada-002      # Embedding model to use
-
-# Vector Database Configuration
-VECTOR_DB=faiss                          # Options: faiss, qdrant, pinecone
-QDRANT_URL=http://localhost:6334         # Qdrant server URL
-PINECONE_API_KEY=...                     # Pinecone API key
-PINECONE_ENVIRONMENT=us-west1-gcp        # Pinecone environment
-
-# Document Processing
-CHUNK_SIZE=512                           # Text chunk size for processing
-CHUNK_OVERLAP=50                         # Overlap between chunks
-```
-
-### Steganography Settings
-
-```bash
-# Enable/disable steganographic techniques
-STEGO_ENABLED=true
-STEGO_TECHNIQUES=noise,rotation,fragmentation
-STEGO_NOISE_LEVEL=0.01
-STEGO_ROTATION_ANGLE=15.0
-STEGO_FRAGMENTATION_RATIO=0.3
-
-# Multi-model fragmentation
-STEGO_FRAGMENT_MODELS=text-embedding-ada-002,text-embedding-3-small
-STEGO_FRAGMENT_STRATEGY=round_robin
-```
-
-### Evasion Configuration
-
-```bash
-# Traffic mimicry
-EVASION_TRAFFIC_MIMICRY=true
-EVASION_BASE_INTERVAL=300.0
-EVASION_JITTER_FACTOR=0.2
-
-# Behavioral camouflage
-EVASION_BEHAVIORAL_CAMOUFLAGE=true
-EVASION_LEGITIMATE_RATIO=0.8
-EVASION_USER_PROFILE=researcher
-
-# Network evasion
-EVASION_PROXY_ROTATION=false
-EVASION_USER_AGENT_ROTATION=true
-EVASION_RATE_LIMITING=true
-```
-
-### Query Enhancement
-
-```bash
-# Query engine settings
-QUERY_CACHE_ENABLED=true
-QUERY_CACHE_SIZE=1000
-QUERY_MULTI_STEP_REASONING=true
-QUERY_CONTEXT_RECONSTRUCTION=true
-
-# Performance optimization
-QUERY_BATCH_SIZE=10
-QUERY_TIMEOUT=30.0
-QUERY_MAX_RETRIES=3
-```
-
-### Logging Configuration
-
-```bash
-# Logging settings
-LOG_LEVEL=INFO                           # DEBUG, INFO, WARNING, ERROR
-LOG_FORMAT=json                          # json, text
-LOG_FILE=vectorsmuggle.log
-LOG_RETENTION_DAYS=30
-```
-
-## Configuration Files
-
-### Main Configuration (`config.py`)
-
-The main configuration is handled through the `Config` class which automatically loads environment variables:
-
-```python
-from config import Config
-
-config = Config()
-print(f"Vector DB: {config.vector_db}")
-print(f"Chunk size: {config.chunk_size}")
-```
-
-### Environment File (`.env`)
-
-Copy `.env.example` to `.env` and customize:
+VectorSmuggle reads its runtime configuration from environment variables. The canonical source is `config.py`, which defines a set of typed dataclasses (`OpenAIConfig`, `VectorStoreConfig`, `DocumentConfig`, `SteganographyConfig`, etc.) and reads each field from the corresponding environment variable. A complete `.env.example` ships with the repository — the easiest way to get started is to copy it and fill in the secrets:
 
 ```bash
 cp .env.example .env
-# Edit .env with your specific settings
+$EDITOR .env
 ```
 
-## Advanced Configuration
+The remainder of this document explains the variables you are most likely to change. For the exhaustive list, read `config.py` directly — every dataclass field maps to an environment variable.
 
-### Custom Steganography Techniques
+## Embedding provider
 
-```python
-from config import Config
+`OPENAI_API_KEY` is required if you embed through OpenAI. `OPENAI_EMBEDDING_MODEL` selects the model; the paper's headline numbers use `text-embedding-3-large`, while `.env.example` ships with `text-embedding-3-small` because it is cheaper for development. `OPENAI_LLM_MODEL` selects the chat model used by the query engine for answer synthesis (separate from the embedding model).
 
-config = Config()
-config.steganography.techniques = ["noise", "rotation", "custom"]
-config.steganography.custom_params = {"param1": "value1"}
-```
+For local embedding, install a model into Ollama (`ollama pull nomic-embed-text`) and run `scripts/multi_model_study.py`, which talks to the local daemon at `localhost:11434`. The cross-model study in the paper uses four local Ollama models in addition to OpenAI.
 
-### Multi-Environment Setup
+## Vector backend
 
-#### Development Environment
+`VECTOR_DB` selects the backend: `faiss` (default), `qdrant`, or `pinecone`. Each has its own settings:
+
+- **FAISS**: `FAISS_INDEX_PATH` controls where the index is persisted on disk. FAISS is process-local and is the simplest backend for reproducing single-machine experiments.
+- **Qdrant**: `QDRANT_URL` points at the server (`http://localhost:6333` for a local docker container). The cross-backend study uses Qdrant with both float32 storage and int8 scalar quantization to measure how scalar quantization affects bit-channel survival.
+- **Pinecone**: `PINECONE_API_KEY` and `PINECONE_ENVIRONMENT` are required. Pinecone is a hosted backend — running large studies against it incurs costs.
+
+`COLLECTION_NAME` and `INDEX_NAME` apply to all backends and default to `rag-exfil-poc`.
+
+For the cross-backend study (`scripts/cross_backend_study.py`), the script ignores `VECTOR_DB` and instantiates every backend in turn from `vector_backends/` directly.
+
+## Document processing
+
+`CHUNK_SIZE` and `CHUNK_OVERLAP` control text splitting; the paper's results use `512` and `50`, which are also the defaults. `CHUNKING_STRATEGY` accepts `auto`, `fixed`, or `semantic` — `auto` selects between the others based on document type.
+
+`ENABLE_PREPROCESSING` toggles the entire preprocessing pipeline. `SANITIZE_CONTENT` and `DETECT_SENSITIVE_DATA` are independent: sanitization rewrites detected PII before embedding, while detection only flags it in the metadata. For the paper the corpus is synthetic PII, so detection is on but sanitization is off — the whole point is that the embeddings carry the PII.
+
+The format-specific toggles (`OFFICE_EXTRACT_TABLES`, `CSV_DELIMITER`, `JSON_FLATTEN_NESTED`, `EMAIL_INCLUDE_ATTACHMENTS`, `DATABASE_QUERY`) only matter for non-text formats.
+
+## Steganography
+
+The base perturbation techniques each have a single intensity parameter:
+
+- `STEGO_NOISE_LEVEL` — Gaussian noise standard deviation as a fraction of embedding L2 norm. `0.005` is "low," `0.01` is the default operating point used throughout the paper, `0.05` is "high."
+- `STEGO_ROTATION_ANGLE` — angle in radians for the planar rotation generator. The rotation sweep in §5.5 sweeps this from `0.001` to `π`.
+- `STEGO_SCALING_FACTOR` — multiplicative factor applied to vector norms. `0.95` reduces norms by 5%.
+- `STEGO_OFFSET_RANGE` — magnitude of the constant offset added to every vector.
+
+`STEGO_FRAGMENT_SIZE` and `STEGO_INTERLEAVE_RATIO` control multi-model fragmentation; `STEGO_DECOY_RATIO` controls how many cover chunks are interleaved with payload chunks. The temporal evasion settings (`STEGO_BASE_DELAY`, `STEGO_DELAY_VARIANCE`, `STEGO_BATCH_SIZE`, `STEGO_MAX_BATCHES_PER_HOUR`, `STEGO_BUSINESS_HOURS_ONLY`) only apply when the timing module is enabled.
+
+`STEGO_ENABLED` is a master switch: with it set to `false`, the embedder runs as a normal RAG ingester with no perturbation, which is how the clean-baseline embeddings for the detectors are generated.
+
+## Logging
+
+`LOG_LEVEL` is `INFO` by default. Set it to `DEBUG` to trace per-chunk processing — useful when a script silently drops content. `LOG_FORMAT` is a Python `logging` format string, not a JSON/text toggle.
+
+## Reproducing paper measurements
+
+The paper's measurements are produced by setting:
 
 ```bash
-# .env.development
-LOG_LEVEL=DEBUG
-STEGO_ENABLED=true
-EVASION_TRAFFIC_MIMICRY=false
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+CHUNK_SIZE=512
+CHUNK_OVERLAP=50
+STEGO_NOISE_LEVEL=0.01
+STEGO_ROTATION_ANGLE=0.1
+STEGO_SCALING_FACTOR=0.95
+STEGO_OFFSET_RANGE=0.05
 ```
 
-#### Production Environment
-
-```bash
-# .env.production
-LOG_LEVEL=WARNING
-STEGO_ENABLED=true
-EVASION_TRAFFIC_MIMICRY=true
-EVASION_BEHAVIORAL_CAMOUFLAGE=true
-```
-
-### Docker Configuration
-
-Environment variables can be passed through Docker:
-
-```bash
-docker run -e OPENAI_API_KEY=sk-... -e VECTOR_DB=qdrant vectorsmuggle
-```
-
-### Kubernetes Configuration
-
-Use ConfigMaps and Secrets for Kubernetes deployment:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vectorsmuggle-config
-data:
-  VECTOR_DB: "qdrant"
-  CHUNK_SIZE: "512"
-  STEGO_ENABLED: "true"
-```
+and running the empirical scripts in `scripts/`. See [usage.md](usage.md) for the full reproduction workflow.
 
 ## Validation
 
-Configuration validation is performed at startup:
-
-```python
-from config import Config
-
-try:
-    config = Config()
-    config.validate()
-except ConfigurationError as e:
-    print(f"Configuration error: {e}")
-```
-
-## Security Considerations
-
-- Store sensitive values (API keys) in secure secret management systems
-- Use environment-specific configuration files
-- Validate all configuration values
-- Implement proper access controls for configuration files
-- Audit configuration changes
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing API Key**: Ensure `OPENAI_API_KEY` is set
-2. **Invalid Vector DB**: Check `VECTOR_DB` value is supported
-3. **Connection Issues**: Verify network connectivity to external services
-4. **Permission Errors**: Check file system permissions for log files
-
-### Debug Mode
-
-Enable debug logging for troubleshooting:
-
-```bash
-export LOG_LEVEL=DEBUG
-python scripts/embed.py --debug
-```
-
-## Examples
-
-### Minimal Configuration
-
-```bash
-export OPENAI_API_KEY=sk-...
-export VECTOR_DB=faiss
-python scripts/embed.py
-```
-
-### Full Steganography Setup
-
-```bash
-export OPENAI_API_KEY=sk-...
-export VECTOR_DB=qdrant
-export QDRANT_URL=https://your-qdrant-instance.com
-export STEGO_ENABLED=true
-export STEGO_TECHNIQUES=noise,rotation,fragmentation
-export EVASION_TRAFFIC_MIMICRY=true
-python scripts/embed.py --techniques all
+`Config.validate()` is called once at startup. It checks that required keys are present (e.g. `OPENAI_API_KEY` when the embedding provider is OpenAI) and that numeric ranges are sane (`CHUNK_OVERLAP < CHUNK_SIZE`, `STEGO_NOISE_LEVEL` non-negative, etc.). A misconfigured run fails at startup rather than partway through embedding.
