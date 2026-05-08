@@ -23,7 +23,7 @@ VectorSmuggle investigates how sensitive information can be hidden within seemin
 - **Steganographic techniques**: Embedding obfuscation through noise injection, rotation, scaling, offset, fragmentation, and decoy interleaving
 - **Multi-format ingestion**: Support for 15+ document formats (PDF, Office, email, structured data, databases)
 - **Multi-backend evaluation**: FAISS Flat / HNSW / PQ, Chroma HNSW, Qdrant float32 and int8 — used for the cross-backend bit-channel survival study
-- **Multi-model evaluation**: OpenAI plus four local Ollama models (`nomic-embed-text`, `embeddinggemma`, `snowflake-arctic-embed`, `mxbai-embed-large`)
+- **Multi-model evaluation**: OpenAI `text-embedding-3-large` plus four local Ollama embedding models exercised in the paper (`nomic-embed-text`, `embeddinggemma`, `snowflake-arctic-embed`, `mxbai-embed-large`); `scripts/multi_model_study.py` runs the full battery, and any other Ollama embedding model (e.g. `bge-large`, `bge-m3`, `granite-embedding`, `arctic-embed-m-v2.0`) can be plugged in by extending the `MODELS` list at the top of that script
 - **Detection battery**: Isolation Forest and One-Class SVM detectors used as defenders inside every empirical script
 - **Reproducibility**: deterministic per-run seeding and timestamped result directories under `results/`
 
@@ -107,7 +107,7 @@ The demo covers:
 - Integrity verification of encoding and decoding
 - Performance metrics: processing time, success rate, and data statistics
 
-Expected runtime: 10–30 seconds. Sample output: 6 documents to 45 chunks to 45 steganographic embeddings.
+Expected runtime: 10–30 seconds. Sample output (with the default chunker, `chunk_size=512`, `chunk_overlap=50`): ~10 supported files in `sample_docs/` to ~22 loaded document objects (CSVs split into per-row records) to ~73 text chunks to 73 steganographic embeddings.
 
 See [`examples/README.md`](examples/README.md) for detailed setup instructions, troubleshooting, and expected outputs.
 
@@ -129,6 +129,9 @@ For testing, see [TEST_PLAN.md](TEST_PLAN.md) and [TESTING_GUIDE.md](TESTING_GUI
 The pipeline modules are importable. A typical custom experiment looks like:
 
 ```python
+from pathlib import Path
+
+import numpy as np
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -137,18 +140,22 @@ from steganography.obfuscation import EmbeddingObfuscator
 from analysis.detectors import IsolationForestDetector
 from analysis.detectors.isolation_forest_detector import evaluate
 
-docs = DocumentLoaderFactory().load_documents(["sample_docs/financial_report_q3_2024.md"])
+# Load the full sample corpus (~9 docs -> ~68 chunks) used by the paper.
+sample_dir = Path("sample_docs")
+files = sorted(p for p in sample_dir.iterdir() if p.is_file() and p.name != "README.md")
+docs = DocumentLoaderFactory().load_documents([str(f) for f in files])
 chunks = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=50).split_documents(docs)
 
 embedder = OpenAIEmbeddings(model="text-embedding-3-large")
-clean = embedder.embed_documents([c.page_content for c in chunks])
+clean = np.asarray(embedder.embed_documents([c.page_content for c in chunks]))
 
 obfuscator = EmbeddingObfuscator(seed=42, noise_level=0.01)
-rotated, rotation_matrix = obfuscator.apply_rotation(clean)
+rotated, _rotation_matrix = obfuscator.apply_rotation(clean)
 
-detector = IsolationForestDetector(n_estimators=200, contamination=0.05).fit(clean[:34])
-metrics = evaluate(detector, clean[34:], rotated[34:])
-print(metrics["auc"])  # ~0.5 — rotation is not detected by distribution-based methods
+# 27/41 train/test split mirrors the headline detection table in the paper.
+detector = IsolationForestDetector(n_estimators=200, contamination=0.05).fit(clean[:27])
+metrics = evaluate(detector, clean[27:], rotated[27:])
+print(metrics["auc"])  # ~0.5 at the obfuscator's library-default rotation parameters
 ```
 
 See [`docs/api_reference.md`](docs/api_reference.md) for the public module APIs.
@@ -182,12 +189,19 @@ VECTOR_DB=faiss
 CHUNK_SIZE=512
 ```
 
-For local embedding via Ollama, install a model and run the multi-model study:
+For local embedding via Ollama, pull one or more embedding models and run the multi-model study:
 
 ```bash
+# The four models exercised in the paper:
 ollama pull nomic-embed-text
+ollama pull embeddinggemma:300m
+ollama pull snowflake-arctic-embed:335m
+ollama pull mxbai-embed-large:335m
+
 python scripts/multi_model_study.py
 ```
+
+To evaluate a different Ollama embedding model (`bge-large`, `bge-m3`, `granite-embedding`, `arctic-embed-m-v2.0`, or any other model with an embedding endpoint), `ollama pull` it and add the tag to the `MODELS` list at the top of `scripts/multi_model_study.py`. The same script is also reused as the per-model template by `scripts/multi_corpus_study.py` for cross-corpus runs.
 
 The full set of environment variables — including the steganography intensity parameters used to reproduce specific paper measurements — is documented in [`docs/configuration.md`](docs/configuration.md).
 
@@ -215,11 +229,12 @@ bandit -r . -x ./venv,./tests
 
 The empirical study, threat model, technique catalog, and the constructive defense (VectorPin) are described in the companion preprint at <https://doi.org/10.5281/zenodo.20058256>. The numbers in the paper are produced by the scripts in `scripts/` against the corpus in `sample_docs/`; see [`docs/usage.md`](docs/usage.md) for the reproduction workflow.
 
-Headline findings:
+Headline findings (v1.2 preprint):
 
-- Distribution-shifting perturbations (noise, scaling, offset, combinations) are detectable in our corpus by an off-the-shelf Isolation Forest or One-Class SVM trained on a clean baseline.
-- Orthogonal rotation defeats distribution-based detection at every parameter setting we swept, and the finding generalizes across five embedding models (OpenAI `text-embedding-3-large` plus four local Ollama models).
-- The bit channel survives normal vector-database deployments: cross-backend round-trips, int8 scalar quantization, and FAISS PQ all leave enough signal for end-to-end recovery.
+- Distribution-shifting perturbations (noise, scaling, offset, combinations) are often detectable in our corpus by an off-the-shelf Isolation Forest or One-Class SVM trained on a clean baseline.
+- Small-angle / few-rotation orthogonal rotation defeats distribution-based detection on every (model, corpus) pair tested — five embedding models (OpenAI `text-embedding-3-large` plus four local Ollama models) and three corpora (the 68-chunk synthetic-PII baseline plus a cross-corpus replication on BEIR NFCorpus and a Quora subset, ~26,000 chunks combined).
+- A disjoint-Givens rotation encoder gives a closed-form per-vector capacity ceiling of `floor(d/2) * b` bits — 1,920 B per vector at `d=3072`, `b=10` — with a working encoder/decoder that round-trips arbitrary payloads at zero BER under float64, float32, and float16 storage. The retrieval-preserving operating point at `cos ≥ 0.7` caps the *useful* channel at hundreds of bytes per vector, not the ceiling, and at high `K` the AUC becomes data-distribution-dependent.
+- The bit channel survives every non-PQ vector-store configuration we tested (FAISS-flat, FAISS-HNSW, Chroma, Qdrant float32, Qdrant int8). FAISS IVF-PQ is the one configuration that materially narrows the channel — `recover_cos` drops to 0.76–0.88 — as a side effect of memory optimization rather than an intentional defense.
 - White-box adaptive attackers drive both detector AUCs to near-zero, confirming that statistical detection is not a load-bearing control.
 
 The constructive defense, VectorPin, signs each embedding to its source content and producing model with Ed25519 over a canonical byte representation. Any post-embedding modification — including all studied techniques — breaks signature verification. See <https://github.com/ThirdKeyAI/VectorPin>.

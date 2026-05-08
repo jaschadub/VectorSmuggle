@@ -79,10 +79,10 @@ This document outlines the testing strategy for VectorSmuggle. It combines resea
 
 #### 3.2 Attack Simulation
 
-- Data exfiltration scenarios
-- DLP bypass against commercial DLP tools
-- Behavioral camouflage validation
-- Multi-vector attack effectiveness
+- Data exfiltration scenarios via the empirical scripts in `scripts/`
+- Steganographic technique evaluation against off-the-shelf statistical detectors (Isolation Forest, One-Class SVM)
+- Cross-backend bit-channel survival (FAISS-flat / HNSW / IVF-PQ, Chroma, Qdrant float32 / int8)
+- Adaptive white-box detector evasion via projected gradient descent
 
 #### 3.3 Vulnerability Tests
 
@@ -127,12 +127,26 @@ This document outlines the testing strategy for VectorSmuggle. It combines resea
 - Statistical significance (p-values) for research claims
 - Comparison against existing techniques
 
-#### 5.2 Real-World Scenarios
+#### 5.2 Empirical Reproduction Scripts
 
-- Industry datasets: finance, healthcare, legal
-- Enterprise environments: corporate vector databases
-- Multi-language and international document formats
-- Effectiveness over time (time-series analysis)
+The numbers in the companion preprint are produced by these
+top-level scripts; each writes to `results/<study>/<timestamp>/`
+with a `summary.json` and a `report.md`:
+
+- `scripts/empirical_study.py` — headline detection table on the 68-chunk synthetic-PII corpus with `text-embedding-3-large`
+- `scripts/rotation_sweep.py` — 35-point parameter sweep over `theta_max × num_rotations`
+- `scripts/payload_capacity.py` — closed-form and empirical disjoint-Givens capacity (synthetic + real-corpus tables)
+- `scripts/cross_backend_study.py` — round-trip across FAISS-flat / HNSW / IVF-PQ, Chroma, Qdrant float32 / int8
+- `scripts/multi_model_study.py` — same battery on four local Ollama embedding models (any other Ollama embedding model can be added by extending the `MODELS` list)
+- `scripts/multi_corpus_study.py` — cross-corpus replication on BEIR NFCorpus and a Quora subset
+- `scripts/adaptive_attacker.py` — white-box PGD evasion against the One-Class SVM defender
+- `scripts/paraphrased_retrieval.py` — paraphrased-query recall benchmark
+
+#### 5.3 Real-World Scenarios
+
+- BEIR-standard public corpora (NFCorpus medical-domain ~3,600 docs, Quora web Q&A subset ~10,000 docs) for cross-corpus replication
+- Enterprise environments: corporate vector databases (FAISS, Chroma, Qdrant)
+- Multi-format document processing (15+ formats handled by `loaders/`)
 
 ### 6. Regression Tests (Quality Assurance Layer)
 

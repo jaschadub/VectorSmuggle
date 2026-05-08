@@ -38,9 +38,9 @@ pytest tests/unit/ -m "not slow" -v
 **Coverage:**
 
 - Configuration loading and validation
-- Steganography techniques (noise, rotation, scaling)
+- Steganography techniques (noise, rotation, scaling, offset, fragmentation, decoy interleaving)
 - Document loaders for all 15+ formats
-- Embedding generation and fallback
+- Embedding generation and fallback (OpenAI plus any locally pulled Ollama embedding model)
 - Query algorithms and optimization
 
 ### 2. Integration Tests (`--suite integration`)
@@ -59,8 +59,8 @@ python run_comprehensive_tests.py --suite integration
 **Coverage:**
 
 - End-to-end document → embedding → storage pipeline
-- Vector store connectivity (FAISS, Qdrant, Pinecone)
-- API integration with external services
+- Vector store connectivity for the cross-backend study (FAISS-flat / HNSW / IVF-PQ, Chroma, Qdrant float32 / int8) plus legacy Pinecone support in `scripts/embed.py` and `scripts/query.py`
+- API integration with external services (OpenAI, Ollama)
 - Error propagation and recovery
 - Performance under load
 
@@ -123,11 +123,14 @@ python run_comprehensive_tests.py --suite research
 
 **Coverage:**
 
-- Steganographic technique effectiveness
-- Detection resistance validation
-- Statistical significance testing
-- Baseline generation accuracy
-- Cross-model compatibility
+- Steganographic technique effectiveness against Isolation Forest and One-Class SVM defenders
+- Detection resistance validation across the rotation parameter sweep
+- Closed-form and empirical payload-capacity for the rotation channel (`scripts/payload_capacity.py`)
+- Cross-model generalisation across `text-embedding-3-large` plus four local Ollama embedding models (`scripts/multi_model_study.py`); extensible to any other Ollama embedding model
+- Cross-corpus generalisation on BEIR NFCorpus and a Quora subset (`scripts/multi_corpus_study.py`)
+- Adaptive white-box detector evasion (`scripts/adaptive_attacker.py`)
+- Paraphrased-query retrieval benchmark (`scripts/paraphrased_retrieval.py`)
+- Reproducibility under fixed seeds and timestamped result directories
 
 ## Advanced Usage
 
