@@ -253,10 +253,12 @@ class EmbeddingObfuscator:
 
         obfuscated = embeddings.copy()
 
-        # Apply noise injection
+        # Apply noise injection — store realization so deobfuscate can reverse it
         if "noise" in techniques:
-            obfuscated = self.inject_noise(obfuscated)
+            noise = np.random.normal(0, self.noise_level, obfuscated.shape)
+            obfuscated = obfuscated + noise
             result["techniques_applied"].append("noise")
+            result["metadata"]["noise"] = noise
             result["metadata"]["noise_level"] = self.noise_level
 
         # Apply rotation
@@ -265,17 +267,22 @@ class EmbeddingObfuscator:
             result["techniques_applied"].append("rotation")
             result["metadata"]["rotation_matrix"] = rotation_matrix
 
-        # Apply scaling
+        # Apply scaling — store per-vector factors so deobfuscate can reverse exactly
         if "scaling" in techniques:
-            obfuscated = self.apply_scaling(obfuscated)
+            scale_factors = np.random.normal(
+                self.scaling_factor, self.scaling_factor * 0.1, obfuscated.shape[0]
+            )
+            scale_factors = np.clip(scale_factors, 0.8, 1.2)
+            obfuscated = obfuscated * scale_factors[:, np.newaxis]
             result["techniques_applied"].append("scaling")
-            result["metadata"]["scaling_factor"] = self.scaling_factor
+            result["metadata"]["scale_factors"] = scale_factors
 
-        # Apply offset
+        # Apply offset — store realization so deobfuscate can reverse it
         if "offset" in techniques:
-            obfuscated = self.apply_offset(obfuscated)
+            offset = np.random.uniform(-self.offset_range, self.offset_range, obfuscated.shape)
+            obfuscated = obfuscated + offset
             result["techniques_applied"].append("offset")
-            result["metadata"]["offset_range"] = self.offset_range
+            result["metadata"]["offset"] = offset
 
         # Apply fragmentation
         if "fragmentation" in techniques:
@@ -339,17 +346,20 @@ class EmbeddingObfuscator:
 
             embeddings = np.array(reconstructed)
 
-        # Reverse rotation
+        # Reverse in opposite order of application: offset → scaling → rotation → noise
+
+        if "offset" in techniques and "offset" in metadata:
+            embeddings = embeddings - metadata["offset"]
+
+        if "scaling" in techniques and "scale_factors" in metadata:
+            embeddings = embeddings / metadata["scale_factors"][:, np.newaxis]
+
         if "rotation" in techniques and "rotation_matrix" in metadata:
             rotation_matrix = metadata["rotation_matrix"]
-            embeddings = embeddings @ rotation_matrix  # Apply inverse rotation
+            embeddings = embeddings @ rotation_matrix  # inverse of @ R.T is @ R
 
-        # Note: Noise, scaling, and offset are not perfectly reversible
-        # but we can attempt approximate reversal
+        if "noise" in techniques and "noise" in metadata:
+            embeddings = embeddings - metadata["noise"]
 
-        if "scaling" in techniques and "scaling_factor" in metadata:
-            scaling_factor = metadata["scaling_factor"]
-            embeddings = embeddings / scaling_factor
-
-        self.logger.info("Deobfuscation completed (approximate recovery)")
+        self.logger.info("Deobfuscation completed")
         return embeddings
