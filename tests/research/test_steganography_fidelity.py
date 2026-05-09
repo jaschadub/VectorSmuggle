@@ -167,10 +167,11 @@ class TestStatisticalDetectability:
         assert "rotation" in result["techniques_applied"]
         assert "scaling" in result["techniques_applied"]
 
-        # Metadata should include reversibility info
+        # Metadata should include reversibility info — the actual realizations
+        # needed for exact deobfuscation, not just the config scalars.
         assert "rotation_matrix" in result["metadata"]
-        assert "noise_level" in result["metadata"]
-        assert "scaling_factor" in result["metadata"]
+        assert "noise" in result["metadata"]
+        assert "scale_factors" in result["metadata"]
 
 
 class TestRecoveryFeasibility:
