@@ -1,112 +1,11 @@
 # Usage Guidelines
 
-## Purpose and Scope
+VectorSmuggle is a research framework. It exists to study how sensitive information can be hidden inside vector embeddings, to give security researchers and defenders a concrete artifact to reason about, and to support the empirical claims in the companion preprint and the [VectorPin](https://github.com/ThirdKeyAI/VectorPin) defense. It is intended for academic study, defensive countermeasure development, authorized red-team exercises, and classroom or training use. It is not a product, not an exfiltration tool you are expected to point at someone else's infrastructure, and not a license to bypass anyone's controls.
 
-VectorSmuggle is designed exclusively for:
-- **Educational purposes**: Learning about vector-based security threats
-- **Security research**: Academic and professional research
-- **Defensive testing**: Authorized security assessments
-- **Red team exercises**: Approved penetration testing
+Using this code to access systems you do not own or have written authorization to test is unlawful in most jurisdictions, and nothing in this repository changes that. The same applies to actually exfiltrating data, hiding payloads in third-party vector stores, evading detection on production systems you do not run, or repackaging the techniques here into a covert-channel product. If your work touches another organization's environment, you need an engagement scope, a signed authorization, and an understanding of the data-protection regimes that apply to whatever passes through it — GDPR for EU data, CCPA for California residents, HIPAA for protected health information, and any sector-specific regime that covers the rest. If you are not sure which apply, get advice before you run anything.
 
-## Prohibited Uses
+Within an authorized scope, the usual professional expectations hold. Keep blast radius small, log what you do, don't disclose findings outside the agreed channels, and treat any sensitive data you encounter as something to protect rather than collect. The repository ships with `sample_docs/` precisely so the demos do not require real data; prefer synthetic fixtures wherever a real document is not load-bearing.
 
-**STRICTLY FORBIDDEN:**
-- Unauthorized access to systems or data
-- Actual data theft or exfiltration
-- Malicious attacks against any organization
-- Violation of laws or regulations
-- Commercial exploitation without permission
+The framework is distributed under Apache 2.0 with no warranty. The authors and contributors do not accept liability for misuse, do not guarantee fitness for any particular purpose, and reserve the right to change or withdraw the code. By cloning, running, or adapting it, you accept that the responsibility for how it is used sits with you.
 
-## Legal Requirements
-
-### Authorization Required
-- **Written permission** from system owners
-- **Scope agreement** defining testing boundaries
-- **Legal review** of testing activities
-- **Compliance verification** with applicable laws
-
-### Documentation
-- Maintain detailed logs of all activities
-- Document testing scope and limitations
-- Record findings and recommendations
-- Preserve evidence for analysis
-
-## Ethical Guidelines
-
-### Responsible Use
-- Minimize impact on systems and users
-- Protect confidentiality of any discovered vulnerabilities
-- Report findings through appropriate channels
-- Respect privacy and data protection rights
-
-### Professional Standards
-- Follow industry best practices
-- Maintain professional competence
-- Avoid conflicts of interest
-- Uphold integrity and honesty
-
-## Compliance Requirements
-
-### Data Protection
-- GDPR compliance for EU data
-- CCPA compliance for California residents
-- HIPAA compliance for healthcare data
-- Industry-specific regulations
-
-### Security Standards
-- ISO 27001 information security
-- NIST Cybersecurity Framework
-- SOC 2 compliance requirements
-- Industry security standards
-
-## Liability and Disclaimers
-
-### User Responsibility
-Users are solely responsible for:
-- Ensuring authorized use
-- Compliance with applicable laws
-- Proper handling of sensitive data
-- Consequences of misuse
-
-### Limitation of Liability
-The authors and contributors:
-- Assume no liability for misuse
-- Provide no warranties or guarantees
-- Disclaim responsibility for damages
-- Reserve right to modify or discontinue
-
-## Reporting and Disclosure
-
-### Vulnerability Disclosure
-- Follow responsible disclosure practices
-- Report to appropriate authorities
-- Coordinate with affected parties
-- Provide remediation guidance
-
-### Incident Reporting
-- Report security incidents promptly
-- Cooperate with investigations
-- Preserve evidence and logs
-- Document lessons learned
-
-## Contact Information
-
-For questions about usage guidelines:
-- Review documentation thoroughly
-- Consult legal counsel
-- Contact project maintainers
-- Seek professional guidance
-
-## Updates and Changes
-
-These guidelines may be updated to:
-- Reflect legal changes
-- Address new threats
-- Improve clarity
-- Enhance protection
-
-Users are responsible for staying current with the latest version.
-
----
-
-**By using VectorSmuggle, you acknowledge that you have read, understood, and agree to comply with these usage guidelines.**
+If you find a vulnerability — in VectorSmuggle itself, in a vector store you are authorized to test, or in a RAG pipeline that surfaces during research — handle it under the process described in [`responsible_disclosure.md`](responsible_disclosure.md). Broader ethical context for the dual-use nature of this work lives in [`ethical_considerations.md`](ethical_considerations.md), and operational notes for engagement work are in [`compliance_checklist.md`](compliance_checklist.md).

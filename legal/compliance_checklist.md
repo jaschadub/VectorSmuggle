@@ -1,63 +1,13 @@
-# Compliance Checklist
+# Compliance Notes for Engagement Use
 
-## Pre-Use Requirements
+This file is a prose companion to [`usage_guidelines.md`](usage_guidelines.md), aimed at people who plan to run VectorSmuggle inside a paid engagement, an authorized internal red-team exercise, or a research program that touches another organization's data. It is not legal advice and it is not a substitute for the controls your own organization or your client requires; treat it as a starting checklist of considerations to talk through with the people who can actually sign things.
 
-### Legal Authorization
-- [ ] Written permission from system owners
-- [ ] Scope of work agreement signed
-- [ ] Legal review completed
-- [ ] Insurance coverage verified
+Before any engagement begins, the foundation is written authorization from the owner of the system under test, with a scope agreement that names the systems, the techniques in play, and the boundaries you will not cross. Vector-based exfiltration techniques are unusual enough that a generic penetration-test scope often does not anticipate them; spell them out so there are no surprises later. If the engagement touches personal data, the applicable regime needs to be identified up front — GDPR if EU residents are in scope, CCPA if Californians are, HIPAA if protected health information is involved, and any sector-specific overlay such as PCI or financial-services rules. Confirm whether the client carries the insurance and indemnification that engagement work usually requires, and whether your own organization does too.
 
-### Regulatory Compliance
-- [ ] GDPR compliance verified (EU data)
-- [ ] CCPA compliance verified (CA residents)
-- [ ] HIPAA compliance verified (healthcare)
-- [ ] Industry-specific regulations reviewed
+On the technical side, treat the test environment as something to be isolated rather than improvised. A separate vector store, a separate embedding endpoint or local model, and a separate set of API credentials make it much easier to reason about what your activity touched and to clean up afterward. Decide ahead of time how you will handle any sensitive content you encounter: minimization is the default, redaction or local-only processing where possible, and a clear destruction step for anything that does end up on disk. Ensure your monitoring is at least as good as the client's — you want to know what your own activity looked like from a defender's perspective, both for the report and in case anything is later questioned.
 
-### Technical Safeguards
-- [ ] Test environment isolated
-- [ ] Data handling procedures defined
-- [ ] Security controls implemented
-- [ ] Monitoring systems active
+During the engagement, keep a contemporaneous log: timestamps, commands run, systems touched, anything unexpected, anything you decided not to do and why. This is dull to write and invaluable later. Stay inside the scope you agreed to; if a discovery pulls you toward something the scope does not cover, stop and renegotiate rather than improvising. Watch for impact on the system under test — embedding generation can be costly, and a fragmentation experiment that explodes the index size is the kind of thing you want to catch yourself doing rather than have the client catch first.
 
-## During Use
+After the engagement, the deliverable is a report the client can act on: what you tested, what you found, the impact in concrete terms, and remediation guidance keyed to the affected components. Vulnerabilities that affect third parties — the vector-store vendor, an upstream embedding provider, a DLP product the client uses — should go through the disclosure process in [`responsible_disclosure.md`](responsible_disclosure.md), with the client's coordination and consent. On your own side, retire the credentials you used, destroy or hand back any sensitive artifacts you accumulated, archive the activity logs in line with whatever retention policy the engagement specified, and review what you would do differently next time. If your organization runs periodic compliance reviews of its own, the engagement records belong in that audit trail.
 
-### Documentation
-- [ ] Activities logged and timestamped
-- [ ] Scope boundaries maintained
-- [ ] Findings documented securely
-- [ ] Evidence preserved properly
-
-### Monitoring
-- [ ] System impact monitored
-- [ ] User privacy protected
-- [ ] Data access logged
-- [ ] Anomalies investigated
-
-## Post-Use Requirements
-
-### Reporting
-- [ ] Findings reported to stakeholders
-- [ ] Vulnerabilities disclosed responsibly
-- [ ] Recommendations provided
-- [ ] Follow-up scheduled
-
-### Data Handling
-- [ ] Sensitive data secured or destroyed
-- [ ] Access logs reviewed
-- [ ] Artifacts cleaned up
-- [ ] Retention policies followed
-
-## Compliance Verification
-
-### Regular Reviews
-- [ ] Quarterly compliance audits
-- [ ] Policy updates reviewed
-- [ ] Training completed
-- [ ] Certifications maintained
-
-### Documentation
-- [ ] Compliance records maintained
-- [ ] Audit trails preserved
-- [ ] Policies documented
-- [ ] Procedures updated
+None of this is exotic; it is the same operational discipline that any responsible offensive-security engagement requires. The point of writing it down is that vector-based exfiltration is novel enough that the usual habits sometimes do not extend to it automatically, and a moment of explicit attention up front avoids most of the problems that would otherwise show up in the close-out.

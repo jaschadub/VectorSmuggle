@@ -1,60 +1,11 @@
-# Responsible Disclosure Framework
+# Responsible Disclosure
 
-## Overview
+This document covers two cases: vulnerabilities you find in VectorSmuggle itself, and vulnerabilities you find elsewhere — in a vector database, RAG pipeline, or detection product — using the techniques this repository demonstrates.
 
-This framework guides responsible disclosure of vulnerabilities discovered through VectorSmuggle research.
+For issues in this repository, the preferred channel is a private report to the maintainer rather than a public issue. Open a GitHub security advisory on the repo, or email the maintainer listed in `pyproject.toml`. A useful report describes what the issue is, how to reproduce it (a minimal script or notebook is ideal), what an attacker would gain by exploiting it, and which versions or configurations are affected. Expect an initial acknowledgement within a few days; the project is small, so timelines are best-effort rather than contractual. Please hold public disclosure until a fix or mitigation is available, or until ninety days have passed without a response, whichever comes first.
 
-## Disclosure Process
+For issues you find in third-party systems while using VectorSmuggle, the framework you choose matters more than the framework that produced the finding. Coordinated disclosure is the default: reach out to the affected vendor or operator first, give them a clear technical description and a reproduction path, agree on a timeline that reflects the severity and the realistic remediation effort, and assist with verification of the fix before anything goes public. Most vendors of vector stores, embedding services, and DLP products have either a security.txt, a published advisory program, or a /security page; for systems without one, a CERT or CSIRT is usually the right escalation path, and for issues that touch a regulated sector the relevant regulator may also need to know. Document your good-faith efforts as you go — the existence of safe-harbor protections in the abstract is not a substitute for a contemporaneous record of what you did and why.
 
-### 1. Initial Assessment
-- Verify the vulnerability
-- Assess potential impact
-- Document technical details
-- Determine affected parties
+A few specifics for this domain. Vector-store vulnerabilities tend to be subtle: the system behaves normally, the embeddings look ordinary, and the impact is informational rather than service-affecting. Reproductions should make the impact concrete (recover a known plaintext, demonstrate a measurable AUC collapse on a stated detector, show payload survival across a stated backend) rather than relying on the reader to take the severity on faith. Avoid burning third-party API quota or storage as part of a reproduction; build the demonstration on local fixtures wherever you can. If a finding involves data that is not yours, do not retain it past what is needed to file the report, and destroy any copies once the issue is resolved.
 
-### 2. Notification
-- Contact affected organizations
-- Provide clear vulnerability description
-- Offer remediation assistance
-- Establish communication timeline
-
-### 3. Coordination
-- Work with security teams
-- Provide technical details
-- Assist with testing fixes
-- Coordinate public disclosure
-
-### 4. Public Disclosure
-- Wait for reasonable remediation time
-- Publish findings responsibly
-- Credit researchers appropriately
-- Share defensive measures
-
-## Timeline Guidelines
-
-- **Initial contact**: Within 24 hours of discovery
-- **Detailed report**: Within 7 days
-- **Remediation period**: 90 days (negotiable)
-- **Public disclosure**: After remediation or timeline expiry
-
-## Contact Information
-
-For vulnerability reports:
-- Security teams of affected organizations
-- Industry CERTs and CSIRTs
-- Relevant regulatory bodies
-- Academic research communities
-
-## Legal Protections
-
-- Follow safe harbor provisions
-- Document good faith efforts
-- Maintain professional standards
-- Seek legal guidance when needed
-
-## Best Practices
-
-- Minimize testing impact
-- Protect sensitive information
-- Maintain confidentiality
-- Provide actionable recommendations
+Public writeups, including academic papers, are welcome and are part of why this kind of research has value, but they should follow rather than precede the coordination steps above. Where appropriate, credit the affected operator's response in the writeup; where the operator has asked for anonymity as a condition of cooperating, honor it. The goal across all of this is the same as the goal of the project itself: more durable defenses against a class of attack that traditional DLP was not built to see.
