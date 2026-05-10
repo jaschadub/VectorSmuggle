@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Generate publication-style report and plots from empirical_study.py output.
 
 Reads the latest results/empirical/<timestamp>/summary.json and emits:

@@ -1,3 +1,6 @@
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Contract tests for the vector_backends package.
 
 Each backend implements the same VectorBackend interface, so the test

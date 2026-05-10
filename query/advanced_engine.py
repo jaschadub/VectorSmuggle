@@ -1,3 +1,6 @@
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Advanced query engine with semantic search optimization and multi-step reasoning."""
 
 import logging

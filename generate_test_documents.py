@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Generate 100 sensitive test documents for VectorSmuggle testing."""
 
 import csv

@@ -1,4 +1,4 @@
-# Copyright 2025 Jascha Wanger / Tarnover, LLC
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
 # SPDX-License-Identifier: Apache-2.0
 """Round-trip-focused vector store backends for empirical research.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2025 Jascha Wanger / Tarnover, LLC
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
 # SPDX-License-Identifier: Apache-2.0
 """Cross-backend empirical study.
 

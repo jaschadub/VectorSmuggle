@@ -1,3 +1,6 @@
+# Copyright 2025-2026 Jascha Wanger / Tarnover, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Structured data loader for CSV, JSON, XML, TXT files."""
 
 import csv
