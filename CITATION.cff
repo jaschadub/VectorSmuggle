@@ -24,8 +24,8 @@ preferred-citation:
       given-names: Jascha
       affiliation: "ThirdKey / Tarnover, LLC"
   year: 2026
-  doi: "10.5281/zenodo.20058256"
-  url: "https://doi.org/10.5281/zenodo.20058256"
+  doi: "10.5281/zenodo.20058255"
+  url: "https://doi.org/10.5281/zenodo.20058255"
 references:
   - type: software
     title: "VectorPin: Verifiable integrity for AI embedding stores"

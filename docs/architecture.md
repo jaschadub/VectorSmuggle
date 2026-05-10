@@ -2,7 +2,7 @@
 
 VectorSmuggle is a research framework for studying steganographic exfiltration through vector embedding stores. The codebase is organized as a pipeline: documents are loaded, chunked, embedded, optionally perturbed by one or more steganographic techniques, and stored in a vector backend; queries traverse the same path in reverse.
 
-This document describes the modules that make up that pipeline and the boundaries between them. It does not duplicate the research narrative — for the threat model, technique catalog, and empirical results, see the preprint at <https://doi.org/10.5281/zenodo.20058256>.
+This document describes the modules that make up that pipeline and the boundaries between them. It does not duplicate the research narrative — for the threat model, technique catalog, and empirical results, see the preprint at <https://doi.org/10.5281/zenodo.20058255>.
 
 ## Pipeline
 
