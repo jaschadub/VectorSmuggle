@@ -229,6 +229,9 @@ jobs:
         image: qdrant/qdrant:v1.12.6
         ports:
           - 6333:6333
+    env:
+      # Hoisted to job level so the Slack-notify step's `if:` can check it.
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
     - uses: actions/checkout@v4
@@ -263,14 +266,13 @@ jobs:
           security_report.json
 
     - name: Notify on failure
-      if: failure() && github.event_name == 'schedule'
+      # Skip when no webhook is configured — empty SLACK_WEBHOOK_URL would error the step.
+      if: failure() && github.event_name == 'schedule' && env.SLACK_WEBHOOK_URL != ''
       uses: 8398a7/action-slack@v3
       with:
         status: failure
         channel: '#vectorsmuggle-alerts'
         text: 'VectorSmuggle nightly tests failed'
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Code quality checks
   code-quality:
