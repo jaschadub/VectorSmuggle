@@ -124,10 +124,13 @@ class TestConfig:
         assert config.query.batch_size == 10
 
     @pytest.mark.unit
-    def test_api_key_handling(self):
+    def test_api_key_handling(self, monkeypatch):
         """Test API key loading from environment."""
+        # CI runners may export OPENAI_API_KEY="" when the secret is unset,
+        # so clear it explicitly to test the no-key path.
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         config = Config()
-        assert config.openai.api_key is None
+        assert not config.openai.api_key
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test123"}):
             config = Config()
