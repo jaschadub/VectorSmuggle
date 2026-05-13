@@ -12,10 +12,19 @@ try:
 except ImportError:
     OpenAIEmbeddings = None
 
+# Prefer the modern langchain_ollama package; fall back to the deprecated
+# langchain_community shim (which emits a LangChainDeprecationWarning on
+# import) only if langchain_ollama isn't installed.
 try:
-    from langchain_community.embeddings import OllamaEmbeddings
+    from langchain_ollama import OllamaEmbeddings
 except ImportError:
-    OllamaEmbeddings = None
+    try:
+        import warnings as _warnings
+        with _warnings.catch_warnings():
+            _warnings.simplefilter("ignore", DeprecationWarning)
+            from langchain_community.embeddings import OllamaEmbeddings
+    except ImportError:
+        OllamaEmbeddings = None
 
 
 class EmbeddingFactory:
