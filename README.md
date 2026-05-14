@@ -9,13 +9,14 @@ A research framework demonstrating vector-based data exfiltration techniques in 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Security Research](https://img.shields.io/badge/purpose-security%20research-red.svg)](https://github.com/jaschadub/VectorSmuggle)
 [![Educational](https://img.shields.io/badge/use-educational%20only-green.svg)](https://github.com/jaschadub/VectorSmuggle)
+[![arXiv](https://img.shields.io/badge/arXiv-2605.13764-b31b1b.svg)](https://arxiv.org/abs/2605.13764)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20058255.svg)](https://doi.org/10.5281/zenodo.20058255)
 
 > **Try the demos in Colab →** No setup, no API key needed (uses `sentence-transformers` locally in the runtime):
 > - [**Rotation demo**](https://colab.research.google.com/github/jaschadub/VectorSmuggle/blob/main/rotation_demo_colab.ipynb) — one-click reproduction of the headline finding: rotation drives an off-the-shelf Isolation Forest detector to AUC ≈ 0.5, and the rotation matrix recovers the original embeddings losslessly.
 > - [**Vector-payload dissociation demo**](https://colab.research.google.com/github/jaschadub/VectorSmuggle/blob/main/vector_payload_swap_demo_colab.ipynb) — sensitive content hidden in an obfuscated vector behind a benign decoy payload in LanceDB.
 
-> **Companion preprint:** Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. Zenodo. <https://doi.org/10.5281/zenodo.20058255>
+> **Companion preprint:** Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. arXiv:2605.13764. <https://arxiv.org/abs/2605.13764> ([PDF](https://arxiv.org/pdf/2605.13764)) · Zenodo mirror: <https://doi.org/10.5281/zenodo.20058255>
 >
 > **Constructive defense:** [VectorPin](https://github.com/ThirdKeyAI/VectorPin) — cryptographic provenance for embedding stores, locked to the threat model evaluated here.
 
@@ -118,7 +119,7 @@ See [`examples/README.md`](examples/README.md) for detailed setup instructions, 
 
 ## Documentation
 
-The research narrative — threat model, technique catalog, empirical results, and the VectorPin defense — lives in the preprint at <https://doi.org/10.5281/zenodo.20058255>. The repository documentation covers how to run, configure, and extend the framework.
+The research narrative — threat model, technique catalog, empirical results, and the VectorPin defense — lives in the preprint at <https://arxiv.org/abs/2605.13764>. The repository documentation covers how to run, configure, and extend the framework.
 
 - [Architecture](docs/architecture.md) — module layout and pipeline
 - [Configuration](docs/configuration.md) — environment variables and runtime settings
@@ -232,7 +233,7 @@ bandit -r . -x ./venv,./tests
 
 ## Research
 
-The empirical study, threat model, technique catalog, and the constructive defense (VectorPin) are described in the companion preprint at <https://doi.org/10.5281/zenodo.20058255>. The numbers in the paper are produced by the scripts in `scripts/` against the corpus in `sample_docs/`; see [`docs/usage.md`](docs/usage.md) for the reproduction workflow.
+The empirical study, threat model, technique catalog, and the constructive defense (VectorPin) are described in the companion preprint at <https://arxiv.org/abs/2605.13764>. The numbers in the paper are produced by the scripts in `scripts/` against the corpus in `sample_docs/`; see [`docs/usage.md`](docs/usage.md) for the reproduction workflow.
 
 Headline findings (v1.2 preprint):
 
@@ -259,7 +260,7 @@ What this repository does **not** claim or measure:
 - Behaviour at production scale — millions of vectors, multi-tenant stores, mixed-corpus deployments.
 - Real-world adversary economics (intent, dwell time, exfiltration volume, attribution).
 
-The notebooks under `*_demo_colab.ipynb` are one-click reproductions of the *demonstrable* claims — the attack runs and produces the headline output. The full empirical scope, including the white-box adaptive-attacker analysis and the cross-backend / cross-model / cross-corpus tables, lives in the [companion preprint](https://doi.org/10.5281/zenodo.20058255).
+The notebooks under `*_demo_colab.ipynb` are one-click reproductions of the *demonstrable* claims — the attack runs and produces the headline output. The full empirical scope, including the white-box adaptive-attacker analysis and the cross-backend / cross-model / cross-corpus tables, lives in the [companion preprint](https://arxiv.org/abs/2605.13764).
 
 ## Educational use
 
@@ -297,16 +298,18 @@ VectorPin defense) and the software framework itself.
 
 ### Preprint (preferred)
 
-> Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. Zenodo. <https://doi.org/10.5281/zenodo.20058255>
+> Wanger, J. (2026). *VectorSmuggle: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense*. arXiv:2605.13764. <https://arxiv.org/abs/2605.13764> ([PDF](https://arxiv.org/pdf/2605.13764)) · Zenodo mirror: <https://doi.org/10.5281/zenodo.20058255>
 
 ```bibtex
 @misc{wanger2026vectorsmuggle,
   title  = {{VectorSmuggle}: Steganographic Exfiltration in Embedding Stores and a Cryptographic Provenance Defense},
   author = {Wanger, Jascha},
   year   = {2026},
-  publisher = {Zenodo},
+  eprint = {2605.13764},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
   doi    = {10.5281/zenodo.20058255},
-  url    = {https://doi.org/10.5281/zenodo.20058255}
+  url    = {https://arxiv.org/abs/2605.13764}
 }
 ```
 
@@ -326,13 +329,13 @@ VectorPin defense) and the software framework itself.
 ### APA
 
 ```
-Wanger, J. (2026). VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense. Zenodo. https://doi.org/10.5281/zenodo.20058255
+Wanger, J. (2026). VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense (arXiv:2605.13764). arXiv. https://arxiv.org/abs/2605.13764
 ```
 
 ### IEEE
 
 ```
-J. Wanger, "VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense," Zenodo, 2026. [Online]. Available: https://doi.org/10.5281/zenodo.20058255
+J. Wanger, "VectorSmuggle: Steganographic exfiltration in embedding stores and a cryptographic provenance defense," 2026, arXiv:2605.13764. [Online]. Available: https://arxiv.org/abs/2605.13764
 ```
 
 ---
