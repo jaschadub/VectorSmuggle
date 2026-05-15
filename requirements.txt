@@ -12,6 +12,11 @@ ollama>=0.1.7,<1.0.0
 # Vector stores
 faiss-cpu>=1.8.0,<2.0.0
 qdrant-client>=1.7.0,<2.0.0
+# pgvector backend (vector_backends.pgvector_backend). psycopg 3.x is
+# required; pgvector provides the type adapter that registers the
+# `vector` column type with psycopg.
+psycopg[binary]>=3.1,<4.0
+pgvector>=0.3,<1.0
 # Pinecone: pinned to v2.x because code uses legacy pinecone.init() API.
 # Upgrading to v3+ requires migrating database_adapters/pinecone_adapter.py
 # and scripts/{embed,query}.py to the new Pinecone class-based client.

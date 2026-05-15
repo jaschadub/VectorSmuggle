@@ -125,8 +125,9 @@ services:
 
   # pgvector: Open-source vector similarity search for PostgreSQL.
   # Connection: postgresql://postgres:mypassword@localhost:5432/vectordb
+  # Image moved from ankane/pgvector to pgvector/pgvector in 2024.
   postgres:
-    image: ankane/pgvector:v0.7.2
+    image: pgvector/pgvector:pg16
     container_name: local-pgvector
     ports:
       - "5432:5432"
