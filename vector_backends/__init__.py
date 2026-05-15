@@ -40,6 +40,7 @@ Available backends:
   | FaissHNSW  | no        | IndexHNSWFlat  | none (float32)       |
   | Chroma     | no        | HNSW           | none (float32)       |
   | Qdrant     | yes       | HNSW           | scalar int8          |
+  | PgVector   | yes       | HNSW (cosine)  | none (float32)       |
   +------------+-----------+----------------+----------------------+
 
 Pinecone is intentionally excluded because (a) it requires cloud

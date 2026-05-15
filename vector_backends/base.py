@@ -155,6 +155,11 @@ def list_backends() -> dict[str, type[VectorBackend]]:
         backends[QdrantBackend.name] = QdrantBackend
     except ImportError:
         pass
+    try:
+        from vector_backends.pgvector_backend import PgVectorBackend
+        backends[PgVectorBackend.name] = PgVectorBackend
+    except ImportError:
+        pass
 
     return backends
 
