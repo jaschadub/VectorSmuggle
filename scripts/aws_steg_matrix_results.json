@@ -1,0 +1,170 @@
+[
+  {
+    "backend": "OpenSearch",
+    "technique": "noise",
+    "lossless": 0.9999999951427354,
+    "recovery": 0.9999999869530083,
+    "stealth": 0.999999986953009,
+    "notes": ""
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "rotation",
+    "lossless": 0.9999999878234556,
+    "recovery": 0.9999999869530088,
+    "stealth": 0.9999647757792086,
+    "notes": ""
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "scaling",
+    "lossless": 1.0000001192092896,
+    "recovery": 1.0,
+    "stealth": 1.0,
+    "notes": "magnitude-only attack; survives via direction preservation"
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "offset",
+    "lossless": 1.0000000395703263,
+    "recovery": 0.999999986953008,
+    "stealth": 0.9724055904240925,
+    "notes": ""
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "fragmentation",
+    "lossless": 1.0,
+    "recovery": 0.9996010065078735,
+    "stealth": NaN,
+    "notes": "4 fragments stored as separate records"
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "decoy-interleaving",
+    "lossless": 1.0,
+    "recovery": 1.0,
+    "stealth": 1.0,
+    "notes": "1 real + 4 decoys; real recovered by id"
+  },
+  {
+    "backend": "OpenSearch",
+    "technique": "composed",
+    "lossless": 0.9999999902003351,
+    "recovery": 0.9999999869530084,
+    "stealth": 0.9974655827317184,
+    "notes": ""
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "noise",
+    "lossless": 0.9999999951427354,
+    "recovery": 0.9999999869530083,
+    "stealth": 0.999999986953009,
+    "notes": ""
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "rotation",
+    "lossless": 0.9999999878234556,
+    "recovery": 0.9999999869530088,
+    "stealth": 0.9999647757792086,
+    "notes": ""
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "scaling",
+    "lossless": 1.0000001192092896,
+    "recovery": 1.0,
+    "stealth": 1.0,
+    "notes": "magnitude-only attack; survives via direction preservation"
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "offset",
+    "lossless": 1.0000000395703263,
+    "recovery": 0.999999986953008,
+    "stealth": 0.9724055904240925,
+    "notes": ""
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "fragmentation",
+    "lossless": 1.0,
+    "recovery": 0.9996010065078735,
+    "stealth": NaN,
+    "notes": "4 fragments stored as separate records"
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "decoy-interleaving",
+    "lossless": 1.0,
+    "recovery": 1.0,
+    "stealth": 1.0,
+    "notes": "1 real + 4 decoys; real recovered by id"
+  },
+  {
+    "backend": "MemoryDB",
+    "technique": "composed",
+    "lossless": 0.9999999902003351,
+    "recovery": 0.9999999869530084,
+    "stealth": 0.9974655827317184,
+    "notes": ""
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "noise",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "rotation",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "scaling",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "offset",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "fragmentation",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "decoy-interleaving",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  },
+  {
+    "backend": "S3Vectors",
+    "technique": "composed",
+    "lossless": NaN,
+    "recovery": NaN,
+    "stealth": NaN,
+    "notes": "ERROR: AccessDeniedException: An error occurred (AccessDeniedException) when calling the CreateVectorBucket operation: The security token included in the request is invalid."
+  }
+]
