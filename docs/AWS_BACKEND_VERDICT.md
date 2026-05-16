@@ -25,26 +25,27 @@ Run 1 (rotation primitive, all three backends, live S3 Vectors). Small-angle Giv
 | MemoryDB | 1.0000000000 | 1.0000000000 | 0.9999647737 | **VULNERABLE** |
 | S3 Vectors | 1.0000000000 | 1.0000000000 | 0.9999647737 | **VULNERABLE** |
 
-Run 2 (full primitive matrix). Harness: [`scripts/aws_backend_steg_matrix.py`](../scripts/aws_backend_steg_matrix.py). Exercises every primitive in `steganography.obfuscation.EmbeddingObfuscator` plus the composed-pipeline path. Each cell reports `(lossless, recovery)` — see harness header for definitions.
+Run 2 (full primitive matrix, all three backends, live S3 Vectors). Harness: [`scripts/aws_backend_steg_matrix.py`](../scripts/aws_backend_steg_matrix.py). Exercises every primitive in `steganography.obfuscation.EmbeddingObfuscator` plus the composed-pipeline path. Each cell reports `(lossless, recovery)` — see harness header for definitions. Same baseline (`SEED=20260516`, 64-dim unit vector) across all backends.
 
-| Primitive | OpenSearch (lossless / recovery) | MemoryDB (lossless / recovery) | S3 Vectors |
+| Primitive | OpenSearch (lossless / recovery) | MemoryDB (lossless / recovery) | S3 Vectors (lossless / recovery) |
 |---|---|---|---|
-| noise | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 | * |
-| rotation | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 | 1.0 / 1.0 (Run 1) |
-| scaling | 1.0000001 / 1.0000000 | 1.0000001 / 1.0000000 | * |
-| offset | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 | * |
-| fragmentation (4 sparse fragments → separate records) | 1.0000000 / 0.9996010 | 1.0000000 / 0.9996010 | * |
-| decoy interleaving (1 real + 4 decoys) | 1.0000000 / 1.0000000 | 1.0000000 / 1.0000000 | * |
-| composed (noise + rotation + scaling + offset) | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 | * |
+| noise | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 |
+| rotation | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 |
+| scaling | 1.0000001 / 1.0000000 | 1.0000001 / 1.0000000 | 1.0000001 / 1.0000000 |
+| offset | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 | 1.0000000 / 0.9999999 |
+| fragmentation (4 sparse fragments → separate records) | 1.0000000 / 0.9996010 | 1.0000000 / 0.9996010 | 1.0000000 / 0.9996010 |
+| decoy interleaving (1 real + 4 decoys) | 1.0000000 / 1.0000000 | 1.0000000 / 1.0000000 | 1.0000000 / 1.0000000 |
+| composed (noise + rotation + scaling + offset) | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 | 0.9999999 / 0.9999999 |
 
-\* S3 Vectors not re-run in this matrix — the IAM key was rotated between Run 1 and Run 2 (correctly, per security advice). The remaining six primitives are not directly observed on S3 Vectors but follow by reduction: Run 1 established `cos(retrieved, inserted) = 1.0` on S3 Vectors, i.e. byte-for-byte lossless float32 round-trip. Every primitive other than fragmentation is a deterministic per-vector transformation in float32 space, so lossless storage is a sufficient condition for survival. Fragmentation requires per-fragment storage + retrieval-by-ID, both of which S3 Vectors supports per the integration tests in `tests/integration/test_s3vectors_backend.py`.
+The S3 Vectors column matches the OpenSearch and MemoryDB columns to the 8th decimal across all 7 primitives — exactly what should happen when all three backends round-trip float32 bytes losslessly. Numerical differences below the 7th decimal are float32 renormalization noise in the backend's `_normalize` step.
 
 Interpretation of the full matrix:
 
-- **Storage is lossless on both backends across all primitives** — every cell shows `cos(retrieved, inserted) ≈ 1.0` (deviations at the 8th decimal are float32 renormalization noise).
-- **Recovery succeeds for every primitive** — direction-reconstruction cosine is ≥ 0.9996 in every cell; 5/7 primitives reach ≥ 0.9999999. The fragmentation cell is the lowest, at 0.9996, because non-overlapping fragments are renormalized independently before being summed, which introduces a small reconstruction error. Still well above any anomaly-detector threshold.
+- **Storage is lossless on all three backends across every primitive.** Lossless deviation is bounded above by 10⁻⁷ in every cell.
+- **Recovery succeeds for every primitive.** Direction-reconstruction cosine is ≥ 0.9996 in every cell; 5/7 primitives reach ≥ 0.9999999. The fragmentation cell is the lowest, at 0.9996, because non-overlapping fragments are renormalized independently before being summed, which introduces a small reconstruction shift. Still well above any anomaly-detector threshold.
 - **The composed pipeline (noise + rotation + scaling + offset stacked) recovers at 0.9999999** — degradation from stacking four primitives is negligible.
 - **The L2-normalize-on-insert step that all three backends perform does not defeat any primitive.** Magnitude-only attacks (scaling) survive because cosine retrieval is invariant to magnitude; magnitude-and-direction attacks (offset, noise) survive because the perturbations are small enough that the renormalized vector remains close to the recoverable target.
+- **Cross-backend numerical agreement to 8 decimals confirms identical storage semantics.** None of AWS's three vector backends has any defense-in-depth against this attack class at the storage layer.
 
 The most consequential single finding is still **S3 Vectors**: AWS's brand-new object-storage-backed vector store stores float32 verbatim. The bytes that go in are the bytes that come out — and that's all the rotation attack needs.
 
@@ -80,4 +81,4 @@ Total: 8 backends span local, OSS, and three hyperscaler-managed AWS surfaces. A
 
 ## Action required
 
-The IAM access key used for the live run (`AKIAWX4N37CWD3V6IP76`) appears in conversation transcript and should be rotated immediately via the AWS IAM console. **Confirmed rotated** between Run 1 and Run 2 (Run 2's S3 Vectors row returned `InvalidToken`).
+The IAM access key used for the live runs (`AKIAWX4N37CWD3V6IP76`) appears in conversation transcript and **must be rotated permanently** after the research run completes. It was rotated once between Run 1 and Run 2's first attempt, then re-enabled to allow Run 2 to capture the full S3 Vectors row. It should now be rotated again and **not re-enabled**.
