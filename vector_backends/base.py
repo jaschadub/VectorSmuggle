@@ -160,6 +160,21 @@ def list_backends() -> dict[str, type[VectorBackend]]:
         backends[PgVectorBackend.name] = PgVectorBackend
     except ImportError:
         pass
+    try:
+        from vector_backends.opensearch_backend import OpenSearchBackend
+        backends[OpenSearchBackend.name] = OpenSearchBackend
+    except ImportError:
+        pass
+    try:
+        from vector_backends.memorydb_backend import MemoryDBBackend
+        backends[MemoryDBBackend.name] = MemoryDBBackend
+    except ImportError:
+        pass
+    try:
+        from vector_backends.s3vectors_backend import S3VectorsBackend
+        backends[S3VectorsBackend.name] = S3VectorsBackend
+    except ImportError:
+        pass
 
     return backends
 

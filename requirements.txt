@@ -17,6 +17,17 @@ qdrant-client>=1.7.0,<2.0.0
 # `vector` column type with psycopg.
 psycopg[binary]>=3.1,<4.0
 pgvector>=0.3,<1.0
+# AWS-side backends (vector_backends.{opensearch,memorydb,s3vectors}_backend).
+# opensearch-py is the data plane (same for local OpenSearch and AWS
+# OpenSearch Service / Serverless). requests-aws4auth signs requests
+# under SigV4 when AWS_OPENSEARCH_REGION is set. redis-py talks to
+# AWS MemoryDB and to local redis-stack identically. boto3 covers
+# the S3 Vectors API surface and the OpenSearch Serverless control
+# plane (collection create / delete).
+opensearch-py>=2.4,<4.0
+requests-aws4auth>=1.2,<2.0
+redis>=5.0,<8.0
+boto3>=1.34,<2.0
 # Pinecone: pinned to v2.x because code uses legacy pinecone.init() API.
 # Upgrading to v3+ requires migrating database_adapters/pinecone_adapter.py
 # and scripts/{embed,query}.py to the new Pinecone class-based client.
