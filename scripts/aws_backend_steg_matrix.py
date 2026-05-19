@@ -32,7 +32,6 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 
@@ -122,17 +121,19 @@ def run_rotation(backend_name: str, baseline: np.ndarray) -> CellResult:
     # Single-pair Givens rotation in (0,1) — invertible, magnitude-preserving.
     theta = 0.05
     c, s = np.cos(theta), np.sin(theta)
-    R = np.eye(baseline.shape[0])
-    R[0, 0] = c; R[0, 1] = -s
-    R[1, 0] = s; R[1, 1] = c
-    inserted = baseline @ R.T
+    rot = np.eye(baseline.shape[0])
+    rot[0, 0] = c
+    rot[0, 1] = -s
+    rot[1, 0] = s
+    rot[1, 1] = c
+    inserted = baseline @ rot.T
     inserted_n = _unit(inserted)
 
     backend = _new_backend(backend_name)
     retrieved = _insert_get(backend, baseline.shape[0], inserted)
 
     lossless = _cos(retrieved, inserted_n)
-    recovered = retrieved @ R  # inverse of @ R.T is @ R for orthogonal R
+    recovered = retrieved @ rot  # inverse of @ rot.T is @ rot for orthogonal rot
     recovery = _cos(_unit(recovered), baseline)
     stealth = _cos(inserted_n, baseline)
     return CellResult(backend_name, "rotation", lossless, recovery, stealth)
