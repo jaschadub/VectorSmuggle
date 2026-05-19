@@ -31,6 +31,8 @@ volumes:
   milvus_minio: {}
   milvus_data: {}
   postgres_data: {}
+  opensearch_data: {}
+  redis_data: {}
 
 services:
   # Qdrant: A vector database & search engine.
@@ -146,6 +148,66 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
+
+  # OpenSearch: AWS-compatible search + k-NN data plane. The
+  # opensearchproject image is the same engine that AWS OpenSearch
+  # Service and Serverless run; what differs is auth (SigV4 vs basic).
+  # The local instance accepts basic auth with admin / the password
+  # baked into vector_backends/opensearch_backend.py:_DEFAULT_PASS.
+  # API endpoint: https://localhost:9200 (self-signed cert)
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    container_name: local-opensearch
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=vectorsmuggle-Admin-2026
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - plugins.security.disabled=true
+      # Local dev disk is usually >85% full on developer laptops; the
+      # default watermark would block index creation in tests. Disable
+      # the disk-threshold guardrails entirely for the test container.
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    networks:
+      - vector-db-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Redis Stack: drop-in AWS MemoryDB equivalent for local testing.
+  # MemoryDB and Redis Stack both ship Redis Search with the same
+  # FT.SEARCH / VECTOR HNSW commands; the data plane is identical.
+  # Connection: redis://localhost:6379 (no TLS, no auth)
+  redis-stack:
+    image: redis/redis-stack-server:7.4.0-v1
+    container_name: local-redis-stack
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vector-db-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     restart: unless-stopped
 
   # --- Milvus Standalone Cluster ---

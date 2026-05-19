@@ -41,6 +41,9 @@ Available backends:
   | Chroma     | no        | HNSW           | none (float32)       |
   | Qdrant     | yes       | HNSW           | scalar int8          |
   | PgVector   | yes       | HNSW (cosine)  | none (float32)       |
+  | OpenSearch | yes / AWS | k-NN HNSW      | none (float32)       |
+  | MemoryDB   | yes / AWS | Redis Search   | none (float32)       |
+  | S3 Vectors | AWS only  | opaque         | opaque               |
   +------------+-----------+----------------+----------------------+
 
 Pinecone is intentionally excluded because (a) it requires cloud
